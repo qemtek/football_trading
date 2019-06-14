@@ -1,4 +1,5 @@
 import sqlite3
+import pandas as pd
 
 # Connect to database
 def connect_to_db(dir = None):
@@ -11,3 +12,21 @@ def connect_to_db(dir = None):
 
     # Return the connection object
     return conn, conn.cursor()
+
+
+# Function to run a query on the DB while still keeping the column names. Returns a DataFrame
+def run_query(cursor, query):
+
+    # Run query
+    cursor.execute(query)
+
+    # Get column names and apply to the data frame
+    names = cursor.description
+    name_list = []
+    for name in names:
+        name_list.append(name[0])
+
+    # Convert the result into a DataFrame and add column names
+    df = pd.DataFrame(cursor.fetchall(), columns=name_list)
+
+    return df
