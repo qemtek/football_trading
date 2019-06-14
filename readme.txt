@@ -18,4 +18,4 @@ Stage 3
 ...
 
 Stage x
-- Incorporate in-play features. Cash out and back in reaction to events happening in the game using a recreational neural network or similar!
+- Incorporate in-play features. Cash out and back in reaction to events happening in the game using a recreational neural network/reinforcement learning or similar!
