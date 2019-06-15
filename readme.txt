@@ -19,3 +19,15 @@ Stage 3
 
 Stage x
 - Incorporate in-play features. Cash out and back in reaction to events happening in the game using a recreational neural network/reinforcement learning or similar!
+
+
+
+LOG 
+
+15-06-2019 - Tried to get horse racing data out of britishhorseracing.com but ran indoor difficulties decoding the response, it seems to be in HTML when it should be JSON? To look into horse racing data about the ground and horses (time form or similar) is needed for good results. Cant access the football data for a week or so because of errors with bet fair historic data.
+
+14-06-2019 - Rolling mean data for every FPL game since 2003 has been added to the database, along with poisson probabilities for goals for and goals against for each team. Also added score probabilities from this, need to work on the logic for pulling all 
+
+09-06-2019 - Managed to parse historic data, but the package I am using is based around horse racing , so there are two options. Edit the code to include football data, or use a different package that also can use historical data (I think historic and non historic are in the same format).
+
+10-06-2019 - Found out how to get all the data I need, now I need to turn the historical data into a function and call it on every
