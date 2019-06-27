@@ -3,6 +3,9 @@ FPL Betting on Betfair Exchange (pre-match and in-play) #2
 Link to trello:
 https://trello.com/b/8okRfP4A/football-prediction-betfair-exchange
 
+Link to quick presentation/plan:
+https://drive.google.com/file/d/1XJlEjGll8YnDCsfpLJp69tTnp9O3-1NW/view?usp=sharing
+
 Stage 1
 - Get poisson distribution mean/sd for every EPL game in the last 10 seasons
 - Use this data to get probabilities of each correct score in the betfair market (up to 3 goals for each team then any other win for each team)
