@@ -1,4 +1,7 @@
-FPL Betting #2
+FPL Betting on Betfair Exchange (pre-match and in-play) #2
+
+Link to trello:
+https://trello.com/b/8okRfP4A/football-prediction-betfair-exchange
 
 Stage 1
 - Get poisson distribution mean/sd for every EPL game in the last 10 seasons
@@ -8,13 +11,10 @@ Stage 1
 Stage 2
 - Gather correct store odds (pre-game) for all games
 - Use the calculated probabilities and betting odds to compare different betting strategies and measure total return. [betting strategies: standard betting, kelly staking]
-- Try test different window sizes and report results
+- Test different window sizes (how many games should we use as history)
 
 Stage 3
-- Use additional data to inform the probabilities, using the previous probabilities as a base.. Many different options for this:
-	Option 1 - Model with 4 outputs, which are the mean and standard deviation of the goal distributions.
-	Option 2 - Model with 1 output per goal selection in betfair (up to 3-3 then 'any other home/away win')
-
+- Use additional features to change the probabilities (by altering the mean of the poisson distribution). Here we basically turn the mean of the poisson distribution into the output of a model, using other features.
 ...
 
 Stage x
