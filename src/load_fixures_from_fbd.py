@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-#import src.team_id_functions as id
+from src.team_id_functions import fetch_id
 from datetime import datetime
 from src.tools import connect_to_db
 
@@ -11,7 +11,8 @@ def extract_data_from_fbd(url, table_name, connection_url=None):
     conn, cursor = connect_to_db(connection_url)
 
     # Pull the csv into a pandas data frame
-    fixtureData = pd.read_csv(url, skipinitialspace=True, error_bad_lines=False, keep_default_na=False)
+    fixtureData = pd.read_csv(url, skipinitialspace=True,
+                              error_bad_lines=False, keep_default_na=False)
 
     # Get the length of the data frame
     sLength = len(fixtureData['HomeTeam'])
@@ -79,9 +80,9 @@ def extract_data_from_fbd(url, table_name, connection_url=None):
                 params = [
                     i+1,  # Fixture ID
                     fixtureData.HomeTeam[i],  # Home team name
+                    fetch_id(fixtureData.HomeTeam[i], cursor),  # Home team ID
                     fixtureData.AwayTeam[i],  # Away team name
-                    #fixtureData.HomeTeam[i], #id.fetch_id(fixtureData.HomeTeam[i], cursor),  # Home team ID
-                    #fixtureData.AwayTeam[i], #id.fetch_id(fixtureData.AwayTeam[i], cursor),  # Away team ID
+                    fetch_id(fixtureData.AwayTeam[i], cursor),  # Away team ID
                     date_corrected,  # Fixture date
                     int(fixtureData.FTHG[i]),  # Home goals (full time)
                     int(fixtureData.FTAG[i]),  # Away goals (full time)
@@ -104,15 +105,17 @@ def extract_data_from_fbd(url, table_name, connection_url=None):
                     int(fixtureData.AR[i])]  # Away red cards
 
                 # Load the parameters into the table
-                cursor.execute("""
+                query = """
                     INSERT INTO {tn} (
-                        fixture_id, home_team, away_team, date, home_score, away_score, home_shots, 
-                        away_shots, full_time_result, b365_home_odds, b365_draw_odds, b365_away_odds, referee, 
-                        over_2p5_odds, under_2p5_odds, ah_home_odds, ah_away_odds, ah_home_handicap, season, 
-                        home_yellow_cards, away_yellow_cards, home_red_cards, away_red_cards
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""".format(
-                        tn=table_name),
-                    params)
+                        fixture_id, home_team, home_id, away_team, away_id, date, 
+                        home_score, away_score, home_shots, away_shots, full_time_result, 
+                        b365_home_odds, b365_draw_odds, b365_away_odds, referee, 
+                        over_2p5_odds, under_2p5_odds, ah_home_odds, ah_away_odds, 
+                        ah_home_handicap, season, home_yellow_cards, away_yellow_cards, 
+                        home_red_cards, away_red_cards) VALUES (
+                        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
+                        ?, ?, ?, ?, ?, ?)"""
+                cursor.execute(query.format(tn=table_name), params)
             except:
                 # Some dates have no valid format, skipping for now.
                 # ToDo: count the number of missing rows
@@ -131,17 +134,17 @@ def update_fixtures_from_fbd(table_name='main_fixtures'):
 
     # Connect to the database
     conn, cursor = connect_to_db()
-
     # Drop and recrease the table we are going to populate
     cursor.execute("DROP TABLE IF EXISTS {tn}".format(tn=table_name))
-    cursor.execute("""CREATE TABLE {tn} (fixture_id INTEGER, home_team TEXT, away_team TEXT,
-    date DATE, home_score INTEGER, away_score INTEGER, home_shots INTEGER, away_shots INTEGER, 
-    full_time_result TEXT, b365_home_odds REAL, b365_draw_odds REAL, b365_away_odds REAL, referee TEXT, 
-    over_2p5_odds REAL, under_2p5_odds REAL, ah_home_odds REAL, ah_away_odds REAL, ah_home_handicap REAL, 
-    season TEXT, home_yellow_cards INTEGER, away_yellow_cards INTEGER, home_red_cards INTEGER, 
+    cursor.execute("""CREATE TABLE {tn} (fixture_id INTEGER, home_team TEXT, 
+    home_id INTEGER, away_team TEXT, away_id INTEGER, date DATE, home_score INTEGER, 
+    away_score INTEGER, home_shots INTEGER, away_shots INTEGER, full_time_result TEXT, 
+    b365_home_odds REAL, b365_draw_odds REAL, b365_away_odds REAL, referee TEXT, 
+    over_2p5_odds REAL, under_2p5_odds REAL, ah_home_odds REAL, ah_away_odds REAL, 
+    ah_home_handicap REAL, season TEXT, home_yellow_cards INTEGER, 
+    away_yellow_cards INTEGER, home_red_cards INTEGER, 
     away_red_cards INTEGER)""".format(tn=table_name))
     conn.commit()
-
     # Create the list of urls to get data from
     urls = ['http://www.football-data.co.uk/mmz4281/0304/E0.csv',
             'http://www.football-data.co.uk/mmz4281/0405/E0.csv',
@@ -158,13 +161,15 @@ def update_fixtures_from_fbd(table_name='main_fixtures'):
             'http://www.football-data.co.uk/mmz4281/1516/E0.csv',
             'http://www.football-data.co.uk/mmz4281/1617/E0.csv',
             'http://www.football-data.co.uk/mmz4281/1718/E0.csv',
-            'http://www.football-data.co.uk/mmz4281/1819/E0.csv']
+            'http://www.football-data.co.uk/mmz4281/1819/E0.csv',
+            'http://www.football-data.co.uk/mmz4281/1920/E0.csv']
 
     for url in urls:
         extract_data_from_fbd(url, table_name)
 
     # Close the connection
     conn.close()
+
 
 if __name__ == "__main__":
     update_fixtures_from_fbd()

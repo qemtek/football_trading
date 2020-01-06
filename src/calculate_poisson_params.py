@@ -44,6 +44,8 @@ def create_team_poisson_probabilities():
     df['ga_prob_other'] = df.apply(lambda x: 1 - (x['ga_prob_0'] + x['ga_prob_1'] +
                                                   x['ga_prob_2'] + x['ga_prob_3']), axis=1)
 
+    # ToDo: Get the data also in key-value pair, e.g type: goals_for/goals_against, amount:, value: for easier plotting
+    
     # Create the DB table to store data
     cursor.execute("DROP TABLE IF EXISTS poisson_team_odds")
     cursor.execute("""CREATE TABLE poisson_team_odds (fixture_id INT, team_name TEXT, date DATE, season TEXT, 

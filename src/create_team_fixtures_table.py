@@ -12,11 +12,14 @@ cursor.execute("""CREATE TABLE team_fixtures_home as SELECT
     season, 
     home_score goals_for, 
     away_score goals_against, 
+    home_score-away_score goal_difference,
     home_yellow_cards yellow_cards, 
     home_red_cards red_cards, 
     home_shots shots_for,
     away_shots shots_against,
+    home_shots-away_shots shot_difference,
     1 as is_home,
+    b365_home_odds as b365_win_odds,
     case 
         when home_score > away_score then 'W'
         when home_score < away_score then 'L' 
@@ -37,11 +40,14 @@ cursor.execute("""CREATE TABLE team_fixtures_away as SELECT
     season, 
     away_score goals_for, 
     home_score goals_against, 
+    away_score-home_score goal_difference
     away_yellow_cards yellow_cards, 
     away_red_cards red_cards, 
     away_shots shots_for,
     home_shots shots_against,
+    away_shots-home_shots shot_difference,
     0 as is_home,
+    b365_away_odds as b365_win_odds,
     case 
         when home_score > away_score then 'L'
         when home_score < away_score then 'W' 
