@@ -85,7 +85,7 @@ def get_home_away_advantage(df, type):
         else [1/home_advantage_sum, 1/home_advantage_avg]
 
 
-def get_features(row, window_length=8, type='home'):
+def get_features(row, index, window_length=8, type='home'):
     team_name = row['home_team' if type == 'home' else 'away_team']
     fixture_id = row['fixture_id']
     season = row['season']
@@ -97,37 +97,36 @@ def get_features(row, window_length=8, type='home'):
     df_filtered = df_filtered.sort_values('date').tail(window_length)
     # Create aggregated features
     df_output = pd.DataFrame()
-    df_output.loc[0, 'avg_goals_for_'+type] = np.mean(df_filtered['goals_for'])
-    df_output.loc[0, 'avg_goals_against_'+type] = np.mean(df_filtered['goals_against'])
-    df_output.loc[0, 'sd_goals_for_'+type] = np.std(df_filtered['goals_for'])
-    df_output.loc[0, 'sd_goals_against_'+type] = np.std(df_filtered['goals_against'])
-    df_output.loc[0, 'avg_shots_for_'+type] = np.mean(df_filtered['shots_for'])
-    df_output.loc[0, 'avg_shots_against_'+type] = np.mean(df_filtered['shots_against'])
-    df_output.loc[0, 'sd_shots_for_'+type] = np.std(df_filtered['shots_for'])
-    df_output.loc[0, 'sd_shots_against_'+type] = np.std(df_filtered['shots_against'])
-    df_output.loc[0, 'avg_yellow_cards_'+type] = np.mean(df_filtered['yellow_cards'])
-    df_output.loc[0, 'avg_red_cards_'+type] = np.mean(df_filtered['red_cards'])
-    df_output.loc[0, 'b365_win_odds_'+type] = np.mean(df_filtered['b365_win_odds'])
-    df_output.loc[0, 'avg_perf_vs_bm_'+type] = get_performance_vs_bookmaker(df_filtered)
-    df_output.loc[0, 'manager_new_'+type] = row[type + '_manager_new']
-    df_output.loc[0, 'manager_age_'+type] = row[type + '_manager_age']
-    df_output.loc[0, 'win_rate_'+type] = np.mean(df_filtered['result_W'])
-    df_output.loc[0, 'draw_rate_'+type] = np.mean(df_filtered['result_D'])
-    df_output.loc[0, 'loss_rate_'+type] = np.mean(df_filtered['result_L'])
+    df_output.loc[index, 'avg_goals_for_'+type] = np.mean(df_filtered['goals_for'])
+    df_output.loc[index, 'avg_goals_against_'+type] = np.mean(df_filtered['goals_against'])
+    df_output.loc[index, 'sd_goals_for_'+type] = np.std(df_filtered['goals_for'])
+    df_output.loc[index, 'sd_goals_against_'+type] = np.std(df_filtered['goals_against'])
+    df_output.loc[index, 'avg_shots_for_'+type] = np.mean(df_filtered['shots_for'])
+    df_output.loc[index, 'avg_shots_against_'+type] = np.mean(df_filtered['shots_against'])
+    df_output.loc[index, 'sd_shots_for_'+type] = np.std(df_filtered['shots_for'])
+    df_output.loc[index, 'sd_shots_against_'+type] = np.std(df_filtered['shots_against'])
+    df_output.loc[index, 'avg_yellow_cards_'+type] = np.mean(df_filtered['yellow_cards'])
+    df_output.loc[index, 'avg_red_cards_'+type] = np.mean(df_filtered['red_cards'])
+    df_output.loc[index, 'b365_win_odds_'+type] = np.mean(df_filtered['b365_win_odds'])
+    df_output.loc[index, 'avg_perf_vs_bm_'+type] = get_performance_vs_bookmaker(df_filtered)
+    df_output.loc[index, 'manager_new_'+type] = row[type + '_manager_new']
+    df_output.loc[index, 'manager_age_'+type] = row[type + '_manager_age']
+    df_output.loc[index, 'win_rate_'+type] = np.mean(df_filtered['result_W'])
+    df_output.loc[index, 'draw_rate_'+type] = np.mean(df_filtered['result_D'])
+    df_output.loc[index, 'loss_rate_'+type] = np.mean(df_filtered['result_L'])
     ha_features = get_home_away_advantage(df_filtered, type)
-    df_output.loc[0, 'home_advantage_sum_'] = ha_features[0]
-    df_output.loc[0, 'home_advantage_avg_'] = ha_features[1]
+    df_output.loc[index, 'home_advantage_sum_'] = ha_features[0]
+    df_output.loc[index, 'home_advantage_avg_'] = ha_features[1]
     return df_output
 
 
 num_features = 38
 X = pd.DataFrame()
 for i in range(len(df)):
-    home_features = get_features(df.iloc[i, :], type='home', window_length=window_length)
-    away_features = get_features(df.iloc[i, :], type='away', window_length=window_length)
+    row = df.iloc[i, :]
+    home_features = get_features(row, type='home', window_length=window_length, index=df.index[i])
+    away_features = get_features(row, type='away', window_length=window_length, index=df.index[i])
     features = pd.concat([home_features, away_features], axis=1)
     X = X.append(features)
 
-
-
-
+output = pd.concat([df[['fixture_id', 'date', 'home_team', 'home_id', 'away_team', 'away_id']], X], axis=1)
