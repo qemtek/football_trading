@@ -2,7 +2,7 @@ from src.tools import connect_to_db, run_query
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import QuantileTransformer
-import tensorflow
+import tensorflow as tf
 from keras import regularizers
 from keras.activations import tanh, sigmoid
 from keras.layers import Dropout, Dense, Flatten
@@ -141,7 +141,7 @@ for i in range(len(df)):
 X = np.delete(X, obj=to_delete, axis=0)
 num_games = len(X)
 targets = np.delete(np.array(targets), to_delete, axis=0)
-#df = df.iloc[~df.index.isin(to_delete), :]
+df = df.iloc[~df.index.isin(to_delete), :]
 
 
 # Split data into test/train
@@ -153,9 +153,9 @@ y_train = targets[mask]
 
 mask_value = -500.1234
 
-# class_weights = compute_class_weight(
-#     'balanced', np.unique(df.iloc[mask, :]['full_time_result']),
-#     df.iloc[mask, :]['full_time_result'])
+class_weights = compute_class_weight(
+    'balanced', np.unique(df['full_time_result']),
+    df['full_time_result'])
 
 
 # def get_class_weights(row):
@@ -167,6 +167,47 @@ mask_value = -500.1234
 #         return class_weights[2]
 #     else:
 #         return -1
+
+f
+
+model = Sequential()
+# model.add(Flatten())
+model.add(Masking(mask_value=mask_value))
+model.add(Dense(32,
+                activation='tanh',
+                kernel_regularizer=regularizers.l1(0.01),
+                input_shape=(X_train.shape[1], X_train.shape[2],)
+               ))
+model.add(LSTM(12,
+               kernel_regularizer=regularizers.l2(0.01),
+               return_sequences=True,
+               activation='tanh',
+               ))
+model.add(LSTM(12,
+               kernel_regularizer=regularizers.l2(0.01),
+               return_sequences=False,
+               activation='tanh',
+               ))
+model.add(Dense(3, activation='sigmoid'))
+lr_schedule = tf.keras.callbacks.LearningRateScheduler(
+    lambda epoch: 1e-8 * 10**(epoch / 20))
+optimizer = adam(lr=1e-8)
+model.compile(loss='categorical_crossentropy',
+              optimizer=optimizer,
+              metrics=["accuracy"])
+history = model.fit(X_train, y_train, epochs=100, batch_size=3, callbacks=[lr_schedule])
+
+
+import matplotlib.pyplot as plt
+plt.semilogx(history.history["lr"], history.history["loss"])
+plt.axis([1e-8, 1e-3, 0, 5])
+
+
+
+
+
+
+
 
 # define general model for hyperparameter tuning
 def lstm_model(x_train, y_train, x_val, y_val, params):
@@ -181,7 +222,6 @@ def lstm_model(x_train, y_train, x_val, y_val, params):
                     kernel_regularizer=regularizers.l1(params['l1_reg']),
                     input_shape=(x_train.shape[1], x_train.shape[2],)
                    ))
-    model.add(Dropout(rate=params['dropout']))
     model.add(LSTM(params['lstm_hspace'],
                    kernel_regularizer=regularizers.l2(params['l2_reg']),
                    return_sequences=True,
@@ -192,10 +232,6 @@ def lstm_model(x_train, y_train, x_val, y_val, params):
                    return_sequences=False,
                    activation='tanh',
                    ))
-    # model.add(Dense(round(params['dense_neurons']/2),
-    #                 activation=params['non_lstm_act'],
-    #                 kernel_regularizer=regularizers.l2(params['l1_reg'])))
-
     model.add(Dense(3, activation='sigmoid'))
     model.compile(loss='categorical_crossentropy',
                   optimizer=adam(lr=params['learning_rate']),
@@ -211,17 +247,25 @@ def lstm_model(x_train, y_train, x_val, y_val, params):
                   verbose=1,
                   validation_data=(x_val, y_val),
                   steps_per_epoch=None,
-                  # sample_weight=weights,
+                  class_weight=class_weights,
                   callbacks=[ta.utils.ExperimentLogCallback(experiment_name, params)])
 
     return out, model
 
 experiment_name = 'test1'
 
-p = {'dense_neurons': [32], 'lstm_hspace': [4],
+p = {'dense_neurons': [32, 64], 'lstm_hspace': [4, 12],
      'batch_size': [1], 'dropout': [0.2],
-     'l1_reg': [0.01], 'l2_reg': [0.0100], 'epochs': [10],
-     'learning_rate': [0.001], 'non_lstm_act': [tanh]}
+     'l1_reg': [0.01], 'l2_reg': [0.01], 'epochs': [50, 100],
+     'learning_rate': [1e-3], 'non_lstm_act': [tanh]}
+
+# p = {'dense_neurons': 32, 'lstm_hspace': 12,
+#      'batch_size': 1, 'dropout': 0.2,
+#      'l1_reg': 0.01, 'l2_reg': 0.01, 'epochs': 500,
+#      'learning_rate': 1e-3, 'non_lstm_act': tanh}
+#
+# hist, model = lstm_model(X_train, y_train, params=p)
+
 scan_object = ta.Scan(X_train, y_train, model=lstm_model,
                       params=p, experiment_name=experiment_name)
 r = ta.Reporting(scan_object)

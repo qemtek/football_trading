@@ -1,0 +1,2 @@
+round_epochs,val_loss,val_accuracy,loss,accuracy,batch_size,dense_neurons,dropout,epochs,l1_reg,l2_reg,learning_rate,lstm_hspace,non_lstm_act
+50,1.0457681963283025,0.4915730357170105,1.0613224429445762,0.4583836,1,32,0.2,50,0.01,0.01,0.001,4,<function tanh at 0x13b4bf440>

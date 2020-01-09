@@ -2,8 +2,6 @@ from src.tools import connect_to_db, run_query
 import pandas as pd
 import numpy as np
 
-# ToDo: Add whether the last game was an 'upset' from the b365 odds
-
 window_length = 8
 
 # Connect to database
@@ -15,10 +13,12 @@ df = run_query(cursor, "select t1.*, m_h.manager home_manager, m_h.start home_ma
                        "from main_fixtures t1 "
                        "left join managers m_h "
                        "on t1.home_id = m_h.team_id "
-                       "and (t1.date between m_h.start and date(m_h.end, '+1 day') or t1.date > m_h.start and m_h.end is NULL) "
+                       "and (t1.date between m_h.start and date(m_h.end, '+1 day') "
+                       "or t1.date > m_h.start and m_h.end is NULL) "
                        "left join managers m_a "
                        "on t1.away_id = m_a.team_id "
-                       "and (t1.date between m_a.start and date(m_a.end, '+1 day') or t1.date > m_a.start and m_a.end is NULL) "
+                       "and (t1.date between m_a.start and date(m_a.end, '+1 day') "
+                       "or t1.date > m_a.start and m_a.end is NULL) "
                        "where t1.date > '2013-08-01'")
 
 # Get additional features (time as manager) (manager age is logged to reduce scale)
@@ -115,8 +115,8 @@ def get_features(row, index, window_length=8, type='home'):
     df_output.loc[index, 'draw_rate_'+type] = np.mean(df_filtered['result_D'])
     df_output.loc[index, 'loss_rate_'+type] = np.mean(df_filtered['result_L'])
     ha_features = get_home_away_advantage(df_filtered, type)
-    df_output.loc[index, 'home_advantage_sum_'] = ha_features[0]
-    df_output.loc[index, 'home_advantage_avg_'] = ha_features[1]
+    df_output.loc[index, 'home_advantage_sum_'+type] = ha_features[0]
+    df_output.loc[index, 'home_advantage_avg_'+type] = ha_features[1]
     return df_output
 
 
@@ -129,4 +129,12 @@ for i in range(len(df)):
     features = pd.concat([home_features, away_features], axis=1)
     X = X.append(features)
 
-output = pd.concat([df[['fixture_id', 'date', 'home_team', 'home_id', 'away_team', 'away_id']], X], axis=1)
+output = pd.concat([df[['fixture_id', 'date', 'home_team', 'home_id', 'away_team', 'away_id']], X, targets], axis=1)
+
+# Upload the data to a table in the database
+run_query(cursor, 'DROP TABLE IF EXISTS model_features', return_data=False)
+output.to_sql('model_features', conn)
+
+# ToDo: Upload to model_features table
+# ToDo: Add home/away stats (HA form)
+# ToDo: Add whether the last game was an 'upset' from the b365 odds

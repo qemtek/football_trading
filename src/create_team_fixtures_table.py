@@ -40,7 +40,7 @@ cursor.execute("""CREATE TABLE team_fixtures_away as SELECT
     season, 
     away_score goals_for, 
     home_score goals_against, 
-    away_score-home_score goal_difference
+    away_score-home_score goal_difference,
     away_yellow_cards yellow_cards, 
     away_red_cards red_cards, 
     away_shots shots_for,
