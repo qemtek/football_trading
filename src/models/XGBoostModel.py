@@ -4,6 +4,7 @@ import numpy as np
 import os
 import pandas as pd
 import logging
+import datetime as dt
 
 from sklearn.model_selection import KFold, train_test_split, GridSearchCV
 from sklearn.metrics import balanced_accuracy_score, accuracy_score
@@ -11,18 +12,23 @@ from sklearn.metrics import balanced_accuracy_score, accuracy_score
 from src.models.base_model import Model
 from src.utils.db import run_query, connect_to_db
 from src.utils.XGBoostUtils import get_features
+from configuration import model_dir
 
 logger = logging.getLogger('XGBoostModel')
 
 
 class XGBoostModel(Model):
     """Everything specific to the XGBoost goes in this class"""
-    def __init__(self, test_mode=False):
+    def __init__(self, test_mode=False, load_latest_model=False):
         # Call the __init__ method of the parent class
         super().__init__()
         self.test_mode = test_mode
+        self.model_type = 'XGBoost'
         self.param_grid = {'max_depth': [2, 4, 6], 'n_estimators': [50, 100, 200]}
         self.params = {'n_estimators': 100}
+        self.model = None
+        self.accuracy = None
+        self.balanced_accuracy = None
         self.model_features = [
             'avg_goals_for_home',
             'avg_goals_against_home',
@@ -67,10 +73,26 @@ class XGBoostModel(Model):
         self.target = ['full_time_result']
         self.balanced_accuracy = 0
         self.scoring = 'balanced_accuracy'
-        df = self.get_training_data()
-        self.ids, self.X, self.y = self.preprocess(df)
-        self.optimise_hyperparams(self.X[self.model_features], self.y)
-        self.train_model(self.X[self.model_features], self.y)
+
+        train_new_model = False if load_latest_model else True
+
+        if load_latest_model: # ToDo: Allow the user to load a specific model instead
+            # Locate all models
+            models = os.listdir(model_dir)
+            # Filter for the model type
+            models_filtered = [model for model in models if model.find(self.model_type) != -1]
+            # Order models by date and pick the latest one
+            model_to_load = models_filtered.sort(reverse=True)[0]
+            try:
+                self.load_model(model_to_load)
+            except FileNotFoundError:
+                logger.error("Chosen model could not be loaded, creating new model instead")
+                train_new_model = True
+        if train_new_model:
+            df = self.get_training_data()
+            self.ids, self.X, self.y = self.preprocess(df)
+            self.optimise_hyperparams(self.X[self.model_features], self.y)
+            self.train_model(self.X[self.model_features], self.y)
 
     def preprocess(self, df):
         logger.info("Preprocessing data and generating features.")
@@ -175,7 +197,18 @@ class XGBoostModel(Model):
         # The sklearn API models are picklable
         logger.info("Saving model via pickle.")
         # must open in binary format to pickle
-        pickle.dump(self.model, open(os.path.join('data', "fpl_predict_model.pkl"), "wb"))
+        pickle.dump(
+            self.model,
+            open(os.path.join(
+                model_dir, self.model_type+str(dt.datetime.today().date()),
+                "wb"))
+
+    def load_model(self, model_name):
+        # The sklearn API models are picklable
+        logger.info("Saving model via pickle.")
+        # must open in binary format to pickle
+        self.model = pickle.load(open(model_name, "rb"))
+        self.params = self.model.get_params()
 
     def predict_proba(self, X):
         X = self.preprocess(X)
