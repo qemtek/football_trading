@@ -1,24 +1,18 @@
-from src.tools import connect_to_db, run_query
+from src.utils.db import connect_to_db, run_query
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import QuantileTransformer
-import tensorflow as tf
 from keras import regularizers
-from keras.activations import tanh, sigmoid
-from keras.layers import Dropout, Dense, Flatten
+from keras.activations import tanh
+from keras.layers import Dense
 from keras.models import Sequential
 from keras.layers import LSTM, Masking
 from keras.optimizers import adam
 from keras.callbacks import History
-import keras.backend as K
 import tensorflow as tf
 import talos as ta
-from sklearn.model_selection import KFold
-from sklearn.utils import multiclass
 from sklearn.metrics import accuracy_score
-import datetime as dt
 from sklearn.utils.class_weight import compute_class_weight
-import math
 
 # Connect to database
 conn, cursor = connect_to_db()

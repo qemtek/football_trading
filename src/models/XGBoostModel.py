@@ -9,7 +9,7 @@ from sklearn.model_selection import KFold, train_test_split, GridSearchCV
 from sklearn.metrics import balanced_accuracy_score, accuracy_score
 
 from src.models.base_model import Model
-from src.tools import run_query, connect_to_db
+from src.utils.db import run_query, connect_to_db
 from src.utils.XGBoostUtils import get_features
 
 logger = logging.getLogger('XGBoostModel')

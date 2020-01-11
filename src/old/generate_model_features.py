@@ -1,4 +1,4 @@
-from src.tools import connect_to_db, run_query
+from src.utils.db import connect_to_db, run_query
 import pandas as pd
 import numpy as np
 

@@ -1,5 +1,5 @@
 import pandas as pd
-from src.tools import run_query, connect_to_db
+from src.utils.db import run_query, connect_to_db
 from src.utils.team_id_functions import fetch_id, fetch_name
 import requests
 from bs4 import BeautifulSoup

@@ -1,4 +1,4 @@
-from src.tools import connect_to_db
+from src.utils.db import connect_to_db
 
 # Connect to database
 conn, cursor = connect_to_db()

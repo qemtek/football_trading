@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import numpy as np
 
-from src.tools import run_query, connect_to_db
+from src.utils.db import run_query, connect_to_db
 from src.utils.team_id_functions import get_alternative_name
 
 # Connect to database

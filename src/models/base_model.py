@@ -1,5 +1,5 @@
 import logging
-from src.tools import connect_to_db, run_query
+from src.utils.db import connect_to_db, run_query
 
 logger = logging.getLogger('XGBoostModel')
 

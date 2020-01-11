@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from src.utils.team_id_functions import fetch_id
 from datetime import datetime
-from src.tools import connect_to_db
+from src.utils.db import connect_to_db
 
 # Extract data from .csv files hosted at football-data.co.uk
 def extract_data_from_fbd(url, table_name, connection_url=None):
