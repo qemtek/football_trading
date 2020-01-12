@@ -3,10 +3,10 @@ import pandas as pd
 from configuration import db_dir
 
 
-def connect_to_db(dir=None):
+def connect_to_db(path_to_db=None):
     """# Connect to local sqlite3 database"""
     # If no name is supplied, use the default name
-    sqlite_file = db_dir if dir is None else dir
+    sqlite_file = db_dir if path_to_db is None else path_to_db
     # Establish a connection to the database
     conn = sqlite3.connect(sqlite_file)
     # Return the connection object
