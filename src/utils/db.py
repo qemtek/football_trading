@@ -1,18 +1,21 @@
 import sqlite3
 import pandas as pd
+from configuration import db_dir
 
-# Connect to database
-def connect_to_db(dir = None):
+
+def connect_to_db(dir=None):
+    """# Connect to local sqlite3 database"""
     # If no name is supplied, use the default name
-    if dir == None: sqlite_file = '/Users/chriscollins/Documents/GitHub/football_trading/data/db.sqlite'
+    sqlite_file = db_dir if dir is None else dir
     # Establish a connection to the database
     conn = sqlite3.connect(sqlite_file)
     # Return the connection object
     return conn, conn.cursor()
 
 
-# Function to run a query on the DB while still keeping the column names. Returns a DataFrame
 def run_query(cursor, query, params=[], return_data=True):
+    """Function to run a query on the DB while still keeping the
+    column names. Returns a DataFrame"""
     # Run query
     cursor.execute(query, params)
     # Get column names and apply to the data frame

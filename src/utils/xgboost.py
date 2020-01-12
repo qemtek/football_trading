@@ -71,6 +71,6 @@ def get_features(row, index, team_data, window_length=8, type='home'):
 
 def calculate_win_streak(last_games):
     count = 0
-    while (last_games.iloc[count] == 1):
+    while last_games.iloc[count] == 1:
         count += 1
     return count
