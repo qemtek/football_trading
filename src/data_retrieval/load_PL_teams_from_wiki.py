@@ -48,10 +48,10 @@ run_query(cursor, 'create table team_ids (team_name TEXT, team_id INTEGER, alter
 for row in df.iterrows():
     params = [row[1]['team_name'], row[1]['team_id']]
     params.append(get_alternative_name(row[1]['team_name']))
-
     run_query(cursor, 'insert into team_ids(team_name, team_id, alternate_name) values(?, ?, ?)',
               params=params, return_data=False)
 
 conn.commit()
 conn.close()
 
+# ToDo: use df.to_sql() instead of the above!!
