@@ -1,11 +1,18 @@
 import logging
+import pandas as pd
+import os
 from src.utils.db import connect_to_db, run_query
+from configuration import available_models, model_dir
+import joblib
+from src.utils.base_model import load_model
 
 logger = logging.getLogger('XGBoostModel')
 
 class Model:
     """Anything that can be used by all models goes in this class"""
     def __init__(self):
+        self.params = None
+        self.model = None
         self.training_data_query = \
             """select t1.*, m_h.manager home_manager, m_h.start home_manager_start, 
             m_a.manager away_manager, m_a.start away_manager_start 
@@ -37,3 +44,28 @@ class Model:
         # Get all fixtures after game week 8, excluding the last game week
         df = run_query(cursor, self.training_data_query)
         return df
+
+    def load_model(self, model_type, date=None):
+        """Wrapper for the load model function in utils"""
+        model = load_model(model_type, date=date)
+        if model is None:
+            return False
+        else:
+            # Set the attributes of the model to those of the class
+            self.model = model
+            self.params = model.get_params()
+            return True
+
+    @staticmethod
+    def get_categorical_features(X):
+        """Get a list of categorical features in the data"""
+        categoricals = []
+        for col, col_type in X.dtypes.iteritems():
+            if col_type == 'O':
+                categoricals.append(col)
+        return categoricals
+
+    @staticmethod
+    def fill_na_values(self, X):
+        """Fill NA values in the data"""
+        pass

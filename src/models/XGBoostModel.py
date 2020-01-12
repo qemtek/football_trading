@@ -1,17 +1,17 @@
-import pickle
 import xgboost as xgb
 import numpy as np
 import os
 import pandas as pd
 import logging
 import datetime as dt
+import joblib
 
 from sklearn.model_selection import KFold, train_test_split, GridSearchCV
 from sklearn.metrics import balanced_accuracy_score, accuracy_score
 
 from src.models.base_model import Model
 from src.utils.db import run_query, connect_to_db
-from src.utils.XGBoostUtils import get_features
+from src.utils.xgboost import get_features
 from configuration import model_dir
 
 logger = logging.getLogger('XGBoostModel')
@@ -19,7 +19,7 @@ logger = logging.getLogger('XGBoostModel')
 
 class XGBoostModel(Model):
     """Everything specific to the XGBoost goes in this class"""
-    def __init__(self, test_mode=False, load_latest_model=False):
+    def __init__(self, test_mode=False, load_model=False, load_model_date=None):
         # Call the __init__ method of the parent class
         super().__init__()
         self.test_mode = test_mode
@@ -74,21 +74,14 @@ class XGBoostModel(Model):
         self.balanced_accuracy = 0
         self.scoring = 'balanced_accuracy'
 
-        train_new_model = False if load_latest_model else True
+        # Attempt to load a model
+        load_successful = False
+        if load_model:
+            load_successful = self.load_model(model_type=self.model_type, date=load_model_date)
 
-        if load_latest_model: # ToDo: Allow the user to load a specific model instead
-            # Locate all models
-            models = os.listdir(model_dir)
-            # Filter for the model type
-            models_filtered = [model for model in models if model.find(self.model_type) != -1]
-            # Order models by date and pick the latest one
-            model_to_load = models_filtered.sort(reverse=True)[0]
-            try:
-                self.load_model(model_to_load)
-            except FileNotFoundError:
-                logger.error("Chosen model could not be loaded, creating new model instead")
-                train_new_model = True
-        if train_new_model:
+        # If load model is false or model loading was unsuccessful, train a new model
+        if any([load_model, load_successful]):
+            logger.info("Training a new model.")
             df = self.get_training_data()
             self.ids, self.X, self.y = self.preprocess(df)
             self.optimise_hyperparams(self.X[self.model_features], self.y)
@@ -106,7 +99,6 @@ class XGBoostModel(Model):
             lambda x: np.log10(round((x['date'] - x['away_manager_start']).days)), axis=1)
         df['home_manager_new'] = df['home_manager_age'].apply(lambda x: 1 if x <= 70 else 0)
         df['away_manager_new'] = df['away_manager_age'].apply(lambda x: 1 if x <= 70 else 0)
-
         # Get team stats
         conn, cursor = connect_to_db()
         df2 = run_query(cursor, "select * from team_fixtures where date > '2013-08-01'")
@@ -116,7 +108,6 @@ class XGBoostModel(Model):
             df[['date', 'season', 'fixture_id', 'home_manager_age', 'away_manager_age',
                 'home_manager_new', 'away_manager_new']],
             on=['date', 'season', 'fixture_id'])
-
         # Filter out the first window_length and last game weeks from the data
         df = df[(df['fixture_id'] > self.window_length * 10) & (df['fixture_id'] < 370)]
         # Filter out games that had red cards
@@ -194,21 +185,13 @@ class XGBoostModel(Model):
             self.params = clf.best_params_
 
     def save_model(self):
-        # The sklearn API models are picklable
-        logger.info("Saving model via pickle.")
-        # must open in binary format to pickle
-        pickle.dump(
-            self.model,
-            open(os.path.join(
-                model_dir, self.model_type+str(dt.datetime.today().date()),
-                "wb"))
-
-    def load_model(self, model_name):
-        # The sklearn API models are picklable
-        logger.info("Saving model via pickle.")
-        # must open in binary format to pickle
-        self.model = pickle.load(open(model_name, "rb"))
-        self.params = self.model.get_params()
+        if self.model is None:
+            logger.error("Trying to save a model that is None, aborting.")
+        else:
+            save_dir = os.path.join(
+                model_dir, self.model_type+str(dt.datetime.today().date())+'.joblib')
+            logger.info("Saving model to {} with joblib.".format(save_dir))
+            joblib.dump(self.model, open(save_dir, "wb"))
 
     def predict_proba(self, X):
         X = self.preprocess(X)
@@ -221,6 +204,3 @@ class XGBoostModel(Model):
 
 if __name__ == '__main__':
     model = XGBoostModel()
-    # ToDo: At the end, train the model on the whole dataset and
-    #  save the accuracy and balanced accuracy for that.
-
