@@ -5,6 +5,7 @@ from src.utils.db import connect_to_db, run_query
 from configuration import available_models, model_dir
 import joblib
 from src.utils.base_model import load_model
+import shap
 
 logger = logging.getLogger('XGBoostModel')
 
@@ -69,3 +70,14 @@ class Model:
     def fill_na_values(self, X):
         """Fill NA values in the data"""
         pass
+
+    @staticmethod
+    def get_shap_explainer(model, X, plot_force=False):
+        """Explain model predictions using SHAP"""
+        explainer = shap.TreeExplainer(model)
+        shap_values = explainer.shap_values(X)
+        # visualize the first prediction's explanation
+        # (use matplotlib=True to avoid Javascript)
+        if plot_force:
+            shap.force_plot(explainer.expected_value[0], shap_values[0])
+        return explainer, shap_values
