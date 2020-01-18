@@ -4,42 +4,35 @@ from src.utils.team_id_functions import fetch_id
 from datetime import datetime
 from src.utils.db import connect_to_db
 
+
 # Extract data from .csv files hosted at football-data.co.uk
 def extract_data_from_fbd(url, table_name, connection_url=None):
-
     # Connect to database
     conn, cursor = connect_to_db(connection_url)
-
     # Pull the csv into a pandas data frame
     fixtureData = pd.read_csv(url, skipinitialspace=True,
-                              error_bad_lines=False, keep_default_na=False)
-
+                              error_bad_lines=False, keep_default_na=False).dropna()
     # Get the length of the data frame
     sLength = len(fixtureData['HomeTeam'])
-
     # Create an additional column for fixture_id, home_id and away_id. Full with random values for now
-    fixtureData['fixture_id'] = pd.Series(np.random.randn(sLength), index=fixtureData.index)
-    fixtureData['home_id'] = pd.Series(np.random.randn(sLength), index=fixtureData.index)
-    fixtureData['away_id'] = pd.Series(np.random.randn(sLength), index=fixtureData.index)
-
+    fixtureData['fixture_id'] = 0
+    fixtureData['home_id'] = 0
+    fixtureData['away_id'] = 0
     # Replace dodgy column names.
     fixtureData.columns = fixtureData.columns.str.replace('>', '_greater_than_').\
         str.replace('<', '_less_than_').str.replace('.', 'p')
-
     # Loop through each row of the data
     for i in range(0, len(fixtureData.index)):
-
-        # Change the game date format to a more appropriate format
-        try:
+        # Check if the row is empty
+        if fixtureData.loc[i, 'HomeTeam'] != "":
+            # Change the game date format to a more appropriate format
             try:
                 date_corrected = datetime.strptime(fixtureData.Date[i], '%d/%m/%y').strftime('%Y-%m-%d')
             except:
                 date_corrected = datetime.strptime(fixtureData.Date[i], '%d/%m/%Y').strftime('%Y-%m-%d')
-
             date_corrected = datetime.strptime(date_corrected, '%Y-%m-%d')
-
             # The next section determines which season the game is in, e.g. 16/17.
-
+            test = fixtureData.Date[i]
             # Extract the year and month
             year = date_corrected.year
             month = date_corrected.month
@@ -72,66 +65,59 @@ def extract_data_from_fbd(url, table_name, connection_url=None):
                 # Try the older format
                 ahHome = fixtureData.B365AHH[i]
                 ahAway = fixtureData.B365AHA[i]
-                ahHandicap = fixtureData.B365AH[i]
+                try:
+                    ahHandicap = fixtureData.B365AH[i]
+                except AttributeError:
+                    ahHandicap = None
 
             # Load all parameters into the main_fixtures table in SQLite.
-            try:
-                # Define the parameters
-                params = [
-                    i+1,  # Fixture ID
-                    fixtureData.HomeTeam[i],  # Home team name
-                    fetch_id(fixtureData.HomeTeam[i], cursor),  # Home team ID
-                    fixtureData.AwayTeam[i],  # Away team name
-                    fetch_id(fixtureData.AwayTeam[i], cursor),  # Away team ID
-                    date_corrected,  # Fixture date
-                    int(fixtureData.FTHG[i]),  # Home goals (full time)
-                    int(fixtureData.FTAG[i]),  # Away goals (full time)
-                    int(fixtureData.HS[i]),  # Home shots
-                    int(fixtureData.AS[i]),  # Away shots
-                    fixtureData.FTR[i],  # Full time result
-                    float(fixtureData.B365H[i]),  # Bet 365 home odds
-                    float(fixtureData.B365D[i]),  # Bet 365 draw odds
-                    float(fixtureData.B365A[i]),  # Bet 365 away odds
-                    fixtureData.Referee[i],  # Referee name
-                    o2p5,  # Over 2.5 goal odds
-                    u2p5,  # Under 2.5 goal odds
-                    ahHome,  # Asian Handicap home odds
-                    ahAway,  # Asian Handicap away odds
-                    ahHandicap,  #  Asian Handicap
-                    season,  # Season name (e.g. 16/17)
-                    int(fixtureData.HY[i]),  # Home yellow cards
-                    int(fixtureData.AY[i]),  # Away yellow cards
-                    int(fixtureData.HR[i]),  # Home red cards
-                    int(fixtureData.AR[i])]  # Away red cards
+          #  try:
+            # Define the parameters
+            params = [
+                i+1,  # Fixture ID
+                fixtureData.HomeTeam[i],  # Home team name
+                fetch_id(fixtureData.HomeTeam[i], cursor),  # Home team ID
+                fixtureData.AwayTeam[i],  # Away team name
+                fetch_id(fixtureData.AwayTeam[i], cursor),  # Away team ID
+                date_corrected,  # Fixture date
+                int(fixtureData.FTHG[i]),  # Home goals (full time)
+                int(fixtureData.FTAG[i]),  # Away goals (full time)
+                int(fixtureData.HS[i]),  # Home shots
+                int(fixtureData.AS[i]),  # Away shots
+                fixtureData.FTR[i],  # Full time result
+                float(fixtureData.B365H[i]),  # Bet 365 home odds
+                float(fixtureData.B365D[i]),  # Bet 365 draw odds
+                float(fixtureData.B365A[i]),  # Bet 365 away odds
+                fixtureData.Referee[i],  # Referee name
+                o2p5,  # Over 2.5 goal odds
+                u2p5,  # Under 2.5 goal odds
+                ahHome,  # Asian Handicap home odds
+                ahAway,  # Asian Handicap away odds
+                ahHandicap,  #  Asian Handicap
+                season,  # Season name (e.g. 16/17)
+                int(fixtureData.HY[i]),  # Home yellow cards
+                int(fixtureData.AY[i]),  # Away yellow cards
+                int(fixtureData.HR[i]),  # Home red cards
+                int(fixtureData.AR[i])]  # Away red cards
 
-                # Load the parameters into the table
-                query = """
-                    INSERT INTO {tn} (
-                        fixture_id, home_team, home_id, away_team, away_id, date, 
-                        home_score, away_score, home_shots, away_shots, full_time_result, 
-                        b365_home_odds, b365_draw_odds, b365_away_odds, referee, 
-                        over_2p5_odds, under_2p5_odds, ah_home_odds, ah_away_odds, 
-                        ah_home_handicap, season, home_yellow_cards, away_yellow_cards, 
-                        home_red_cards, away_red_cards) VALUES (
-                        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
-                        ?, ?, ?, ?, ?, ?)"""
-                cursor.execute(query.format(tn=table_name), params)
-            except:
-                # Some dates have no valid format, skipping for now.
-                # ToDo: count the number of missing rows
-                a = 1
+            # Load the parameters into the table
+            query = """
+                INSERT INTO {tn} (
+                    fixture_id, home_team, home_id, away_team, away_id, date, 
+                    home_score, away_score, home_shots, away_shots, full_time_result, 
+                    b365_home_odds, b365_draw_odds, b365_away_odds, referee, 
+                    over_2p5_odds, under_2p5_odds, ah_home_odds, ah_away_odds, 
+                    ah_home_handicap, season, home_yellow_cards, away_yellow_cards, 
+                    home_red_cards, away_red_cards) VALUES (
+                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
+                    ?, ?, ?, ?, ?, ?)"""
+            cursor.execute(query.format(tn=table_name), params)
 
             # Commit the changes
             conn.commit()
 
-        except:
-            # Debug block
-            a=1
-
-
 # Update fixtures from football-data.co.uk
 def update_fixtures_from_fbd(table_name='main_fixtures'):
-
     # Connect to the database
     conn, cursor = connect_to_db()
     # Drop and recrease the table we are going to populate

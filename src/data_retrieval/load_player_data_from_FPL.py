@@ -5,7 +5,7 @@ from src.utils.db import connect_to_db, run_query
 import asyncio
 
 
-async def main():
+async def get_player_data():
     """Download all data from the Fantasy Premier League website"""
     # Connect to the sqlite3 DB
     conn, cursor = connect_to_db()
@@ -30,4 +30,4 @@ async def main():
 
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    asyncio.run(get_player_data())

@@ -5,7 +5,7 @@ from src.utils.db import connect_to_db, run_query
 import asyncio
 
 
-async def main():
+async def get_fpl_fixtures():
     """Download upcoming fixture data from the Fantasy Premier League website"""
     # Connect to the sqlite3 DB
     conn, cursor = connect_to_db()
@@ -15,7 +15,8 @@ async def main():
         fpl = FPL(session)
         fixtures = await fpl.get_fixtures(return_json=True)
         for fixture in fixtures:
-            fixture_list = fixture_list.append(pd.DataFrame(fixture).drop('stats', axis=1))
+            del fixture['stats']
+            fixture_list = fixture_list.append(pd.DataFrame(fixture, index=[0]))
 
     # Upload the data to a table in the database
     run_query(cursor, 'DROP TABLE IF EXISTS fpl_fixtures', return_data=False)
@@ -23,4 +24,4 @@ async def main():
 
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    asyncio.run(get_fpl_fixtures())
