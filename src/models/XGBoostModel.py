@@ -1,12 +1,7 @@
 import xgboost as xgb
 import numpy as np
-import os
 import pandas as pd
 import logging
-import datetime as dt
-import joblib
-from src.utils.xgboost import get_manager
-from src.utils.team_id_functions import fetch_name
 
 from sklearn.model_selection import KFold, train_test_split, GridSearchCV
 from sklearn.metrics import balanced_accuracy_score, accuracy_score
@@ -14,7 +9,8 @@ from sklearn.metrics import balanced_accuracy_score, accuracy_score
 from src.models.base_model import Model
 from src.utils.db import run_query, connect_to_db
 from src.utils.xgboost import get_features, get_manager_features, get_feature_data
-from configuration import model_dir
+from src.utils.xgboost import get_manager
+from src.utils.team_id_functions import fetch_name
 
 logger = logging.getLogger('XGBoostModel')
 
@@ -217,7 +213,9 @@ class XGBoostModel(Model):
         info = self.get_info(home_id, away_id, date, season)
         info = get_manager_features(info)
         _, X, _ = self.get_data(info)
-        return self.predict_proba(X)
+        preds = self.predict_proba(X)
+        output = {"H": preds[0][2], "D": preds[0][1], "A": preds[0][0]}
+        return output
 
 
 if __name__ == '__main__':
