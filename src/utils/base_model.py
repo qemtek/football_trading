@@ -27,9 +27,14 @@ def load_model(model_type, date=None, logger=None):
         models_filtered = [model for model in models if model.find(date) != -1]
     # Order models by date and pick the latest one
     try:
-        model_name = models_filtered.sort(reverse=True)[0]
-        model = joblib.load(open(model_name, "rb"))
+        models_filtered.sort(reverse=True)
+        model_name = models_filtered[0]
+        logger.info("load_model: Loading model with filename: {}".format(model_name))
+        model = joblib.load(open(os.path.join(model_dir, model_name), "rb"))
         return model
     except FileNotFoundError:
         logger.error("Chosen model could not be loaded, returning None")
+        return None
+    except TypeError:
+        logger.error("No models could be found, returning None")
         return None

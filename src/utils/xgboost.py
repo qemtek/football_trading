@@ -1,5 +1,9 @@
 import numpy as np
 import pandas as pd
+import logging
+from src.utils.db import connect_to_db, run_query
+
+logger = logging.getLogger('XGBoostModel')
 
 
 def get_performance_vs_bookmaker(df):
@@ -29,11 +33,12 @@ def get_home_away_advantage(df, type):
 
 
 def get_features(row, index, team_data, window_length=8, type='home'):
-    team_name = row['home_team' if type == 'home' else 'away_team']
+    # ToDo: Use team ID instead of team name
+    team_id = row['home_id' if type == 'home' else 'away_id']
     fixture_id = row['fixture_id']
     season = row['season']
     # Filter for the team/season
-    df_filtered = team_data[(team_data['team_name'] == team_name) &
+    df_filtered = team_data[(team_data['team_id'] == team_id) &
                       (team_data['season'] == season) &
                       (team_data['fixture_id'] < fixture_id)]
     # Get the last 8 games
@@ -74,3 +79,60 @@ def calculate_win_streak(last_games):
     while last_games.iloc[count] == 1:
         count += 1
     return count
+
+
+def get_manager(team_id, date):
+    """Find the sitting manager for a given team_id and date"""
+    query = """select * from managers where team_id = {} 
+            and start < '{}' and end >= '{}'""".format(team_id, date, date)
+    conn, cursor = connect_to_db()
+    df = run_query(cursor, query)
+    rows = len(df)
+    conn.close()
+    if rows != 1:
+        logger.warning("get_manager: Expected 1 row but got {}. Is the manager "
+                       "info up to date?".format(rows))
+    return df
+
+
+def get_manager_features(df):
+    """Get manager features (time as manager) (manager age is logged to reduce scale)"""
+    df['date'] = pd.to_datetime(df['date'])
+    df['home_manager_start'] = pd.to_datetime(df['home_manager_start'])
+    df['home_manager_age'] = df.apply(
+        lambda x: np.log10(round((x['date'] - x['home_manager_start']).days)), axis=1)
+    df['away_manager_start'] = pd.to_datetime(df['away_manager_start'])
+    df['away_manager_age'] = df.apply(
+        lambda x: np.log10(round((x['date'] - x['away_manager_start']).days)), axis=1)
+    df['home_manager_new'] = df['home_manager_age'].apply(lambda x: 1 if x <= 70 else 0)
+    df['away_manager_new'] = df['away_manager_age'].apply(lambda x: 1 if x <= 70 else 0)
+    return df
+
+
+def get_feature_data(min_training_data_date='2013-08-01'):
+    conn, cursor = connect_to_db()
+    df = run_query(cursor, """select t1.*, m_h.manager home_manager,
+     m_h.start home_manager_start, 
+     m_a.manager away_manager, m_a.start away_manager_start 
+     from main_fixtures t1 
+     left join managers m_h 
+     on t1.home_id = m_h.team_id 
+     and (t1.date between m_h.start and date(m_h.end, '+1 day') 
+     or t1.date > m_h.start and m_h.end is NULL) 
+     left join managers m_a 
+     on t1.away_id = m_a.team_id 
+     and (t1.date between m_a.start and date(m_a.end, '+1 day') 
+     or t1.date > m_a.start and m_a.end is NULL) 
+     where t1.date > '{}'""".format(min_training_data_date))
+    df=get_manager_features(df)
+    df2 = run_query(cursor, "select * from team_fixtures where date > '{}'".format(
+        min_training_data_date))
+    conn.close()
+    df2['date'] = pd.to_datetime(df2['date'])
+    df2 = pd.merge(
+        df2,
+        df[['date', 'season', 'fixture_id', 'home_manager_age', 'away_manager_age',
+            'home_manager_new', 'away_manager_new']],
+        on=['date', 'season', 'fixture_id'],
+        how="left")
+    return df2

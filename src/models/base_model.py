@@ -4,8 +4,10 @@ import os
 from src.utils.db import connect_to_db, run_query
 from configuration import available_models, model_dir
 import joblib
+import datetime as dt
 from src.utils.base_model import load_model
 import shap
+import numpy as np
 
 logger = logging.getLogger('XGBoostModel')
 
@@ -14,6 +16,7 @@ class Model:
     def __init__(self):
         self.params = None
         self.model = None
+        self.model_type = None
         self.training_data_query = \
             """select t1.*, m_h.manager home_manager, m_h.start home_manager_start, 
             m_a.manager away_manager, m_a.start away_manager_start 
@@ -28,7 +31,8 @@ class Model:
             or t1.date > m_a.start and m_a.end is NULL) 
             where t1.date > '2013-08-01'"""
 
-    def preprocess(self, X):
+    def get_data(self, X):
+        """Get model features, given a DataFrame of match info"""
         pass
 
     def train_model(self, X, y):
@@ -37,14 +41,27 @@ class Model:
     def predict_proba(self, X):
         pass
 
-    def predict_classes(self, X):
+    def predict(self, X):
         pass
+
+    def preprocess(self, X):
+        """Apply preprocessing steps to data"""
+        return np.array(X)
 
     def get_training_data(self):
         conn, cursor = connect_to_db()
         # Get all fixtures after game week 8, excluding the last game week
         df = run_query(cursor, self.training_data_query)
         return df
+
+    def save_model(self):
+        if self.model is None:
+            logger.error("Trying to save a model that is None, aborting.")
+        else:
+            file_name = self.model_type + '_' + str(dt.datetime.today().date()) + '.joblib'
+            save_dir = os.path.join(model_dir, file_name)
+            logger.info("Saving model to {} with joblib.".format(save_dir))
+            joblib.dump(self.model, open(save_dir, "wb"))
 
     def load_model(self, model_type, date=None):
         """Wrapper for the load model function in utils"""
@@ -69,6 +86,7 @@ class Model:
     @staticmethod
     def fill_na_values(self, X):
         """Fill NA values in the data"""
+        # ToDo: Add a data structure that specifies how to fill NA's for every column
         pass
 
     @staticmethod
