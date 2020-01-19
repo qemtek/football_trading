@@ -10,9 +10,11 @@ This projects has been created to design and test different models for the predi
 
 To DO
 
-- Use the FPL fixtures table to get the games for the next game week.
+- Wrap the model in an API and test its ability to serve predictions
 
 - Create a dashboard to monitor model performance and post predictions
+
+- Host the dashboard on a server, seperated from the model API
 
 - Each week, download the fixtures for the upcoming game week and serve them to the model API.
 

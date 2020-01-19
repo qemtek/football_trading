@@ -38,11 +38,9 @@ class Model:
     def train_model(self, X, y):
         pass
 
-    def predict_proba(self, X):
-        pass
-
     def predict(self, X):
-        pass
+        X = self.preprocess(X)
+        return self.model.predict_proba(X) if self.model is not None else None
 
     def preprocess(self, X):
         """Apply preprocessing steps to data"""

@@ -170,14 +170,6 @@ class XGBoostModel(Model):
                         "saving hyperparameters.")
             self.params = clf.best_params_
 
-    def predict_proba(self, X):
-        X = self.preprocess(X)
-        return self.model.predict_proba(X)
-
-    def predict(self, X):
-        X = self.preprocess(X)
-        return self.model.predict(X)
-
     def get_info(self, home_id, away_id, date, season):
         """Given the data and home/away team id's, get model features"""
         h_manager = get_manager(team_id=home_id, date=date)
@@ -195,9 +187,9 @@ class XGBoostModel(Model):
         info_dict = {
             "date": date,
             "home_id": home_id,
-            "home_team": fetch_name(home_id, cursor),
+            "home_team": fetch_name(home_id),
             "away_id": away_id,
-            "away_team": fetch_name(away_id, cursor),
+            "away_team": fetch_name(away_id),
             "fixture_id": max_fixture,
             "home_manager_start": h_manager.loc[0, "start"],
             "away_manager_start": a_manager.loc[0, "start"],
@@ -208,12 +200,16 @@ class XGBoostModel(Model):
         conn.close()
         return output
 
-    def predict_matchup(self, home_id, away_id, date, season):
+    def predict(self, **kwargs):
         """Predict the outcome of a matchup, given the team id's and date"""
-        info = self.get_info(home_id, away_id, date, season)
+        info = self.get_info(
+            home_id=int(kwargs.get('home_id')),
+            away_id=int(kwargs.get('away_id')),
+            date=str(pd.to_datetime(kwargs.get('date')).date()),
+            season=str(kwargs.get('season')))
         info = get_manager_features(info)
         _, X, _ = self.get_data(info)
-        preds = self.predict_proba(X)
+        preds = super().predict(X)
         output = {"H": preds[0][2], "D": preds[0][1], "A": preds[0][0]}
         return output
 
