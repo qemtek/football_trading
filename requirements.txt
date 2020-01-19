@@ -81,3 +81,4 @@ Werkzeug==0.15.4
 wrangle==0.6.7
 wrapt==1.11.2
 xgboost==0.90
+python-Levenshtein==0.12.0
