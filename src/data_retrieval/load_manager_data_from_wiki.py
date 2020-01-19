@@ -94,8 +94,8 @@ def get_manager_data():
 
     # Replace club names with those used in the rest of the project
     # (e.g. Use Manchester City instead of Man City). Also get the team_id
-    managers["team_id"] = managers["team"].apply(lambda x: fetch_id(x, cursor=cursor))
-    managers["team"] = managers["team_id"].apply(lambda x: fetch_name(x, cursor=cursor))
+    managers["team_id"] = managers["team"].apply(lambda x: fetch_id(x))
+    managers["team"] = managers["team_id"].apply(lambda x: fetch_name(x))
     # Rename columns
     managers = managers[["manager", "team", "team_id", "from", "until"]]
 

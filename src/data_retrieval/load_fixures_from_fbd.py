@@ -76,9 +76,9 @@ def extract_data_from_fbd(url, table_name, connection_url=None):
             params = [
                 i+1,  # Fixture ID
                 fixtureData.HomeTeam[i],  # Home team name
-                fetch_id(fixtureData.HomeTeam[i], cursor),  # Home team ID
+                fetch_id(fixtureData.HomeTeam[i]),  # Home team ID
                 fixtureData.AwayTeam[i],  # Away team name
-                fetch_id(fixtureData.AwayTeam[i], cursor),  # Away team ID
+                fetch_id(fixtureData.AwayTeam[i]),  # Away team ID
                 date_corrected,  # Fixture date
                 int(fixtureData.FTHG[i]),  # Home goals (full time)
                 int(fixtureData.FTAG[i]),  # Away goals (full time)

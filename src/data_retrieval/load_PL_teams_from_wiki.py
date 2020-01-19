@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 
 from src.utils.db import run_query, connect_to_db
-from src.utils.team_id_functions import get_alternative_name
+from src.utils.team_id_functions import fetch_alternative_name
 
 
 def get_teams_from_wiki():
@@ -49,7 +49,7 @@ def get_teams_from_wiki():
 
     for row in df.iterrows():
         params = [row[1]['team_name'], row[1]['team_id']]
-        params.append(get_alternative_name(row[1]['team_name']))
+        params.append(fetch_alternative_name(row[1]['team_name']))
         run_query(cursor, 'insert into team_ids(team_name, team_id, alternate_name) values(?, ?, ?)',
                   params=params, return_data=False)
 

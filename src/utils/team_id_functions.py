@@ -1,18 +1,49 @@
-def fetch_id(team_name, cursor):
+from src.utils.db import run_query, connect_to_db
+import Levenshtein
+
+
+def fetch_id(team_name):
     """Get team ID from name"""
+    conn, cursor = connect_to_db()
     cursor.execute(
         "Select team_id from team_ids where team_name == ? or alternate_name == ?",
         [team_name, team_name])
-    return cursor.fetchone()[0]
+    output = cursor.fetchone()[0]
+    conn.close()
+    return output
 
 
-def fetch_name(team_id, cursor):
+def fetch_name(team_id):
     """Get name from team ID"""
+    conn, cursor = connect_to_db()
     cursor.execute("Select team_name from team_ids where team_id == ?", [team_id])
-    return cursor.fetchone()[0]
+    output = cursor.fetchone()[0]
+    conn.close()
+    return output
 
 
-def get_alternative_name(team_name):
+def find_closest_match(team_name):
+    # Hardcoded some of the matches because it was too difficult to match accurately
+    if team_name == 'Man City':
+        output = {"team_name": 'Manchester City', "team_id": fetch_id("Manchester City")}
+        return output
+    elif team_name == 'Spurs':
+        output = {"team_name": 'Tottenham', "team_id": fetch_id("Tottenham")}
+        return output
+    else:
+        conn, cursor = connect_to_db()
+        df = run_query(cursor, "Select team_name, team_id from team_ids")
+        df['l_dist'] = df['team_name'].apply(lambda x: Levenshtein.ratio(x, team_name))
+        max_similarity = max(df['l_dist'])
+        closest_match = df.loc[df['l_dist'] == max_similarity,
+                               ['team_name', 'team_id']].reset_index(drop=True)
+        output = {"team_name": closest_match.loc[0, 'team_name'],
+                  "team_id": closest_match.loc[0, 'team_id']}
+        conn.close()
+        return output
+
+
+def fetch_alternative_name(team_name):
     """If a team name cannot be found, use this to try an alternative name"""
     if team_name == 'Birmingham City':
         return 'Birmingham'
