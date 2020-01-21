@@ -14,7 +14,6 @@ async def get_player_data():
     async with aiohttp.ClientSession() as session:
         fpl = FPL(session)
         players = await fpl.get_players()
-        fixtures_by_gameweek = fpl.get_fixtures_by_gameweek()
         i=0
         for player in players:
             id = player.id

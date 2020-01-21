@@ -6,12 +6,11 @@ def fetch_id(team_name):
     """Get team ID from name"""
     conn, cursor = connect_to_db()
     cursor.execute(
-        "Select team_id from team_ids where team_name == ? or alternate_name == ?",
-        [team_name, team_name])
+        "Select team_id from team_ids where team_name = '{}' or alternate_name = '{}'".format(
+        team_name, team_name))
     output = cursor.fetchone()[0]
     conn.close()
     return output
-
 
 def fetch_name(team_id):
     """Get name from team ID"""
@@ -81,6 +80,8 @@ def fetch_alternative_name(team_name):
         return 'Newcastle'
     elif team_name == 'Nottingham Forest':
         return 'Nottingham'
+    elif team_name == 'Norwich City':
+        return 'Norwich'
     elif team_name == 'Oldham Athletic':
         return 'Oldham'
     elif team_name == 'Portsmouth':

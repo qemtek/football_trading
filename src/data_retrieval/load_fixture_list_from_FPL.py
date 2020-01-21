@@ -14,9 +14,9 @@ async def get_fpl_fixtures():
     async with aiohttp.ClientSession() as session:
         fpl = FPL(session)
         fixtures = await fpl.get_fixtures(return_json=True)
-        for fixture in fixtures:
-            del fixture['stats']
-            fixture_list = fixture_list.append(pd.DataFrame(fixture, index=[0]))
+    for fixture in fixtures:
+        del fixture['stats']
+        fixture_list = fixture_list.append(pd.DataFrame(fixture, index=[0]))
 
     # Upload the data to a table in the database
     run_query(cursor, 'DROP TABLE IF EXISTS fpl_fixtures', return_data=False)
