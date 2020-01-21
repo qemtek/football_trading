@@ -155,7 +155,7 @@ def get_manager_data():
         ['team', 'team_id', 'manager', 'manager_num'])['date'].max().reset_index()
 
     # Add on managers who are still in power
-    df_curreent = df_dates.groupby(
+    df_current = df_dates.groupby(
         ['team', 'team_id', 'manager', 'manager_num'])['date']
 
     manager_dates = pd.merge(min_dates, max_dates, on=['team', 'team_id', 'manager', 'manager_num']).reset_index(drop=True)
@@ -170,7 +170,7 @@ def get_manager_data():
     # Drop and recreate the table we are going to populate
     run_query(cursor, "DROP TABLE IF EXISTS managers", return_data=False)
     run_query(cursor, "CREATE TABLE managers (manager INT, team TEXT, "
-                      "team_id INTEGER, start DATE, end DATE)",
+                      "team_id INTEGER, start_date DATE, end_date DATE)",
               return_data=False)
 
     for row in manager_dates.iterrows():
@@ -183,10 +183,14 @@ def get_manager_data():
         ]
         run_query(
             cursor,
-            "INSERT INTO managers (manager, team, team_id, start, end) VALUES("
+            "INSERT INTO managers (manager, team, team_id, start_date, end_date) VALUES("
             "?, ?, ?, ?, ?)",
             params, return_data=False
         )
 
     conn.commit()
     conn.close()
+
+
+if __name__ == '__main__':
+    get_manager_data()
