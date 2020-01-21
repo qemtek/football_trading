@@ -154,6 +154,8 @@ class XGBoostModel(Model):
             self.predictions = model_predictions
             # Upload the predictions to the model_predictions table
             conn, cursor = connect_to_db()
+            run_query(cursor, "drop table if exists latest_historic_predictions")
+            # ToDo: Get the ID's of teams in here so we can do better analysis
             model_predictions.to_sql('latest_historic_predictions', con=conn)
             conn.close()
 
