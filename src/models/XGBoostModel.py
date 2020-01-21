@@ -88,6 +88,8 @@ class XGBoostModel(Model):
 
     def get_data(self, df):
         logger.info("Preprocessing data and generating features.")
+        # Add on manager features
+        df = get_manager_features(df)
         # Get team feature data (unprocessed)
         df2 = get_feature_data(self.min_training_data_date)
         # Filter out the first window_length and last game weeks from the data
@@ -150,6 +152,10 @@ class XGBoostModel(Model):
                 self.accurracy = accuracy
             # Save the model predictions to the class
             self.predictions = model_predictions
+            # Upload the predictions to the model_predictions table
+            conn, cursor = connect_to_db()
+            model_predictions.to_sql('latest_historic_predictions', con=conn)
+            conn.close()
 
     def optimise_hyperparams(self, X, y, param_grid=None):
         logger.info("Optimising hyperparameters")
@@ -174,6 +180,9 @@ class XGBoostModel(Model):
         """Given the data and home/away team id's, get model features"""
         h_manager = get_manager(team_id=home_id, date=date)
         a_manager = get_manager(team_id=away_id, date=date)
+        # Check that data was retrieved (catch the error sooner to speed up debugging)
+        assert len(h_manager) > 0, 'No data returned for home manager'
+        assert len(a_manager) > 0, 'No data returned for away manager'
         # Get the max date from the database
         conn, cursor = connect_to_db()
         max_date = run_query(cursor, 'select max(date) from main_fixtures')
@@ -181,7 +190,7 @@ class XGBoostModel(Model):
         # set the fixture_id to be 1 higher than the max fixture_id for that season
         max_fixture = run_query(
             cursor,
-            "select max(fixture_id) from main_fixtures "
+            "select max(fixture_id) id from main_fixtures "
             "where date = '{}'".format(str(max_date)))
         max_fixture = max_fixture.iloc[0, 0]
         info_dict = {
@@ -191,14 +200,18 @@ class XGBoostModel(Model):
             "away_id": away_id,
             "away_team": fetch_name(away_id),
             "fixture_id": max_fixture,
-            "home_manager_start": h_manager.loc[0, "start"],
-            "away_manager_start": a_manager.loc[0, "start"],
+            "home_manager_start": h_manager.loc[0, "start_date"],
+            "away_manager_start": a_manager.loc[0, "start_date"],
             "season": season
         }
         output = pd.DataFrame()
         output = output.append(pd.DataFrame(info_dict, index=[0]))
         conn.close()
         return output
+
+    def _predict(self, X):
+        X = self.preprocess(X)
+        return self.model.predict_proba(X) if self.model is not None else None
 
     def predict(self, **kwargs):
         """Predict the outcome of a matchup, given the team id's and date"""
@@ -207,10 +220,11 @@ class XGBoostModel(Model):
             away_id=int(kwargs.get('away_id')),
             date=str(pd.to_datetime(kwargs.get('date')).date()),
             season=str(kwargs.get('season')))
-        info = get_manager_features(info)
         _, X, _ = self.get_data(info)
         preds = super().predict(X)
-        output = {"H": preds[0][2], "D": preds[0][1], "A": preds[0][0]}
+        output = {"H": round(preds[0][2], 2),
+                  "D": round(preds[0][1], 2),
+                  "A": round(preds[0][0], 2)}
         return output
 
 

@@ -33,7 +33,6 @@ def get_home_away_advantage(df, type):
 
 
 def get_features(row, index, team_data, window_length=8, type='home'):
-    # ToDo: Use team ID instead of team name
     team_id = row['home_id' if type == 'home' else 'away_id']
     fixture_id = row['fixture_id']
     season = row['season']
@@ -83,9 +82,17 @@ def calculate_win_streak(last_games):
 
 def get_manager(team_id, date):
     """Find the sitting manager for a given team_id and date"""
-    query = """select * from managers where team_id = {} 
-            and start < '{}' and end >= '{}'""".format(team_id, date, date)
     conn, cursor = connect_to_db()
+    # Get the latest date in the db
+    max_date = run_query(cursor, "select max(end_date) date from managers").loc[0, 'date']
+    # If we are predicting past our data
+    if date > max_date:
+        # Take the latest manager for the team
+        query = """select * from managers where end_date = '{}' and 
+        team_id = {}""".format(max_date, team_id)
+    else:
+        query = """select * from managers where team_id = {} 
+                    and '{}' between start_date and end_date""".format(team_id, date)
     df = run_query(cursor, query)
     rows = len(df)
     conn.close()
@@ -112,17 +119,17 @@ def get_manager_features(df):
 def get_feature_data(min_training_data_date='2013-08-01'):
     conn, cursor = connect_to_db()
     df = run_query(cursor, """select t1.*, m_h.manager home_manager,
-     m_h.start home_manager_start, 
-     m_a.manager away_manager, m_a.start away_manager_start 
+     m_h.start_date home_manager_start, 
+     m_a.manager away_manager, m_a.start_date away_manager_start 
      from main_fixtures t1 
      left join managers m_h 
      on t1.home_id = m_h.team_id 
-     and (t1.date between m_h.start and date(m_h.end, '+1 day') 
-     or t1.date > m_h.start and m_h.end is NULL) 
+     and (t1.date between m_h.start_date and date(m_h.end_date, '+1 day') 
+     or t1.date > m_h.start_date and m_h.end_date is NULL) 
      left join managers m_a 
      on t1.away_id = m_a.team_id 
-     and (t1.date between m_a.start and date(m_a.end, '+1 day') 
-     or t1.date > m_a.start and m_a.end is NULL) 
+     and (t1.date between m_a.start_date and date(m_a.end_date, '+1 day') 
+     or t1.date > m_a.start_date and m_a.end_date is NULL) 
      where t1.date > '{}'""".format(min_training_data_date))
     df=get_manager_features(df)
     df2 = run_query(cursor, "select * from team_fixtures where date > '{}'".format(
