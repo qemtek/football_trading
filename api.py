@@ -32,6 +32,14 @@ def next_games():
         return jsonify({'trace': traceback.format_exc()})
 
 
+@app.route('/historic_predictions', methods=['GET'])
+def historic_predictions():
+    try:
+        return model.predictions.to_json()
+    except:
+        return jsonify({'trace': traceback.format_exc()})
+
+
 @app.route('/update', methods=['POST'])
 def update():
     try:
@@ -45,5 +53,5 @@ if __name__ == '__main__':
         port = int(sys.argv[1])  # This is for a command-line input
     except:
         port = 12345  # If you don't provide any port the port will be set to 12345
-    model = XGBoostModel(load_model=True)
+    model = XGBoostModel(test_mode=True)
     app.run(port=port, debug=False)

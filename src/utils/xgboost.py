@@ -32,7 +32,31 @@ def get_home_away_advantage(df, type):
         else [1 / home_advantage_sum, 1 / home_advantage_avg]
 
 
-def get_features(row, index, team_data, window_length=8, type='home'):
+def get_features(row, index, team_data, identifiers, window_length=8):
+    """Generate features for a given fixture"""
+    # Generate features for the home team
+    home_features = get_features_ha(
+        row,
+        team_data=team_data,
+        type='home',
+        window_length=window_length,
+        index=index)
+    # Generate features for the away team
+    away_features = get_features_ha(
+        row,
+        team_data=team_data,
+        type='away',
+        window_length=window_length,
+        index=index)
+    # Combine identifiers, home features and away features
+    features = pd.concat([
+        pd.DataFrame(row[identifiers].to_dict(), columns=identifiers, index=[index]),
+        home_features, away_features], axis=1)
+    return features
+
+
+def get_features_ha(row, index, team_data, window_length=8, type='home'):
+    """Generate features for the home team or away team"""
     team_id = row['home_id' if type == 'home' else 'away_id']
     fixture_id = row['fixture_id']
     season = row['season']

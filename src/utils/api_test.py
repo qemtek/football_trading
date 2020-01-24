@@ -7,8 +7,9 @@ import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_table
+import numpy as np
 
-requests.post("http://127.0.0.1:12345/update")
+#requests.post("http://127.0.0.1:12345/update")
 response = requests.get("http://127.0.0.1:12345/next_games")
 data = response.json()
 fixture_list = pd.DataFrame()
@@ -50,7 +51,12 @@ latest_preds['A_odds'] = round(1/latest_preds['A'], 2)
 
 # ToDo: Get the latest bookmaker odds
 
-# ToDo: Get the models performance on past data
+# Get the models performance on past data
+response = requests.get("http://127.0.0.1:12345/historic_predictions").json()
+historic_df = pd.DataFrame()
+for (k, v) in response.items():
+    print(k)
+    historic_df[k] = pd.Series(np.transpose(pd.DataFrame(v, index=[0]))[0])
 
 # Create the dashboard
 server = Flask(__name__)
@@ -68,7 +74,17 @@ app.layout = html.Div(
                     columns=[{"name": i, "id": i} for i in fixture_list.columns],
                     data=fixture_list.to_dict('records'),
                 )]
-            )]
+            )]),
+        dbc.Row([
+            dbc.Col(
+                [
+                html.H2("Historic Perrformancee"),
+                dash_table.DataTable(
+                    id='historic_performance',
+                    columns=[{"name": i, "id": i} for i in historic_df.columns],
+                    data=fixture_list.to_dict('records'),
+                )]
+            )],
         )
     ]
 )

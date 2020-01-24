@@ -2,6 +2,7 @@ import xgboost as xgb
 import numpy as np
 import pandas as pd
 import logging
+import datetime as dt
 
 from sklearn.model_selection import KFold, train_test_split, GridSearchCV
 from sklearn.metrics import balanced_accuracy_score, accuracy_score
@@ -20,13 +21,36 @@ class XGBoostModel(Model):
     def __init__(self, test_mode=False, load_model=False, load_model_date=None):
         # Call the __init__ method of the parent class
         super().__init__()
+        # Test mode will subsample the data to make things faster and not
+        # save any data to the sqlite3 database
         self.test_mode = test_mode
-        self.model_type = 'XGBoost'
-        self.param_grid = {'max_depth': [2, 4, 6], 'n_estimators': [50, 100, 200]}
+        # Initial model parameters (without tuning)
         self.params = {'n_estimators': 100}
-        self.model = None
-        self.accuracy = None
-        self.balanced_accuracy = None
+        # Define a grid for hyper-parameter tuning
+        self.param_grid = {'max_depth': [2, 4, 6], 'n_estimators': [50, 100, 200]}
+        # The class object of the model you want to use
+        self.model_object = xgb.XGBClassifier
+        # The name of the model you want ot use
+        self.model_type = self.model_object.__name__
+        # Somewhere to store the trained model
+        self.trained_model = None
+        # A list of performance metrics (pass the functions, they must
+        # take actuals, predictions as the first and second arguments
+        self.performance_metrics = [balanced_accuracy_score, accuracy_score]
+        # A dictionary to store the performance metrics for the trained model
+        self.performance = {}
+        # The date this class was instantiated
+        self.creation_date = str(dt.datetime.today().date)
+        # A unique identifier for this model
+        self.model_id = self.model_type + '_' + self.creation_date + str(hash(dt.datetime.today()))
+        # How many games to go back when generating training data
+        self.window_length = 8
+        # Name of the target variable (or variables, stored in a list)
+        self.target = ['full_time_result']
+        self.scoring = 'balanced_accuracy'
+        self.min_training_data_date = '2013-08-01'
+
+        # A list of features used in the model
         self.model_features = [
             'avg_goals_for_home',
             'avg_goals_against_home',
@@ -67,11 +91,6 @@ class XGBoostModel(Model):
             'home_advantage_sum_away',
             'home_advantage_avg_away'
         ]
-        self.window_length = 8
-        self.target = ['full_time_result']
-        self.balanced_accuracy = 0
-        self.scoring = 'balanced_accuracy'
-        self.min_training_data_date = '2013-08-01'
 
         # Attempt to load a model
         load_successful = False
@@ -82,9 +101,9 @@ class XGBoostModel(Model):
         if not any([load_model, load_successful]):
             logger.info("Training a new model.")
             df = self.get_training_data()
-            self.ids, self.X, self.y = self.get_data(df)
-            self.optimise_hyperparams(self.X[self.model_features], self.y)
-            self.train_model(self.X[self.model_features], self.y)
+            X, y = self.get_data(df)
+            self.optimise_hyperparams(X[self.model_features], y)
+            self.train_model(X=X, y=y)
 
     def get_data(self, df):
         logger.info("Preprocessing data and generating features.")
@@ -95,36 +114,28 @@ class XGBoostModel(Model):
         # Filter out the first window_length and last game weeks from the data
         df = df[(df['fixture_id'] > self.window_length * 10) & (df['fixture_id'] < 370)]
         # Filter out games that had red cards
-        # ToDo: Test whether removing red card games is benificial
+        # ToDo: Test whether removing red card games is beneficial
         # df = df[(df['home_red_cards'] == 0) & (df['away_red_cards'] == 0)]
-
+        identifiers = ['fixture_id', 'date', 'home_team', 'home_id', 'away_team', 'away_id']
         # If in test mode, only calculate the first 100 rows
         if self.test_mode and len(df) > 100:
             df = df.sample(100)
-
+        # Generate features for each fixture
         y = pd.DataFrame()
         X = pd.DataFrame()
         for i in range(len(df)):
             row = df.iloc[i, :]
-            home_features = get_features(
-                row,
+            features = get_features(
+                row=row,
+                index=df.index[i],
                 team_data=df2,
-                type='home',
-                window_length=self.window_length,
-                index=df.index[i])
-            away_features = get_features(
-                row,
-                team_data=df2,
-                type='away',
-                window_length=self.window_length,
-                index=df.index[i])
-            features = pd.concat([home_features, away_features], axis=1)
+                identifiers=identifiers,
+                window_length=self.window_length
+            )
             X = X.append(features)
             if self.target[0] in row.index:
                 y = y.append(row[self.target])
-        # Create an ID object to identify predictions later (if needed)
-        ids = df[['fixture_id', 'date', 'home_team', 'home_id', 'away_team', 'away_id']]
-        return ids, X, y
+        return X, y
 
     def train_model(self, X, y):
         """Train a model on 90% of the data and predict 10% using KFold validation,
@@ -134,49 +145,37 @@ class XGBoostModel(Model):
         model_predictions = pd.DataFrame()
         for train_index, test_index in kf.split(X):
             xgb_model = xgb.XGBClassifier().fit(
-                X=np.array(X.iloc[train_index, :]),
+                X=np.array(X.iloc[train_index, :][self.model_features]),
                 y=np.array(y.iloc[train_index]))
-            predictions = xgb_model.predict(np.array(X.iloc[test_index, :]))
+            predictions = xgb_model.predict(np.array(X.iloc[test_index, :][self.model_features]))
             actuals = y.iloc[test_index]
             model_predictions = model_predictions.append(
                 pd.concat([
                     X.iloc[test_index, :],
                     pd.DataFrame(predictions, columns=['pred'], index=X.iloc[test_index, :].index),
                     actuals], axis=1))
-            balanced_accuracy = balanced_accuracy_score(actuals, predictions)
-            accuracy = accuracy_score(actuals, predictions)
+            # Assess the model performance using the first performance metric
+            main_performance_metric = self.performance_metrics[0].__name__
+            performance = self.performance_metrics[0](actuals, predictions)
             # If the model performs better than the previous model, save it
-            if balanced_accuracy > self.balanced_accuracy:
-                self.model = xgb_model
-                self.balanced_accuracy = balanced_accuracy
-                self.accurracy = accuracy
+            # ToDo: Returning 0 when there is no performance score only works
+            #  for performance scores where higher is better
+            if performance > self.performance.get(main_performance_metric, 0):
+                self.trained_model = xgb_model
+                for metric in self.performance_metrics:
+                    metric_name = metric.__name__
+                    self.performance[metric_name] = metric(actuals, predictions)
             # Save the model predictions to the class
             self.predictions = model_predictions
             # Upload the predictions to the model_predictions table
             conn, cursor = connect_to_db()
-            run_query(cursor, "drop table if exists latest_historic_predictions")
+            # Add model ID so we can compare model performances
+            model_predictions['model_id'] = self.model_id
+            run_query(cursor, "drop table if exists latest_historic_predictions", return_data=False)
             # ToDo: Get the ID's of teams in here so we can do better analysis
-            model_predictions.to_sql('latest_historic_predictions', con=conn)
+            if not self.test_mode:
+                model_predictions.to_sql('latest_historic_predictions', con=conn, if_exists='append')
             conn.close()
-
-    def optimise_hyperparams(self, X, y, param_grid=None):
-        logger.info("Optimising hyperparameters")
-        param_grid = self.param_grid if param_grid is None else param_grid
-        # Split data into train and test
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
-        xgb_model = xgb.XGBClassifier()
-        clf = GridSearchCV(xgb_model, param_grid, verbose=1, scoring=self.scoring, n_jobs=3)
-        clf.fit(X_train, y_train)
-        # Train a second model using the default parameters
-        clf2 = xgb.XGBClassifier(params=self.params)
-        clf2.fit(X_train, y_train)
-        # Compare these params to existing params. If they are better, use them.
-        clf_performance = balanced_accuracy_score(y_test, clf.best_estimator_.predict(X_test))
-        clf2_performance = balanced_accuracy_score(y_test, clf2.predict(X_test))
-        if clf2_performance > clf_performance:
-            logger.info("Hyperparameter optimisation improves on previous model, "
-                        "saving hyperparameters.")
-            self.params = clf.best_params_
 
     def get_info(self, home_id, away_id, date, season):
         """Given the data and home/away team id's, get model features"""
@@ -213,7 +212,7 @@ class XGBoostModel(Model):
 
     def _predict(self, X):
         X = self.preprocess(X)
-        return self.model.predict_proba(X) if self.model is not None else None
+        return self.trained_model.predict_proba(X) if self.trained_model is not None else None
 
     def predict(self, **kwargs):
         """Predict the outcome of a matchup, given the team id's and date"""
@@ -222,8 +221,10 @@ class XGBoostModel(Model):
             away_id=int(kwargs.get('away_id')),
             date=str(pd.to_datetime(kwargs.get('date')).date()),
             season=str(kwargs.get('season')))
-        _, X, _ = self.get_data(info)
-        preds = super().predict(X)
+        # Predict using the predict method of the parent class
+        X, _ = self.get_data(info)
+        preds = super().predict(X[self.model_features])
+        # Return predictions
         output = {"H": round(preds[0][2], 2),
                   "D": round(preds[0][1], 2),
                   "A": round(preds[0][0], 2)}
@@ -231,4 +232,5 @@ class XGBoostModel(Model):
 
 
 if __name__ == '__main__':
-    model = XGBoostModel()
+    model = XGBoostModel(test_mode=True)
+    a=1
