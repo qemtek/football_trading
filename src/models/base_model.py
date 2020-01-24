@@ -1,13 +1,13 @@
 import logging
-import pandas as pd
 import os
-from src.utils.db import connect_to_db, run_query
-from configuration import available_models, model_dir
+from configuration import model_dir
 import joblib
 import datetime as dt
 from src.utils.base_model import load_model
 import shap
 import numpy as np
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.metrics import accuracy_score
 
 logger = logging.getLogger('XGBoostModel')
 
@@ -15,21 +15,12 @@ class Model:
     """Anything that can be used by all models goes in this class"""
     def __init__(self):
         self.params = None
-        self.model = None
+        self.trained_model = None
         self.model_type = None
-        self.training_data_query = \
-            """select t1.*, m_h.manager home_manager, m_h.start_date home_manager_start, 
-            m_a.manager away_manager, m_a.start_date away_manager_start 
-            from main_fixtures t1 
-            left join managers m_h 
-            on t1.home_id = m_h.team_id 
-            and (t1.date between m_h.start_date and date(m_h.end_date, '+1 day') 
-            or t1.date > m_h.start_date and m_h.end_date is NULL) 
-            left join managers m_a 
-            on t1.away_id = m_a.team_id 
-            and (t1.date between m_a.start_date and date(m_a.end_date, '+1 day') 
-            or t1.date > m_a.start_date and m_a.end_date is NULL) 
-            where t1.date > '2013-08-01'"""
+        self.param_grid = None
+        self.model_object = None
+        self.performance_metrics = [accuracy_score]
+        self.scoring = 'accuracy'
 
     def get_data(self, X):
         """Get model features, given a DataFrame of match info"""
@@ -38,28 +29,52 @@ class Model:
     def train_model(self, X, y):
         pass
 
+    def optimise_hyperparams(self, X, y, param_grid=None):
+        """Hyperparameter optimisation function using GridSearchCV. Works for any sklearn models"""
+        logger.info("Optimising hyper-parameters")
+        param_grid = self.param_grid if param_grid is None else param_grid
+        # Split data into train and test
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+        model = self.model_object()
+        clf = GridSearchCV(model, param_grid, verbose=1, scoring=self.scoring, n_jobs=1)
+        clf.fit(X_train, y_train)
+        # Train a second model using the default parameters
+        clf2 = self.model_object(params=self.params)
+        clf2.fit(X_train, y_train)
+        # Compare these params to existing params. If they are better, use them.
+        # Use the first listed performance metric
+        performance_metric = self.performance_metrics[0]
+        # Get predictions for the first classifier
+        clf_predictions = clf.best_estimator_.predict(X_test)
+        clf_performance = performance_metric(y_test, clf_predictions)
+        # Get predictions for the second classifierr
+        clf2_predictions = clf2.predict(X_test)
+        clf2_performance = performance_metric(y_test, clf2_predictions)
+        # Compare performance
+        if clf2_performance > clf_performance:
+            logger.info("Hyper-parameter optimisation improves on previous model, "
+                        "saving hyperparameters.")
+            self.params = clf.best_params_
+
     def predict(self, X):
         X = self.preprocess(X)
-        return self.model.predict_proba(X) if self.model is not None else None
+        return self.trained_model.predict_proba(X) if self.trained_model is not None else None
 
     def preprocess(self, X):
         """Apply preprocessing steps to data"""
         return np.array(X)
 
     def get_training_data(self):
-        conn, cursor = connect_to_db()
-        # Get all fixtures after game week 8, excluding the last game week
-        df = run_query(cursor, self.training_data_query)
-        return df
+        pass
 
     def save_model(self):
-        if self.model is None:
+        if self.trained_model is None:
             logger.error("Trying to save a model that is None, aborting.")
         else:
             file_name = self.model_type + '_' + str(dt.datetime.today().date()) + '.joblib'
             save_dir = os.path.join(model_dir, file_name)
             logger.info("Saving model to {} with joblib.".format(save_dir))
-            joblib.dump(self.model, open(save_dir, "wb"))
+            joblib.dump(self.trained_model, open(save_dir, "wb"))
 
     def load_model(self, model_type, date=None):
         """Wrapper for the load model function in utils"""
@@ -68,7 +83,7 @@ class Model:
             return False
         else:
             # Set the attributes of the model to those of the class
-            self.model = model
+            self.trained_model = model
             self.params = model.get_params()
             return True
 
