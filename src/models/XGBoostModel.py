@@ -4,13 +4,13 @@ import pandas as pd
 import logging
 import datetime as dt
 
-from sklearn.model_selection import KFold, train_test_split, GridSearchCV
+from sklearn.model_selection import KFold
 from sklearn.metrics import balanced_accuracy_score, accuracy_score
 
 from src.models.base_model import Model
 from src.utils.db import run_query, connect_to_db
-from src.utils.xgboost import get_features, get_manager_features, get_feature_data
-from src.utils.xgboost import get_manager
+from src.utils.xgboost import get_features, get_manager_features, \
+    get_feature_data, get_profit, get_manager
 from src.utils.team_id_functions import fetch_name
 
 logger = logging.getLogger('XGBoostModel')
@@ -18,7 +18,9 @@ logger = logging.getLogger('XGBoostModel')
 
 class XGBoostModel(Model):
     """Everything specific to the XGBoost goes in this class"""
-    def __init__(self, test_mode=False, load_model=False, load_model_date=None):
+    def __init__(self, test_mode=False, load_model=False,
+                 load_model_date=None, save_trained_model=True,
+                 upload_historic_predictions=None):
         # Call the __init__ method of the parent class
         super().__init__()
         # Test mode will subsample the data to make things faster and not
@@ -40,16 +42,19 @@ class XGBoostModel(Model):
         # A dictionary to store the performance metrics for the trained model
         self.performance = {}
         # The date this class was instantiated
-        self.creation_date = str(dt.datetime.today().date)
+        self.creation_date = str(dt.datetime.today().date())
         # A unique identifier for this model
-        self.model_id = self.model_type + '_' + self.creation_date + str(hash(dt.datetime.today()))
+        self.model_id = "{}_{}_{}".format(
+            self.model_type, self.creation_date, str(abs(hash(dt.datetime.today()))))
         # How many games to go back when generating training data
         self.window_length = 8
         # Name of the target variable (or variables, stored in a list)
         self.target = ['full_time_result']
+        # The metric used to evaluate model performance
         self.scoring = 'balanced_accuracy'
+        self.upload_historic_predictions = upload_historic_predictions
+        # The minimum date to get training data from
         self.min_training_data_date = '2013-08-01'
-
         # A list of features used in the model
         self.model_features = [
             'avg_goals_for_home',
@@ -91,6 +96,20 @@ class XGBoostModel(Model):
             'home_advantage_sum_away',
             'home_advantage_avg_away'
         ]
+        self.training_data_query = \
+            """select t1.*, m_h.manager home_manager, m_h.start_date home_manager_start, 
+            m_a.manager away_manager, m_a.start_date away_manager_start,
+             b365_home_odds, b365_draw_odds, b365_away_odds 
+            from main_fixtures t1 
+            left join managers m_h 
+            on t1.home_id = m_h.team_id 
+            and (t1.date between m_h.start_date and date(m_h.end_date, '+1 day') 
+            or t1.date > m_h.start_date and m_h.end_date is NULL) 
+            left join managers m_a 
+            on t1.away_id = m_a.team_id 
+            and (t1.date between m_a.start_date and date(m_a.end_date, '+1 day') 
+            or t1.date > m_a.start_date and m_a.end_date is NULL) 
+            where t1.date > '2013-08-01'"""
 
         # Attempt to load a model
         load_successful = False
@@ -104,6 +123,8 @@ class XGBoostModel(Model):
             X, y = self.get_data(df)
             self.optimise_hyperparams(X[self.model_features], y)
             self.train_model(X=X, y=y)
+            if save_trained_model:
+                self.save_model()
 
     def get_data(self, df):
         logger.info("Preprocessing data and generating features.")
@@ -116,7 +137,8 @@ class XGBoostModel(Model):
         # Filter out games that had red cards
         # ToDo: Test whether removing red card games is beneficial
         # df = df[(df['home_red_cards'] == 0) & (df['away_red_cards'] == 0)]
-        identifiers = ['fixture_id', 'date', 'home_team', 'home_id', 'away_team', 'away_id']
+        identifiers = ['fixture_id', 'date', 'home_team', 'home_id',
+                       'away_team', 'away_id', 'season']
         # If in test mode, only calculate the first 100 rows
         if self.test_mode and len(df) > 100:
             df = df.sample(100)
@@ -154,28 +176,42 @@ class XGBoostModel(Model):
                     X.iloc[test_index, :],
                     pd.DataFrame(predictions, columns=['pred'], index=X.iloc[test_index, :].index),
                     actuals], axis=1))
-            # Assess the model performance using the first performance metric
-            main_performance_metric = self.performance_metrics[0].__name__
-            performance = self.performance_metrics[0](actuals, predictions)
-            # If the model performs better than the previous model, save it
-            # ToDo: Returning 0 when there is no performance score only works
-            #  for performance scores where higher is better
-            if performance > self.performance.get(main_performance_metric, 0):
-                self.trained_model = xgb_model
-                for metric in self.performance_metrics:
-                    metric_name = metric.__name__
-                    self.performance[metric_name] = metric(actuals, predictions)
-            # Save the model predictions to the class
-            self.predictions = model_predictions
-            # Upload the predictions to the model_predictions table
-            conn, cursor = connect_to_db()
-            # Add model ID so we can compare model performances
-            model_predictions['model_id'] = self.model_id
-            run_query(cursor, "drop table if exists latest_historic_predictions", return_data=False)
-            # ToDo: Get the ID's of teams in here so we can do better analysis
-            if not self.test_mode:
-                model_predictions.to_sql('latest_historic_predictions', con=conn, if_exists='append')
-            conn.close()
+        # Assess the model performance using the first performance metric
+        main_performance_metric = self.performance_metrics[0].__name__
+        performance = self.performance_metrics[0](actuals, predictions)
+        # If the model performs better than the previous model, save it
+        # ToDo: Returning 0 when there is no performance score only works
+        #  for performance scores where higher is better
+        if performance > self.performance.get(main_performance_metric, 0):
+            self.trained_model = xgb_model
+            for metric in self.performance_metrics:
+                metric_name = metric.__name__
+                self.performance[metric_name] = metric(actuals, predictions)
+        # Upload the predictions to the model_predictions table
+        conn, cursor = connect_to_db()
+        # Add model ID so we can compare model performances
+        model_predictions['model_id'] = self.model_id
+        # Add profit made if we bet on the game
+        model_predictions['profit'] = model_predictions.apply(lambda x: get_profit(x), axis=1)
+        run_query(cursor, "drop table if exists historic_predictions",
+                  return_data=False)
+        if (not self.test_mode ) or self.upload_historic_predictions:
+            model_predictions.to_sql(
+                'historic_predictions', con=conn, if_exists='append')
+        conn.close()
+
+    def get_historic_predictions(self):
+        conn, cursor = connect_to_db()
+        df = run_query(
+            cursor, "select * from historic_predictions where "
+                    "model_id = '{}'".format(self.model_id))
+        return df
+
+    def get_training_data(self):
+        conn, cursor = connect_to_db()
+        # Get all fixtures after game week 8, excluding the last game week
+        df = run_query(cursor, self.training_data_query)
+        return df
 
     def get_info(self, home_id, away_id, date, season):
         """Given the data and home/away team id's, get model features"""
@@ -211,6 +247,7 @@ class XGBoostModel(Model):
         return output
 
     def _predict(self, X):
+        """Make predictions using the predict method of the parent class"""
         X = self.preprocess(X)
         return self.trained_model.predict_proba(X) if self.trained_model is not None else None
 
@@ -233,4 +270,3 @@ class XGBoostModel(Model):
 
 if __name__ == '__main__':
     model = XGBoostModel(test_mode=True)
-    a=1

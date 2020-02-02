@@ -49,8 +49,10 @@ def get_features(row, index, team_data, identifiers, window_length=8):
         window_length=window_length,
         index=index)
     # Combine identifiers, home features and away features
+    odds_cols = ['b365_home_odds', 'b365_draw_odds', 'b365_away_odds']
+    row_cols = identifiers + odds_cols
     features = pd.concat([
-        pd.DataFrame(row[identifiers].to_dict(), columns=identifiers, index=[index]),
+        pd.DataFrame(row[row_cols].to_dict(), columns=row_cols, index=[index]),
         home_features, away_features], axis=1)
     return features
 
@@ -138,6 +140,20 @@ def get_manager_features(df):
     df['home_manager_new'] = df['home_manager_age'].apply(lambda x: 1 if x <= 70 else 0)
     df['away_manager_new'] = df['away_manager_age'].apply(lambda x: 1 if x <= 70 else 0)
     return df
+
+
+def get_profit(x):
+    if x['pred'] == x['full_time_result']:
+        if x['full_time_result'] == 'H':
+            return x['b365_home_odds'] - 1
+        elif x['full_time_result'] == 'D':
+            return x['b365_draw_odds'] - 1
+        elif x['full_time_result'] == 'A':
+            return x['b365_away_odds'] - 1
+        else:
+            raise Exception('full_time_result is not H, D or A.')
+    else:
+        return -1
 
 
 def get_feature_data(min_training_data_date='2013-08-01'):

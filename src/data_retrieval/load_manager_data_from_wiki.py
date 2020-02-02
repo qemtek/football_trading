@@ -28,7 +28,7 @@ def get_manager_data():
     """Download html content from wikipedia, break down with BeautifulSoup"""
     url = "https://en.wikipedia.org/wiki/List_of_Premier_League_managers"
     website_url = requests.get(url).text
-    soup = BeautifulSoup(website_url)
+    soup = BeautifulSoup(website_url, features="html.parser")
     My_table = soup.find("table", {"class": "wikitable sortable plainrowheaders"})
     # All data can be found in 'a' and 'span' tags
     links = My_table.findAll("a")

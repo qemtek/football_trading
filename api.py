@@ -1,10 +1,13 @@
 from flask import Flask, request, jsonify
 import sys
 import traceback
+import logging
 
 from src.models.XGBoostModel import XGBoostModel
 from src.utils.api import get_upcoming_games
 from update_tables import update_tables
+
+logger = logging.getLogger('API')
 
 # Your API definition
 app = Flask(__name__)
@@ -35,7 +38,8 @@ def next_games():
 @app.route('/historic_predictions', methods=['GET'])
 def historic_predictions():
     try:
-        return model.predictions.to_json()
+        predictions = model.get_historic_predictions()
+        return predictions.to_json()
     except:
         return jsonify({'trace': traceback.format_exc()})
 
@@ -53,5 +57,5 @@ if __name__ == '__main__':
         port = int(sys.argv[1])  # This is for a command-line input
     except:
         port = 12345  # If you don't provide any port the port will be set to 12345
-    model = XGBoostModel(test_mode=True)
+    model = XGBoostModel()
     app.run(port=port, debug=False)
