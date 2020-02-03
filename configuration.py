@@ -9,4 +9,4 @@ model_dir = os.path.join(data_dir, 'models')
 db_dir = os.path.join(data_dir, 'db.sqlite')
 
 # List of available models
-available_models = ['XGBoost', 'LGBM']
+available_models = ['XGBClassifier', 'LGBM']

@@ -27,6 +27,7 @@ for i in range(10):
         'away_id': data.get('away_id').get(str(i)),
      }, index=[i]))
 
+fixture_list = fixture_list.drop_duplicates()
 
 pl_teams = [list(fixture_list['home_id']) + list(fixture_list['away_id'])]
 predictions = pd.DataFrame(columns=['H', 'D', 'A'])
@@ -73,7 +74,8 @@ historic_df['correct'] = historic_df.apply(lambda x: get_model_correct(x), axis=
 historic_df['rounded_fixture_id'] = np.ceil(historic_df['fixture_id']/10)
 historic_df['year'] = historic_df['date'].apply(lambda x: get_year(x))
 
-historic_df['week_num'] = historic_df.apply(lambda x: str(x['year']) + str(round(x['rounded_fixture_id'])).zfill(2), axis=1)
+historic_df['week_num'] = historic_df.apply(
+    lambda x: str(x['year']) + str(round(x['rounded_fixture_id'])).zfill(2), axis=1)
 
 team_df = historic_df[historic_df['season'] == season]
 home_team_perf = team_df.groupby('home_team')['correct'].mean().round(2)
@@ -164,7 +166,8 @@ app.layout = html.Div(
                 dcc.Graph(
                         id='accuracy_over_time',
                         figure={
-                            'data': [{'x': time_perf.sort_values('Date')['Date'], 'y': time_perf.sort_values('Date')['Accuracy'],},],
+                            'data': [{'x': time_perf.sort_values('Date')['Date'],
+                                      'y': time_perf.sort_values('Date')['Accuracy'],},],
                             'layout': {'clickmode': 'event+select',
                                        'title': 'Model Accuracy Over Time'}
                         }

@@ -17,6 +17,7 @@ class Model:
         self.params = None
         self.trained_model = None
         self.model_type = None
+        self.model_id = None
         self.param_grid = None
         self.model_object = None
         self.performance_metrics = [accuracy_score]
@@ -71,6 +72,9 @@ class Model:
         if self.trained_model is None:
             logger.error("Trying to save a model that is None, aborting.")
         else:
+            # Save the model ID inside the model object (so we know which
+            # model made which predictions in the DB)
+            self.trained_model.model_id = self.model_id
             file_name = self.model_type + '_' + str(dt.datetime.today().date()) + '.joblib'
             save_dir = os.path.join(model_dir, file_name)
             logger.info("Saving model to {} with joblib.".format(save_dir))
@@ -84,6 +88,7 @@ class Model:
         else:
             # Set the attributes of the model to those of the class
             self.trained_model = model
+            self.model_id = self.trained_model.model_id
             self.params = model.get_params()
             return True
 
