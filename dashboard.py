@@ -99,17 +99,19 @@ profit_perf.columns = ['Date', 'Profit']
 #  look at the profit from betting on each team
 team_profit_perf = None
 
-test = historic_df.loc[historic_df['rounded_fixture_id'] == 19, :]
-test.loc[:, 'date'] = pd.to_datetime(test.loc[:, 'date'])
-test['year'] = test['date'].apply(lambda x: x.year)
-
-historic_accuracy_wk19 = test.groupby('year')['correct'].mean()
 # ToDo: Model performance after an unexpected loss
 # ToDo: Run t-tests to find out whether the accuracy on any of the weeks is significantly different
 # ToDo: Cluster the matchups, look for similar groups. Look at the accuracy of each group
 # ToDo: Add Game week, see if it improves the model accuracy on certain weeks
 # ToDo: Add squad value as a feature (probably from wikipedia)
 # ToDo: Add the latest bookmaker odds to latest_preds
+
+historic_df['home_form'] = historic_df['avg_goals_for_home'] - historic_df['avg_goals_against_home']
+historic_df['away_form'] = historic_df['avg_goals_for_away'] - historic_df['avg_goals_against_away']
+historic_df['form_dif'] = historic_df['home_form'] - historic_df['away_form']
+historic_df.loc[historic_df['form_dif'] > 2, 'form_dif'] = 2
+historic_df.loc[historic_df['form_dif'] < -2, 'form_dif'] = -2
+form_dif_acc = historic_df.groupby('form_dif')['correct'].mean().reset_index()
 
 
 # Create the dashboard
@@ -173,10 +175,22 @@ app.layout = html.Div(
                         }
                 )
             , width=12)
+        ),
+        dbc.Row(
+            dbc.Col(
+                dcc.Graph(
+                        id='form_diff_acc',
+                        figure={
+                            'data': [{'x': form_dif_acc.sort_values('form_dif')['form_dif'],
+                                      'y': form_dif_acc.sort_values('form_dif')['correct'],},],
+                            'layout': {'clickmode': 'event+select',
+                                       'title': 'Accuracy vs Form Difference (home_gd - away_gd)'}
+                        }
+                )
+            , width=12)
         )
     ]
 )
-
 
 
 app.run_server(debug=False, port=8050)
