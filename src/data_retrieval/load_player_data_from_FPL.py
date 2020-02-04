@@ -21,6 +21,10 @@ async def get_player_data():
             print("Loading data for player {} of {}".format(i, len(players)))
             player_summary = await fpl.get_player_summary(id)
             player_history = pd.DataFrame(player_summary.history)
+            player_history['web_name'] = player.web_name
+            player_history['id'] = player.id
+            player_history['team'] = player.team
+            player_history['team_code'] = player.team_code
             summary_df = summary_df.append(player_history)
 
     # Upload the data to a table in the database
