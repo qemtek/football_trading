@@ -69,6 +69,7 @@ def get_model_correct(x):
 def get_year(x):
     return pd.to_datetime(x).year
 
+
 historic_df = historic_df.sort_values('date')
 historic_df['correct'] = historic_df.apply(lambda x: get_model_correct(x), axis=1)
 historic_df['rounded_fixture_id'] = np.ceil(historic_df['fixture_id']/10)
@@ -76,6 +77,12 @@ historic_df['year'] = historic_df['date'].apply(lambda x: get_year(x))
 
 historic_df['week_num'] = historic_df.apply(
     lambda x: str(x['year']) + str(round(x['rounded_fixture_id'])).zfill(2), axis=1)
+
+historic_df_all = historic_df
+all_model_ids = historic_df_all['model_id'].unique()
+response = requests.get("http://127.0.0.1:12345/latest_model_id").json()
+model_id = response.get('model_id')
+historic_df = historic_df[historic_df['model_id'] == model_id]
 
 team_df = historic_df[historic_df['season'] == season]
 home_team_perf = team_df.groupby('home_team')['correct'].mean().round(2)
@@ -92,8 +99,8 @@ time_perf = pd.merge(date_perf, time_perf, on='season')
 time_perf.columns = ['Season', 'Date', 'Accuracy']
 
 profit_perf = pd.DataFrame(historic_df.sort_values('date').groupby(
-    ['date'])['profit'].sum().cumsum()).reset_index()
-profit_perf.columns = ['Date', 'Profit']
+    ['date', 'model_id'])['profit'].sum().cumsum()).reset_index()
+profit_perf.columns = ['Date', 'Model ID', 'Profit']
 
 # ToDo: Get a view of historic predictions where its 1 row per team.. Then
 #  look at the profit from betting on each team
@@ -131,17 +138,18 @@ app.layout = html.Div(
                 )]
             )]),
         dbc.Row([
-            dbc.Col([
-                html.H2("Model Performance Plots"),
-                dcc.Graph(
+            dbc.Col(
+                [html.H2("Model Performance Plots")] +
+                [dcc.Graph(
                         id='profit_by_date',
                         figure={
-                            'data': [{'x': profit_perf['Date'], 'y': profit_perf['Profit'],},],
+                            'data': [{'x': profit_perf[profit_perf['Model ID'] == model_id]['Date'],
+                                      'y': profit_perf[profit_perf['Model ID'] == model_id]['Profit'],},],
                             'layout': {'clickmode': 'event+select',
                                        'title': 'Profit Over Time (Cumulative Sum)'}
                         }
-                )
-            ], width=12)
+                ) for model_id in all_model_ids]
+            , width=12)
         ]),
         dbc.Row([
             dbc.Col([

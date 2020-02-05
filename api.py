@@ -6,6 +6,7 @@ import logging
 from src.models.XGBoostModel import XGBoostModel
 from src.utils.api import get_upcoming_games
 from update_tables import update_tables
+from src.utils.db import connect_to_db, run_query
 
 logger = logging.getLogger('API')
 
@@ -40,6 +41,25 @@ def historic_predictions():
     try:
         predictions = model.get_historic_predictions()
         return predictions.to_json()
+    except:
+        return jsonify({'trace': traceback.format_exc()})
+
+
+@app.route('/all_historic_predictions', methods=['GET'])
+def all_historic_predictions():
+    try:
+        conn, cursor = connect_to_db()
+        predictions = run_query(cursor, 'select * from historic_predictions')
+        conn.close()
+        return predictions.to_json()
+    except:
+        return jsonify({'trace': traceback.format_exc()})
+
+
+@app.route('/latest_model_id', methods=['GET'])
+def latest_model_id():
+    try:
+        return jsonify({'model_id': model.model_id})
     except:
         return jsonify({'trace': traceback.format_exc()})
 
