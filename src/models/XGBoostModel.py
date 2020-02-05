@@ -17,7 +17,7 @@ logger = logging.getLogger('XGBoostModel')
 
 
 class XGBoostModel(Model):
-    """Everything specific to the XGBoost goes in this class"""
+    """Everything specific to SKLearn models goes in this class"""
     def __init__(self, test_mode=False, load_model=False,
                  load_model_date=None, save_trained_model=True,
                  upload_historic_predictions=None):
@@ -121,7 +121,7 @@ class XGBoostModel(Model):
             logger.info("Training a new model.")
             df = self.get_training_data()
             X, y = self.get_data(df)
-            self.optimise_hyperparams(X[self.model_features], y)
+            self.optimise_hyperparams(X[self.model_features], y, param_grid=self.param_grid)
             self.train_model(X=X, y=y)
             if save_trained_model:
                 self.save_model()
@@ -166,35 +166,33 @@ class XGBoostModel(Model):
         kf = KFold(n_splits=10)
         model_predictions = pd.DataFrame()
         for train_index, test_index in kf.split(X):
-            xgb_model = xgb.XGBClassifier().fit(
+            model = self.model_type.fit(
                 X=np.array(X.iloc[train_index, :][self.model_features]),
                 y=np.array(y.iloc[train_index]))
-            predictions = xgb_model.predict(np.array(X.iloc[test_index, :][self.model_features]))
+            predictions = model.predict(np.array(X.iloc[test_index, :][self.model_features]))
             actuals = y.iloc[test_index]
             model_predictions = model_predictions.append(
                 pd.concat([
                     X.iloc[test_index, :],
                     pd.DataFrame(predictions, columns=['pred'], index=X.iloc[test_index, :].index),
                     actuals], axis=1))
-        # Assess the model performance using the first performance metric
-        main_performance_metric = self.performance_metrics[0].__name__
-        performance = self.performance_metrics[0](actuals, predictions)
-        # If the model performs better than the previous model, save it
-        # ToDo: Returning 0 when there is no performance score only works
-        #  for performance scores where higher is better
-        if performance > self.performance.get(main_performance_metric, 0):
-            self.trained_model = xgb_model
-            for metric in self.performance_metrics:
-                metric_name = metric.__name__
-                self.performance[metric_name] = metric(actuals, predictions)
+            # Assess the model performance using the first performance metric
+            main_performance_metric = self.performance_metrics[0].__name__
+            performance = self.performance_metrics[0](actuals, predictions)
+            # If the model performs better than the previous model, save it
+            # ToDo: Returning 0 when there is no performance score only works
+            #  for performance scores where higher is better
+            if performance > self.performance.get(main_performance_metric, 0):
+                self.trained_model = model
+                for metric in self.performance_metrics:
+                    metric_name = metric.__name__
+                    self.performance[metric_name] = metric(actuals, predictions)
         # Upload the predictions to the model_predictions table
         conn, cursor = connect_to_db()
         # Add model ID so we can compare model performances
         model_predictions['model_id'] = self.model_id
         # Add profit made if we bet on the game
         model_predictions['profit'] = model_predictions.apply(lambda x: get_profit(x), axis=1)
-        run_query(cursor, "drop table if exists historic_predictions",
-                  return_data=False)
         if (not self.test_mode ) or self.upload_historic_predictions:
             model_predictions.to_sql(
                 'historic_predictions', con=conn, if_exists='append')

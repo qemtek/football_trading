@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import logging
+import math
 from src.utils.db import connect_to_db, run_query
 
 logger = logging.getLogger('XGBoostModel')
@@ -139,6 +140,8 @@ def get_manager_features(df):
         lambda x: np.log10(round((x['date'] - x['away_manager_start']).days)), axis=1)
     df['home_manager_new'] = df['home_manager_age'].apply(lambda x: 1 if x <= 70 else 0)
     df['away_manager_new'] = df['away_manager_age'].apply(lambda x: 1 if x <= 70 else 0)
+    # Convert any -inf to 0 (this occurs when we do np.log10(-1)
+    df = df.replace([np.inf, -np.inf], 0)
     return df
 
 
@@ -187,4 +190,3 @@ def get_feature_data(min_training_data_date='2013-08-01'):
 
 # ToDo: Player features
 # Missing key players (top 3)
-#

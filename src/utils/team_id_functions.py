@@ -12,6 +12,7 @@ def fetch_id(team_name):
     conn.close()
     return output
 
+
 def fetch_name(team_id):
     """Get name from team ID"""
     conn, cursor = connect_to_db()
