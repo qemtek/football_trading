@@ -20,17 +20,6 @@ class LogisticRegressionModel(Model):
         save_trained_model=True,
         upload_historic_predictions=None,
     ):
-        # Call the __init__ method of the parent class
-        self.model_object = LogisticRegression
-        # The name of the model you want ot use
-        self.model_type = self.model_object.__name__
-        # Initial model parameters (without tuning)
-        self.params = {"max_iter": 1000000}
-        # Define a grid for hyper-parameter tuning
-        self.param_grid = {
-            "penalty": ["l2", "none"],
-            "solver": ["newton-cg", "lbfgs", "sag", "saga"],
-        }
         super().__init__(
             test_mode=test_mode,
             load_model=load_model,
@@ -38,6 +27,36 @@ class LogisticRegressionModel(Model):
             save_trained_model=save_trained_model,
             upload_historic_predictions=upload_historic_predictions,
         )
+        # Call the __init__ method of the parent class
+        self.model_object = LogisticRegression
+        # The name of the model you want ot use
+        self.model_type = self.model_object.__name__
+        # A unique identifier for this model
+        self.model_id = "{}_{}_{}".format(
+            self.model_type, self.creation_date, str(abs(hash(dt.datetime.today()))))
+        # Initial model parameters (without tuning)
+        self.params = {"max_iter": 1000000}
+        # Define a grid for hyper-parameter tuning
+        self.param_grid = {
+            "penalty": ["l2", "none"],
+            "solver": ["newton-cg", "lbfgs", "sag", "saga"],
+        }
+
+        # Attempt to load a model
+        load_successful = False
+        if load_model:
+            load_successful = self.load_model(model_type=self.model_type, date=load_model_date)
+
+        # If load model is false or model loading was unsuccessful, train a new model
+        if not any([load_model, load_successful]):
+            logger.info("Training a new model.")
+            df = self.get_training_data()
+            X, y = self.get_data(df)
+            X[self.model_features] = self.preprocess(X[self.model_features])
+            self.optimise_hyperparams(X[self.model_features], y, param_grid=self.param_grid)
+            self.train_model(X=X, y=y)
+            if save_trained_model:
+                self.save_model()
 
     def preprocess(self, X):
         """Standardise the data and return the result"""

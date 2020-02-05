@@ -47,9 +47,6 @@ class Model:
         self.performance = {}
         # The date this class was instantiated
         self.creation_date = str(dt.datetime.today().date())
-        # A unique identifier for this model
-        self.model_id = "{}_{}_{}".format(
-            self.model_type, self.creation_date, str(abs(hash(dt.datetime.today()))))
         # How many games to go back when generating training data
         self.window_length = 8
         # Name of the target variable (or variables, stored in a list)
@@ -115,29 +112,6 @@ class Model:
             or t1.date > m_a.start_date and m_a.end_date is NULL) 
             where t1.date > '2013-08-01'"""
 
-        # Attempt to load a model
-        load_successful = False
-        if load_model:
-            load_successful = self.load_model(model_type=self.model_type, date=load_model_date)
-
-        # If load model is false or model loading was unsuccessful, train a new model
-        if not any([load_model, load_successful]):
-            logger.info("Training a new model.")
-            df = self.get_training_data()
-            X, y = self.get_data(df)
-            X[self.model_features] = self.preprocess(X[self.model_features])
-            self.optimise_hyperparams(X[self.model_features], y, param_grid=self.param_grid)
-            self.train_model(X=X, y=y)
-            if save_trained_model:
-                self.save_model()
-
-    def get_data(self, X):
-        """Get model features, given a DataFrame of match info"""
-        pass
-
-    def train_model(self, X, y):
-        pass
-
     def optimise_hyperparams(self, X, y, param_grid=None):
         """Hyperparameter optimisation function using GridSearchCV. Works for any sklearn models"""
         logger.info("Optimising hyper-parameters")
@@ -185,9 +159,6 @@ class Model:
     def preprocess(self, X):
         """Apply preprocessing steps to data"""
         return np.array(X)
-
-    def get_training_data(self):
-        pass
 
     def save_model(self):
         if self.trained_model is None:

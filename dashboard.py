@@ -8,6 +8,8 @@ import dash_html_components as html
 import dash_table
 import numpy as np
 import logging
+import plotly.graph_objects as go
+import plotly.figure_factory as ff
 
 #requests.post("http://127.0.0.1:12345/update")
 response = requests.get("http://127.0.0.1:12345/next_games")
@@ -57,7 +59,7 @@ latest_preds = pd.concat([fixture_list, predictions], axis=1)[df_cols]
 # latest_preds['A_odds'] = round(1/latest_preds['A'], 2)
 
 # Get the models performance on past data
-response = requests.get("http://127.0.0.1:12345/historic_predictions").json()
+response = requests.get("http://127.0.0.1:12345/all_historic_predictions").json()
 historic_df = pd.DataFrame()
 for (k, v) in response.items():
     historic_df[k] = pd.Series(np.transpose(pd.DataFrame(v, index=[0]))[0])
@@ -98,7 +100,7 @@ date_perf = pd.DataFrame(historic_df.groupby(['season'])['date'].max()).reset_in
 time_perf = pd.merge(date_perf, time_perf, on='season')
 time_perf.columns = ['Season', 'Date', 'Accuracy']
 
-profit_perf = pd.DataFrame(historic_df.sort_values('date').groupby(
+profit_perf = pd.DataFrame(historic_df_all.sort_values('date').groupby(
     ['date', 'model_id'])['profit'].sum().cumsum()).reset_index()
 profit_perf.columns = ['Date', 'Model ID', 'Profit']
 
@@ -138,18 +140,26 @@ app.layout = html.Div(
                 )]
             )]),
         dbc.Row([
-            dbc.Col(
-                [html.H2("Model Performance Plots")] +
-                [dcc.Graph(
+            dbc.Col([
+                html.H2("Model Performance Plots"),
+                dcc.Graph(
                         id='profit_by_date',
                         figure={
-                            'data': [{'x': profit_perf[profit_perf['Model ID'] == model_id]['Date'],
-                                      'y': profit_perf[profit_perf['Model ID'] == model_id]['Profit'],},],
-                            'layout': {'clickmode': 'event+select',
-                                       'title': 'Profit Over Time (Cumulative Sum)'}
-                        }
-                ) for model_id in all_model_ids]
-            , width=12)
+                            'data': [
+                                go.Scatter(
+                                    x=profit_perf[profit_perf['Model ID'] == model_id]['Date'],
+                                    y=profit_perf[profit_perf['Model ID'] == model_id]['Profit'],
+                                    mode="lines+markers",
+                                    name=model_id.split('_')[0],
+                                ) for model_id in all_model_ids],
+                            'layout':
+                                go.Layout(
+                                    title="Profit Over Time (Cumulative Sum)",
+                                    clickmode='event+select',
+                                    height=600,
+                                )
+                        })],
+                width=12)
         ]),
         dbc.Row([
             dbc.Col([
