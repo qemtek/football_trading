@@ -9,7 +9,10 @@ import dash_table
 import numpy as np
 import logging
 import plotly.graph_objects as go
-import plotly.figure_factory as ff
+
+from src.utils.base_model import get_logger
+
+logger = get_logger(log_name='dashboard')
 
 #requests.post("http://127.0.0.1:12345/update")
 response = requests.get("http://127.0.0.1:12345/next_games")
@@ -45,7 +48,7 @@ for i in range(len(fixture_list)):
     }
     response = requests.post("http://127.0.0.1:12345/predict", json=input_dict).json()
     # Convert the probabilities back to floats
-    response = {k:float(v) for (k,v) in response.items()}
+    response = {k: float(v) for (k, v) in response.items()}
     response_df = pd.DataFrame(response, index=[i])
     predictions = predictions.append(response_df)
     print(response)
@@ -67,6 +70,7 @@ for (k, v) in response.items():
 
 def get_model_correct(x):
     return 1 if x['pred'] == x['full_time_result'] else 0
+
 
 def get_year(x):
     return pd.to_datetime(x).year
@@ -95,10 +99,10 @@ combined_team_perf.columns = ['Team Name', 'Accuracy when Home', 'Accuracy when 
 home_season_team_perf = historic_df.groupby(['home_team', 'season'])['correct'].mean()
 away_season_team_perf = historic_df.groupby(['away_team', 'season'])['correct'].mean()
 
-time_perf = pd.DataFrame(historic_df.groupby(['season'])['correct'].mean().round(2)).reset_index()
-date_perf = pd.DataFrame(historic_df.groupby(['season'])['date'].max()).reset_index()
-time_perf = pd.merge(date_perf, time_perf, on='season')
-time_perf.columns = ['Season', 'Date', 'Accuracy']
+time_perf = pd.DataFrame(historic_df_all.groupby(['season', 'model_id'])['correct'].mean().round(2)).reset_index()
+date_perf = pd.DataFrame(historic_df_all.groupby(['season', 'model_id'])['date'].max()).reset_index()
+time_perf = pd.merge(date_perf, time_perf, on=['season', 'model_id'])
+time_perf.columns = ['Season', 'Model ID', 'Date', 'Accuracy']
 
 profit_perf = pd.DataFrame(historic_df_all.sort_values('date').groupby(
     ['date', 'model_id'])['profit'].sum().cumsum()).reset_index()
@@ -115,12 +119,29 @@ team_profit_perf = None
 # ToDo: Add squad value as a feature (probably from wikipedia)
 # ToDo: Add the latest bookmaker odds to latest_preds
 
-historic_df['home_form'] = historic_df['avg_goals_for_home'] - historic_df['avg_goals_against_home']
-historic_df['away_form'] = historic_df['avg_goals_for_away'] - historic_df['avg_goals_against_away']
-historic_df['form_dif'] = historic_df['home_form'] - historic_df['away_form']
-historic_df.loc[historic_df['form_dif'] > 2, 'form_dif'] = 2
-historic_df.loc[historic_df['form_dif'] < -2, 'form_dif'] = -2
-form_dif_acc = historic_df.groupby('form_dif')['correct'].mean().reset_index()
+historic_df_all['home_form'] = historic_df_all['avg_goals_for_home'] - historic_df_all['avg_goals_against_home']
+historic_df_all['away_form'] = historic_df_all['avg_goals_for_away'] - historic_df_all['avg_goals_against_away']
+historic_df_all['form_dif'] = historic_df_all['home_form'] - historic_df_all['away_form']
+historic_df_all.loc[historic_df_all['form_dif'] > 2, 'form_dif'] = 2
+historic_df_all.loc[historic_df_all['form_dif'] < -2, 'form_dif'] = -2
+historic_df_all['form_dif'] = round(historic_df_all['form_dif']*5)/5
+form_dif_acc = historic_df_all.groupby(['form_dif', 'model_id'])['correct'].mean().reset_index()
+form_dif_acc.columns = ['Form Dif', 'Model ID', 'Correct']
+
+from sklearn.cluster import DBSCAN
+from sklearn.preprocessing import StandardScaler
+
+
+def cluster_features(df):
+    historic_df_features = df.drop(['index', 'fixture_id', 'date', 'home_id', 'away_id',
+                                             'home_team', 'away_team', 'season', 'year',
+                                             'week_num', 'full_time_result', 'pred', 'model_id'],
+                                            axis=1)
+    cluster = DBSCAN()
+    scaler = StandardScaler()
+    historic_df_features = scaler.fit_transform(historic_df_features)
+    res = cluster.fit(historic_df_features)
+    return res
 
 
 # Create the dashboard
@@ -186,26 +207,44 @@ app.layout = html.Div(
                 dcc.Graph(
                         id='accuracy_over_time',
                         figure={
-                            'data': [{'x': time_perf.sort_values('Date')['Date'],
-                                      'y': time_perf.sort_values('Date')['Accuracy'],},],
-                            'layout': {'clickmode': 'event+select',
-                                       'title': 'Model Accuracy Over Time'}
-                        }
-                )
-            , width=12)
+                            'data': [
+                                go.Scatter(
+                                    x=time_perf[time_perf['Model ID'] ==
+                                                model_id].sort_values('Date')['Date'],
+                                    y=time_perf[time_perf['Model ID'] ==
+                                                model_id].sort_values('Date')['Accuracy'],
+                                    mode="lines+markers",
+                                    name=model_id.split('_')[0]
+                                ) for model_id in all_model_ids],
+                            'layout': go.Layout(
+                                    title="Model Accuracy Over Time",
+                                    clickmode='event+select',
+                                    height=600,
+                                )
+                        }),
+                width=12)
         ),
         dbc.Row(
             dbc.Col(
                 dcc.Graph(
                         id='form_diff_acc',
                         figure={
-                            'data': [{'x': form_dif_acc.sort_values('form_dif')['form_dif'],
-                                      'y': form_dif_acc.sort_values('form_dif')['correct'],},],
-                            'layout': {'clickmode': 'event+select',
-                                       'title': 'Accuracy vs Form Difference (home_gd - away_gd)'}
-                        }
-                )
-            , width=12)
+                            'data': [
+                                go.Scatter(
+                                    x=form_dif_acc[form_dif_acc['Model ID'] ==
+                                                model_id].sort_values('Form Dif')['Form Dif'],
+                                    y=form_dif_acc[form_dif_acc['Model ID'] ==
+                                                model_id].sort_values('Form Dif')['Correct'],
+                                    mode="lines+markers",
+                                    name=model_id.split('_')[0]
+                                ) for model_id in all_model_ids],
+                            'layout': go.Layout(
+                                    title="Accuracy vs Form Difference (home_gd - away_gd)",
+                                    clickmode='event+select',
+                                    height=600,
+                                )
+                        }),
+                width=12)
         )
     ]
 )
