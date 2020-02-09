@@ -3,7 +3,8 @@ from src.utils.db import connect_to_db
 
 def create_team_fixtures():
     # Connect to database
-    conn, cursor = connect_to_db()
+    conn = connect_to_db()
+    cursor = conn.cursor()
     # Calculate the home team stats
     cursor.execute("drop table if exists team_fixtures_home")
     cursor.execute("""CREATE TABLE team_fixtures_home as SELECT 
@@ -64,7 +65,8 @@ def create_team_fixtures():
 
     # Combine the home and away table to get a full table
     cursor.execute("drop table if exists team_fixtures")
-    cursor.execute("""CREATE TABLE team_fixtures as select * from team_fixtures_home UNION ALL select * from team_fixtures_away""")
+    cursor.execute("""CREATE TABLE team_fixtures as select * from team_fixtures_home 
+    UNION ALL select * from team_fixtures_away""")
     conn.commit()
     conn.close()
 

@@ -9,20 +9,13 @@ from src.utils.team_id_functions import fetch_alternative_name
 
 def get_teams_from_wiki():
     # Connect to database
-    conn, cursor = connect_to_db()
-
+    conn = connect_to_db()
     website_url = requests.get(
         'https://en.wikipedia.org/wiki/List_of_Premier_League_clubs').text
-
     soup = BeautifulSoup(website_url)
-    # print(soup.prettify())
-
     My_table = soup.find('div', {'class': 'timeline-wrapper'})
-
     links = My_table.findAll('area')
-
     teams = []
-
     for link in links:
         team = link.get('alt').encode('UTF-8').decode()
         # Convert &26 to &
@@ -35,24 +28,19 @@ def get_teams_from_wiki():
         # Remove white space from the start and end
         team = team.lstrip().rstrip()
         teams.append(team)
-
     df = pd.DataFrame()
     df['team_name'] = teams
     df = df.sort_values('team_name')
     df['team_id'] = np.arange(len(df))+1
-
     # Load the names into the database
-    run_query(cursor, 'drop table if exists team_ids',
+    run_query('drop table if exists team_ids', return_data=False)
+    run_query('create table team_ids (team_name TEXT, team_id INTEGER, alternate_name)',
               return_data=False)
-    run_query(cursor, 'create table team_ids (team_name TEXT, team_id INTEGER, alternate_name)',
-              return_data=False)
-
     for row in df.iterrows():
         params = [row[1]['team_name'], row[1]['team_id']]
         params.append(fetch_alternative_name(row[1]['team_name']))
-        run_query(cursor, 'insert into team_ids(team_name, team_id, alternate_name) values(?, ?, ?)',
+        run_query('insert into team_ids(team_name, team_id, alternate_name) values(?, ?, ?)',
                   params=params, return_data=False)
-
     conn.commit()
     conn.close()
 

@@ -1,4 +1,4 @@
-from src.models.XGBoostModel import XGBoostModel
+from src.models.templates.XGBoostModel import XGBoostModel
 import logging
 
 logger = logging.getLogger('XGBoostModel')

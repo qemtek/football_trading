@@ -8,7 +8,7 @@ import asyncio
 async def get_player_data():
     """Download all data from the Fantasy Premier League website"""
     # Connect to the sqlite3 DB
-    conn, cursor = connect_to_db()
+    conn = connect_to_db()
     summary_df = pd.DataFrame()
 
     async with aiohttp.ClientSession() as session:
@@ -28,7 +28,7 @@ async def get_player_data():
             summary_df = summary_df.append(player_history)
 
     # Upload the data to a table in the database
-    run_query(cursor, 'DROP TABLE IF EXISTS player_data', return_data=False)
+    run_query('DROP TABLE IF EXISTS player_data', return_data=False)
     summary_df.to_sql('player_data', conn)
 
 

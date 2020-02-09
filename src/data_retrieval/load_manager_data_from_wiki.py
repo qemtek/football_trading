@@ -7,7 +7,7 @@ import re
 import datetime as dt
 
 # Connect to database
-conn, cursor = connect_to_db()
+conn = connect_to_db()
 
 
 def hasNumbers(inputString):
@@ -33,28 +33,22 @@ def get_manager_data():
     # All data can be found in 'a' and 'span' tags
     links = My_table.findAll("a")
     links2 = My_table.findAll("span")
-
     # Load data from links1
     link1_data = []
     for name in links:
         link1_data.append(name.get("title"))
-
     # Load data from links2
     link2_data = []
     for name in links2:
         link2_data.append(name.get("data-sort-value"))
-
-
     # Remove Nulls
     link2_data = [i for i in link2_data if i]
     link1_data = [i for i in link1_data if i]
-
     # Test2 manager name indexes
     name_indexes = []
     for i in range(0, len(link2_data)):
         if not hasNumbers(link2_data[i]):
             name_indexes.append(i)
-
     # Test3 manager name indexes
     manager = []
     country = []
@@ -66,7 +60,6 @@ def get_manager_data():
             country.append(link1_data[i])
         if i % 3 == 2:
             team.append(link1_data[i])
-
     # Create a DataFrame to store all of the scraped data
     managers = pd.DataFrame()
     for i in range(0, len(name_indexes)):
@@ -91,14 +84,12 @@ def get_manager_data():
             # Remove the first 0 zeros from manager_ed
             manager_ed = manager_ed[8:-5]
             managers.loc[i, "until"] = manager_ed
-
     # Replace club names with those used in the rest of the project
     # (e.g. Use Manchester City instead of Man City). Also get the team_id
     managers["team_id"] = managers["team"].apply(lambda x: fetch_id(x))
     managers["team"] = managers["team_id"].apply(lambda x: fetch_name(x))
     # Rename columns
     managers = managers[["manager", "team", "team_id", "from", "until"]]
-
     managers['from'] = pd.to_datetime(managers['from'])
     managers['until'] = pd.to_datetime(managers['until'])
     # If the until date of the last manager and from date of the next manager are the same,
@@ -106,7 +97,6 @@ def get_manager_data():
     managers['next_from'] = managers.groupby('team')['from'].shift(-1)
     managers['until'] = managers.apply(lambda x: x['until']
     if x['until'] != x['next_from'] else x['until'] - dt.timedelta(days=1), axis=1)
-
     df_dates = pd.DataFrame()
     for row in managers.iterrows():
         until = row[1]['until'] if \
@@ -118,11 +108,9 @@ def get_manager_data():
         dates_between['team'] = row[1]['team']
         dates_between['team_id'] = row[1]['team_id']
         df_dates = df_dates.append(dates_between)
-
     # Concatenate manager names when two managers have managed at once
     df_dates = df_dates.groupby(['date', 'team', 'team_id'])['manager'].apply(
         lambda x: ' & '.join(x)).reset_index()
-
     # Get the number of days between each row to identify missing data
     df_dates['date_lag'] = df_dates.groupby(['team', 'team_id'])['date'].apply(lambda x: x.shift(1))
     df_dates['date_diff'] = df_dates.apply(lambda x: (x['date'] - x['date_lag']).days, axis=1)
@@ -141,23 +129,19 @@ def get_manager_data():
     # Drop unnecessary columns and add the missing data rows
     df_dates.drop(['date_lag', 'date_diff'], axis=1, inplace=True)
     df_dates = df_dates.append(missing_dates).reset_index(drop=True).sort_values('date')
-
     # Create an indicator that tells us each time a team changes manager
     df_dates['last_manager'] = df_dates.groupby(['team', 'team_id'])['manager'].apply(lambda x: x.shift(1))
     df_dates['manager_change'] = df_dates.apply(
         lambda x: 1 if x['manager'] != x['last_manager'] else 0, axis=1)
     df_dates['manager_num'] = df_dates.groupby(['team', 'team_id'])['manager_change'].cumsum()
-
     # Aggregate the manager data to get a start/end date for each managerial spell
     min_dates = df_dates.groupby(
         ['team', 'team_id', 'manager', 'manager_num'])['date'].min().reset_index()
     max_dates = df_dates.groupby(
         ['team', 'team_id', 'manager', 'manager_num'])['date'].max().reset_index()
-
     # Add on managers who are still in power
     df_current = df_dates.groupby(
         ['team', 'team_id', 'manager', 'manager_num'])['date']
-
     manager_dates = pd.merge(min_dates, max_dates, on=['team', 'team_id', 'manager', 'manager_num']).reset_index(drop=True)
     manager_dates.columns = ['team', 'team_id', 'manager', 'manager_num', 'from', 'until']
     manager_dates = manager_dates.groupby(
@@ -166,13 +150,11 @@ def get_manager_data():
         ['team', 'team_id', 'manager', 'manager_num', 'until'])['from'].min().reset_index()
     manager_dates = manager_dates.groupby(
         ['team', 'team_id', 'manager', 'manager_num', 'from'])['until'].max().reset_index()
-
     # Drop and recreate the table we are going to populate
-    run_query(cursor, "DROP TABLE IF EXISTS managers", return_data=False)
-    run_query(cursor, "CREATE TABLE managers (manager INT, team TEXT, "
+    run_query("DROP TABLE IF EXISTS managers", return_data=False)
+    run_query("CREATE TABLE managers (manager INT, team TEXT, "
                       "team_id INTEGER, start_date DATE, end_date DATE)",
               return_data=False)
-
     for row in manager_dates.iterrows():
         params = [
             str(row[1]["manager"]),
@@ -182,12 +164,10 @@ def get_manager_data():
             str(row[1]["until"].date()),
         ]
         run_query(
-            cursor,
             "INSERT INTO managers (manager, team, team_id, start_date, end_date) VALUES("
             "?, ?, ?, ?, ?)",
             params, return_data=False
         )
-
     conn.commit()
     conn.close()
 

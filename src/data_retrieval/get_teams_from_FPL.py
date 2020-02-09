@@ -9,11 +9,11 @@ from src.utils.team_id_functions import find_closest_match
 async def get_fpl_teams():
     """Download upcoming fixture data from the Fantasy Premier League website"""
     # Connect to the sqlite3 DB
-    conn, cursor = connect_to_db()
+    conn = connect_to_db()
     df_teams = pd.DataFrame()
     i=0
     # Get all of the team IDs from the fpl_fixtures table
-    teams = run_query(cursor, 'select distinct team_h from fpl_fixtures')
+    teams = run_query('select distinct team_h from fpl_fixtures')
     n_teams = len(teams)
     assert n_teams == 20, 'The number of returned teams should be 20, ' \
                           'but is actually {}'.format(n_teams)
@@ -31,7 +31,7 @@ async def get_fpl_teams():
         df_matches = df_matches.append(pd.DataFrame(match, index=[0]))
     df_teams = pd.concat([df_teams, df_matches.reset_index(drop=True)], axis=1)
     # Upload the data to a table in the database
-    run_query(cursor, 'DROP TABLE IF EXISTS fpl_teams', return_data=False)
+    run_query('DROP TABLE IF EXISTS fpl_teams', return_data=False)
     df_teams.to_sql('fpl_teams', conn)
     conn.close()
 

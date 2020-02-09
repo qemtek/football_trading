@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 from src.utils.team_id_functions import fetch_id
 from datetime import datetime
 from src.utils.db import connect_to_db
@@ -8,7 +7,8 @@ from src.utils.db import connect_to_db
 # Extract data from .csv files hosted at football-data.co.uk
 def extract_data_from_fbd(url, table_name, connection_url=None):
     # Connect to database
-    conn, cursor = connect_to_db(connection_url)
+    conn = connect_to_db(connection_url)
+    cursor = conn.cursor()
     # Pull the csv into a pandas data frame
     fixtureData = pd.read_csv(url, skipinitialspace=True,
                               error_bad_lines=False, keep_default_na=False).dropna()
@@ -119,7 +119,8 @@ def extract_data_from_fbd(url, table_name, connection_url=None):
 # Update fixtures from football-data.co.uk
 def update_fixtures_from_fbd(table_name='main_fixtures'):
     # Connect to the database
-    conn, cursor = connect_to_db()
+    conn = connect_to_db()
+    cursor = conn.cursor()
     # Drop and recrease the table we are going to populate
     cursor.execute("DROP TABLE IF EXISTS {tn}".format(tn=table_name))
     cursor.execute("""CREATE TABLE {tn} (fixture_id INTEGER, home_team TEXT, 
