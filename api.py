@@ -1,14 +1,15 @@
 from flask import Flask, request, jsonify
 import sys
 import traceback
-import logging
 
-from src.models.XGBoostModel import XGBoostModel
+from src.models.templates.XGBoostModel import XGBoostModel
 from src.utils.api import get_upcoming_games
 from update_tables import update_tables
 from src.utils.db import connect_to_db, run_query
 
-logger = logging.getLogger('API')
+from src.utils.base_model import get_logger
+
+logger = get_logger(log_name='api')
 
 # Your API definition
 app = Flask(__name__)
@@ -48,8 +49,8 @@ def historic_predictions():
 @app.route('/all_historic_predictions', methods=['GET'])
 def all_historic_predictions():
     try:
-        conn, cursor = connect_to_db()
-        predictions = run_query(cursor, 'select * from historic_predictions')
+        conn = connect_to_db()
+        predictions = run_query('select * from historic_predictions')
         conn.close()
         return predictions.to_json()
     except:
