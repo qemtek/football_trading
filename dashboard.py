@@ -108,6 +108,13 @@ profit_perf = pd.DataFrame(historic_df_all.sort_values('date').groupby(
     ['date', 'model_id'])['profit'].sum().cumsum()).reset_index()
 profit_perf.columns = ['Date', 'Model ID', 'Profit']
 
+profit_perf_bof = pd.DataFrame(historic_df.sort_values('date').groupby(
+    ['date'])['profit_bof'].sum().cumsum()).reset_index()
+profit_perf_bof.columns = ['Date', 'Profit']
+
+
+
+
 # ToDo: Get a view of historic predictions where its 1 row per team.. Then
 #  look at the profit from betting on each team
 team_profit_perf = None
@@ -133,10 +140,11 @@ from sklearn.preprocessing import StandardScaler
 
 
 def cluster_features(df):
-    historic_df_features = df.drop(['index', 'fixture_id', 'date', 'home_id', 'away_id',
-                                             'home_team', 'away_team', 'season', 'year',
-                                             'week_num', 'full_time_result', 'pred', 'model_id'],
-                                            axis=1)
+    historic_df_features = df.drop(
+        ['index', 'fixture_id', 'date', 'home_id', 'away_id',
+        'home_team', 'away_team', 'season', 'year',
+        'week_num', 'full_time_result', 'pred', 'model_id'],
+        axis=1)
     cluster = DBSCAN()
     scaler = StandardScaler()
     historic_df_features = scaler.fit_transform(historic_df_features)
@@ -172,7 +180,13 @@ app.layout = html.Div(
                                     y=profit_perf[profit_perf['Model ID'] == model_id]['Profit'],
                                     mode="lines+markers",
                                     name=model_id.split('_')[0],
-                                ) for model_id in all_model_ids],
+                                ) for model_id in all_model_ids] +
+                                [go.Scatter(
+                                    x=profit_perf_bof['Date'],
+                                    y=profit_perf_bof['Profit'],
+                                    mode="lines+markers",
+                                    name='Betting on Favourite'
+                                )],
                             'layout':
                                 go.Layout(
                                     title="Profit Over Time (Cumulative Sum)",

@@ -156,6 +156,27 @@ def get_profit(x):
         return -1
 
 
+def get_profit_betting_on_fav(x):
+    max_val = max(x['b365_home_odds'],  x['b365_draw_odds'],  x['b365_away_odds'])
+    if x['actual'] == 'H':
+        if x['b365_home_odds'] == max_val:
+            return x['b365_home_odds']-1
+        else:
+            return -1
+    elif x['actual'] == 'D':
+        if x['b365_draw_odds'] == max_val:
+            return x['b365_draw_odds']-1
+        else:
+            return -1
+    elif x['actual'] == 'A':
+        if x['b365_away_odds'] == max_val:
+            return x['b365_away_odds']-1
+        else:
+            return -1
+    else:
+        raise Exception('full_time_result is not H, D or A.')
+
+
 def get_feature_data(min_training_data_date='2013-08-01'):
     df = run_query("""select t1.*, m_h.manager home_manager,
      m_h.start_date home_manager_start, 

@@ -6,7 +6,7 @@ from src.utils.base_model import get_logger, suspend_logging
 from src.utils.base_model import time_function
 from src.utils.db import run_query, connect_to_db
 from src.utils.xgboost import get_features, get_manager_features, \
-    get_feature_data, get_manager, get_profit, upload_to_table
+    get_feature_data, get_manager, get_profit, upload_to_table, get_profit_betting_on_fav
 from src.utils.team_id_functions import fetch_name
 
 logger = get_logger()
@@ -108,6 +108,9 @@ class MatchResultXGBoost(XGBoostModel):
             # Add profit made if we bet on the game
             self.model_predictions['profit'] = self.model_predictions.apply(
                 lambda x: get_profit(x), axis=1)
+            # Add profit made betting on the favourite
+            self.model_predictions['profit_bof'] = self.model_predictions.apply(
+                lambda x: get_profit_betting_on_fav(x), axis=1)
             if upload_historic_predictions:
                 upload_to_table(
                     self.model_predictions,
