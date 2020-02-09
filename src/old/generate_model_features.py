@@ -5,10 +5,10 @@ import numpy as np
 window_length = 8
 
 # Connect to database
-conn, cursor = connect_to_db()
+conn = connect_to_db()
 
 # Get all fixtures after game week 8, excluding the last game week
-df = run_query(cursor, "select t1.*, m_h.manager home_manager, m_h.start home_manager_start, "
+df = run_query("select t1.*, m_h.manager home_manager, m_h.start home_manager_start, "
                        "m_a.manager away_manager, m_a.start away_manager_start "
                        "from main_fixtures t1 "
                        "left join managers m_h "
@@ -33,7 +33,7 @@ df['home_manager_new'] = df['home_manager_age'].apply(lambda x: 1 if x <= 70 els
 df['away_manager_new'] = df['away_manager_age'].apply(lambda x: 1 if x <= 70 else 0)
 
 # Get team stats
-df2 = run_query(cursor, "select * from team_fixtures where date > '2013-08-01'")
+df2 = run_query("select * from team_fixtures where date > '2013-08-01'")
 df2['date'] = pd.to_datetime(df2['date'])
 df2 = pd.merge(
     df2,
@@ -134,7 +134,7 @@ output = pd.concat([df[['fixture_id', 'date', 'home_team',
                     X, targets], axis=1)
 
 # Upload the data to a table in the database
-run_query(cursor, 'DROP TABLE IF EXISTS model_features', return_data=False)
+run_query('DROP TABLE IF EXISTS model_features', return_data=False)
 output.to_sql('model_features', conn)
 
 # ToDo: Upload to model_features table

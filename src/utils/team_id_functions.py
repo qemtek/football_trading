@@ -4,7 +4,8 @@ import Levenshtein
 
 def fetch_id(team_name):
     """Get team ID from name"""
-    conn, cursor = connect_to_db()
+    conn = connect_to_db()
+    cursor = conn.cursor()
     cursor.execute(
         "Select team_id from team_ids where team_name = '{}' or alternate_name = '{}'".format(
         team_name, team_name))
@@ -15,7 +16,8 @@ def fetch_id(team_name):
 
 def fetch_name(team_id):
     """Get name from team ID"""
-    conn, cursor = connect_to_db()
+    conn = connect_to_db()
+    cursor = conn.cursor()
     cursor.execute("Select team_name from team_ids where team_id == ?", [team_id])
     output = cursor.fetchone()[0]
     conn.close()
@@ -31,8 +33,8 @@ def find_closest_match(team_name):
         output = {"team_name": 'Tottenham', "team_id": fetch_id("Tottenham")}
         return output
     else:
-        conn, cursor = connect_to_db()
-        df = run_query(cursor, "Select team_name, team_id from team_ids")
+        conn = connect_to_db()
+        df = run_query("Select team_name, team_id from team_ids")
         df['l_dist'] = df['team_name'].apply(lambda x: Levenshtein.ratio(x, team_name))
         max_similarity = max(df['l_dist'])
         closest_match = df.loc[df['l_dist'] == max_similarity,

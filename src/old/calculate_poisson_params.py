@@ -6,11 +6,11 @@ import scipy.stats
 def create_team_poisson_probabilities():
 
     # Connect to database
-    conn, cursor = connect_to_db()
+    conn = connect_to_db()
 
     # Extract data
     query = 'select fixture_id, team_name, date, season, is_home, goals_for, goals_against from team_fixtures'
-    df = run_query(cursor, query)
+    df = run_query(query)
 
     # Sort the data by season, team_name and date
     df = df.sort_values(['season', 'team_name', 'date'])
@@ -74,7 +74,7 @@ def create_team_poisson_probabilities():
 def combine_team_poisson_probabilities():
 
     # Connect to database
-    conn, cursor = connect_to_db()
+    conn = connect_to_db()
 
     # Extract data, join the poisson_team_odds table on itself to combine the home and away teams.
     query = '''
@@ -118,7 +118,7 @@ def combine_team_poisson_probabilities():
         and t1.team_name is not t2.team_name
         )'''
 
-    df = run_query(cursor, query)
+    df = run_query(query)
 
     df['prob_sum'] = df.select_dtypes('float64').apply(lambda x: sum(x), axis=1)
 

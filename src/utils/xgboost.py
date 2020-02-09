@@ -1,8 +1,7 @@
 import numpy as np
 import pandas as pd
 import logging
-import math
-from src.utils.db import connect_to_db, run_query
+from src.utils.db import run_query, connect_to_db
 
 logger = logging.getLogger('XGBoostModel')
 
@@ -109,9 +108,8 @@ def calculate_win_streak(last_games):
 
 def get_manager(team_id, date):
     """Find the sitting manager for a given team_id and date"""
-    conn, cursor = connect_to_db()
     # Get the latest date in the db
-    max_date = run_query(cursor, "select max(end_date) date from managers").loc[0, 'date']
+    max_date = run_query("select max(end_date) date from managers").loc[0, 'date']
     # If we are predicting past our data
     if date > max_date:
         # Take the latest manager for the team
@@ -120,9 +118,8 @@ def get_manager(team_id, date):
     else:
         query = """select * from managers where team_id = {} 
                     and '{}' between start_date and end_date""".format(team_id, date)
-    df = run_query(cursor, query)
+    df = run_query(query)
     rows = len(df)
-    conn.close()
     if rows != 1:
         logger.warning("get_manager: Expected 1 row but got {}. Is the manager "
                        "info up to date?".format(rows))
@@ -146,12 +143,12 @@ def get_manager_features(df):
 
 
 def get_profit(x):
-    if x['pred'] == x['full_time_result']:
-        if x['full_time_result'] == 'H':
+    if x['pred'] == x['actual']:
+        if x['actual'] == 'H':
             return x['b365_home_odds'] - 1
-        elif x['full_time_result'] == 'D':
+        elif x['actual'] == 'D':
             return x['b365_draw_odds'] - 1
-        elif x['full_time_result'] == 'A':
+        elif x['actual'] == 'A':
             return x['b365_away_odds'] - 1
         else:
             raise Exception('full_time_result is not H, D or A.')
@@ -160,8 +157,7 @@ def get_profit(x):
 
 
 def get_feature_data(min_training_data_date='2013-08-01'):
-    conn, cursor = connect_to_db()
-    df = run_query(cursor, """select t1.*, m_h.manager home_manager,
+    df = run_query("""select t1.*, m_h.manager home_manager,
      m_h.start_date home_manager_start, 
      m_a.manager away_manager, m_a.start_date away_manager_start 
      from main_fixtures t1 
@@ -175,9 +171,8 @@ def get_feature_data(min_training_data_date='2013-08-01'):
      or t1.date > m_a.start_date and m_a.end_date is NULL) 
      where t1.date > '{}'""".format(min_training_data_date))
     df=get_manager_features(df)
-    df2 = run_query(cursor, "select * from team_fixtures where date > '{}'".format(
+    df2 = run_query("select * from team_fixtures where date > '{}'".format(
         min_training_data_date))
-    conn.close()
     df2['date'] = pd.to_datetime(df2['date'])
     df2 = pd.merge(
         df2,
@@ -186,6 +181,29 @@ def get_feature_data(min_training_data_date='2013-08-01'):
         on=['date', 'season', 'fixture_id'],
         how="left")
     return df2
+
+
+def get_team_model_performance(x, model_id, home_team=True):
+    """Get the performance of the model at predicting a certain team"""
+    team_id = x['home_id'] if home_team else x['away_id']
+    date = x['date']
+    season = x['season']
+    perf = run_query(
+        """select avg(correct) from historic_predictions where 
+        model_id = '{}' and season = '{}' and home_id = {} 
+        or away_id = {} and date < '{}'""".format(
+            model_id, season, team_id, team_id, date))
+    return perf
+
+
+def upload_to_table(df, table_name, model_id=None):
+    # Upload the predictions to the model_predictions table
+    conn = connect_to_db()
+    # Add model ID so we can compare model performances
+    if model_id is not None:
+        df['model_id'] = model_id
+    df.to_sql(table_name, con=conn, if_exists='append')
+    conn.close()
 
 
 # ToDo: Player features
