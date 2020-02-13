@@ -6,7 +6,7 @@ from sklearn.metrics import balanced_accuracy_score, accuracy_score
 
 from configuration import model_dir
 from src.utils.base_model import load_model, time_function, get_logger
-from src.utils.db import run_query, connect_to_db
+from src.utils.db import run_query
 
 logger = get_logger()
 
@@ -87,8 +87,7 @@ class BaseModel:
             # Save the model ID inside the model object (so we know which
             # model made which predictions in the DB)
             self.trained_model.model_id = self.model_id
-            file_name = '{}_{}_{}.joblib'.format(
-                self.problem_name, self.model_type, str(dt.datetime.today().date()))
+            file_name = self.model_id + '.joblib'
             save_dir = os.path.join(model_dir, file_name)
             logger.info("Saving model to {} with joblib.".format(save_dir))
             joblib.dump(self.trained_model, open(save_dir, "wb"))
@@ -111,5 +110,3 @@ class BaseModel:
                 logger.warning('The loaded model has no get_params method, '
                                'cannot load model parameters.')
             return True
-
-

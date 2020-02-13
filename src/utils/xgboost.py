@@ -157,19 +157,19 @@ def get_profit(x):
 
 
 def get_profit_betting_on_fav(x):
-    max_val = max(x['b365_home_odds'],  x['b365_draw_odds'],  x['b365_away_odds'])
+    min_val = min(x['b365_home_odds'],  x['b365_draw_odds'],  x['b365_away_odds'])
     if x['actual'] == 'H':
-        if x['b365_home_odds'] == max_val:
+        if x['b365_home_odds'] == min_val:
             return x['b365_home_odds']-1
         else:
             return -1
     elif x['actual'] == 'D':
-        if x['b365_draw_odds'] == max_val:
+        if x['b365_draw_odds'] == min_val:
             return x['b365_draw_odds']-1
         else:
             return -1
     elif x['actual'] == 'A':
-        if x['b365_away_odds'] == max_val:
+        if x['b365_away_odds'] == min_val:
             return x['b365_away_odds']-1
         else:
             return -1

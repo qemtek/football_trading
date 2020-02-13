@@ -3,3 +3,4 @@ venv/*
 .DS_STORE
 src/.DS_STORE
 data/.DS_STORE
+logs/*

@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 import sys
 import traceback
 
-from src.models.templates.XGBoostModel import XGBoostModel
+from src.models.MatchResultXGBoostModel import MatchResultXGBoost
 from src.utils.api import get_upcoming_games
 from update_tables import update_tables
 from src.utils.db import connect_to_db, run_query
@@ -78,5 +78,5 @@ if __name__ == '__main__':
         port = int(sys.argv[1])  # This is for a command-line input
     except:
         port = 12345  # If you don't provide any port the port will be set to 12345
-    model = XGBoostModel(load_model=True)
+    model = MatchResultXGBoost(load_model=True)
     app.run(port=port, debug=False)

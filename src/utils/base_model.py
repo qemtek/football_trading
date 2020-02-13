@@ -51,13 +51,12 @@ def get_logger(log_name='model'):
     log_dir = os.path.join(project_dir, 'logs')
     if not os.path.exists(log_dir):
         os.mkdir(log_dir)
-    # create logger with 'spam_application'
+    # Create logger
     logger = logging.getLogger(log_name)
-    logger.setLevel(logging.DEBUG)
-    # Setup a logger to handle debug messages
+    # Setup a logger to handle DEBUG messages
     l1 = logging.FileHandler(os.path.join(log_dir, '{}_debug.log'.format(log_name)))
     l1.setLevel(logging.DEBUG)
-    # Setup a logger to handle info messages
+    # Setup a logger to handle INFO messages
     l2 = logging.FileHandler(os.path.join(log_dir, '{}.log'.format(log_name)))
     l2.setLevel(logging.INFO)
     # Create formatter and add it to the handlers
@@ -89,6 +88,7 @@ def time_function(logger):
 def suspend_logging(logger):
     """A decorator that suspends logging for a function and all functions
     called by that function"""
+    # ToDo: Understand how this works
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
