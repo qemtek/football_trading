@@ -82,3 +82,10 @@ wrangle==0.6.7
 wrapt==1.11.2
 xgboost==0.90
 python-Levenshtein==0.12.0
+shap==0.34.0
+fpl==0.6.18
+dash==1.9.0
+dash-bootstrap-components==0.8.3
+dash-core-components==1.8.0
+dash-html-components==1.0.2
+plotly==4.5.0

@@ -4,3 +4,5 @@ venv/*
 src/.DS_STORE
 data/.DS_STORE
 logs/*
+*.pyc
+configuration.py
