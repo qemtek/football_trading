@@ -103,8 +103,10 @@ class MatchResultXGBoost(XGBoostModel):
         if self.trained_model is None:
             logger.info("Training a new model.")
             X, y = self.get_training_data()
+            X[self.model_features] = self.preprocess(X[self.model_features])
+            sample_weight = np.array(abs(X['avg_goals_for_home'] - ['avg_goals_for_home']))
             self.optimise_hyperparams(X[self.model_features], y, param_grid=self.param_grid)
-            self.train_model(X=X, y=y)
+            self.train_model(X=X, y=y, sample_weight=sample_weight)
             # Add profit made if we bet on the game
             self.model_predictions['profit'] = self.model_predictions.apply(
                 lambda x: get_profit(x), axis=1)
@@ -126,7 +128,7 @@ class MatchResultXGBoost(XGBoostModel):
 
     @time_function(logger=logger)
     def get_data(self, df):
-        logger.info("Preprocessing data and generating features.")
+        logger.info("Pre-processing data and generating features.")
         # Add on manager features
         df = get_manager_features(df)
         # Get team feature data (unprocessed)
@@ -135,7 +137,7 @@ class MatchResultXGBoost(XGBoostModel):
         df = df[(df['fixture_id'] > self.window_length * 10) & (df['fixture_id'] < 370)]
         # Filter out games that had red cards
         # ToDo: Test whether removing red card games is beneficial
-        # df = df[(df['home_red_cards'] == 0) & (df['away_red_cards'] == 0)]
+        df = df[(df['home_red_cards'] == 0) & (df['away_red_cards'] == 0)]
         identifiers = ['fixture_id', 'date', 'home_team', 'home_id',
                        'away_team', 'away_id', 'season']
         # If in test mode, only calculate the first 100 rows

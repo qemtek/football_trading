@@ -156,6 +156,30 @@ def get_profit(x):
         return -1
 
 
+def get_profit2(x):
+    if x['pred'] == x['actual']:
+        if x['actual'] == 1:
+            if x['model1_actual'] == 'H':
+                return x['b365_home_odds'] - 1
+            elif x['model1_actual'] == 'D':
+                return x['b365_draw_odds'] - 1
+            elif x['model1_actual'] == 'A':
+                return x['b365_away_odds'] - 1
+            else:
+                raise Exception('full_time_result is not H, D or A.')
+        elif x['actual'] == 0:
+            return 0
+        else:
+            raise Exception('get_profit2: prediction is neither 1 nor 0.')
+    else:
+        if x['actual'] == 1:
+            return 0
+        elif x['actual'] == 0:
+            return -1
+        else:
+            raise Exception('get_profit2: prediction is neither 1 nor 0.')
+
+
 def get_profit_betting_on_fav(x):
     min_val = min(x['b365_home_odds'],  x['b365_draw_odds'],  x['b365_away_odds'])
     if x['actual'] == 'H':
@@ -214,7 +238,7 @@ def get_team_model_performance(x, model_id, home_team=True):
         model_id = '{}' and season = '{}' and home_id = {} 
         or away_id = {} and date < '{}'""".format(
             model_id, season, team_id, team_id, date))
-    return perf
+    return perf.iloc[0,0]
 
 
 def upload_to_table(df, table_name, model_id=None):
