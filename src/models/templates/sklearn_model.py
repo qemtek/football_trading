@@ -55,7 +55,7 @@ class SKLearnModel(BaseModel):
             self.params = clf.best_params_
 
     @time_function(logger=logger)
-    def train_model(self, X, y):
+    def train_model(self, X, y, sample_weight=None):
         """Train a model on 90% of the data and predict 10% using KFold validation,
         such that a prediction is made for all data"""
         logger.info("Training model.")
@@ -66,7 +66,7 @@ class SKLearnModel(BaseModel):
         for train_index, test_index in kf.split(X):
             model = self.model_object().fit(
                 X=X.iloc[train_index, :][self.model_features],
-                y=y[train_index])
+                y=y[train_index], sample_weight=sample_weight[train_index])
             preds = model.predict(X.iloc[test_index, :][self.model_features])
             preds_proba = model.predict_proba(X.iloc[test_index, :][self.model_features])
             actuals = y[test_index]

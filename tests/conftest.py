@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import pytest
 
-from api import app
+from src.api import app
 from configuration import project_dir
 
 

@@ -21,6 +21,7 @@ class BaseModel:
                  load_model_date=None,
                  problem_name=None,
                  ):
+        self.problem_name = problem_name
         self.load_trained_model = load_trained_model
         self.save_trained_model = save_trained_model
         self.test_mode = test_mode
