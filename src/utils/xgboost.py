@@ -214,7 +214,7 @@ def get_team_model_performance(x, model_id, home_team=True):
         model_id = '{}' and season = '{}' and home_id = {} 
         or away_id = {} and date < '{}'""".format(
             model_id, season, team_id, team_id, date))
-    return perf
+    return perf.iloc[0, 0]
 
 
 def upload_to_table(df, table_name, model_id=None):

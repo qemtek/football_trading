@@ -103,6 +103,7 @@ class MatchResultXGBoost(XGBoostModel):
         if self.trained_model is None:
             logger.info("Training a new model.")
             X, y = self.get_training_data()
+            X[self.model_features] = self.preprocess(X[self.model_features])
             self.optimise_hyperparams(X[self.model_features], y, param_grid=self.param_grid)
             self.train_model(X=X, y=y)
             # Add profit made if we bet on the game

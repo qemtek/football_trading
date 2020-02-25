@@ -60,7 +60,6 @@ class SKLearnModel(BaseModel):
         such that a prediction is made for all data"""
         logger.info("Training model.")
         kf = KFold(n_splits=10)
-        X[self.model_features] = self.preprocess(X[self.model_features])
         y = np.ravel(np.array(y))
         labels = list(np.sort(np.unique(y)))
         model_predictions = pd.DataFrame()
@@ -76,7 +75,7 @@ class SKLearnModel(BaseModel):
                     X.iloc[test_index, :],
                     pd.DataFrame(preds, columns=['pred'], index=X.iloc[test_index, :].index),
                     pd.DataFrame(preds_proba,
-                                 columns=['predict_proba_' + label for label in labels],
+                                 columns=['predict_proba_' + str(label) for label in labels],
                                  index=X.iloc[test_index, :].index),
                     pd.DataFrame(actuals, columns=['actual'], index=X.iloc[test_index, :].index)],
                     axis=1))
