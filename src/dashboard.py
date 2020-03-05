@@ -69,7 +69,7 @@ for (k, v) in response.items():
 
 
 def get_model_correct(x):
-    return 1 if x['pred'] == x['full_time_result'] else 0
+    return 1 if x['pred'] == x['actual'] else 0
 
 
 def get_year(x):
@@ -179,7 +179,7 @@ app.layout = html.Div(
                                     x=profit_perf[profit_perf['Model ID'] == model_id]['Date'],
                                     y=profit_perf[profit_perf['Model ID'] == model_id]['Profit'],
                                     mode="lines+markers",
-                                    name=model_id.split('_')[0],
+                                    name='_'.join(model_id.split('_')[-1]),
                                 ) for model_id in all_model_ids] +
                                 [go.Scatter(
                                     x=profit_perf_bof['Date'],
@@ -228,7 +228,7 @@ app.layout = html.Div(
                                     y=time_perf[time_perf['Model ID'] ==
                                                 model_id].sort_values('Date')['Accuracy'],
                                     mode="lines+markers",
-                                    name=model_id.split('_')[0]
+                                    name='_'.join(model_id.split('_')[-1])
                                 ) for model_id in all_model_ids],
                             'layout': go.Layout(
                                     title="Model Accuracy Over Time",
@@ -250,7 +250,7 @@ app.layout = html.Div(
                                     y=form_dif_acc[form_dif_acc['Model ID'] ==
                                                 model_id].sort_values('Form Dif')['Correct'],
                                     mode="lines+markers",
-                                    name=model_id.split('_')[0]
+                                    name='_'.join(model_id.split('_')[-1])
                                 ) for model_id in all_model_ids],
                             'layout': go.Layout(
                                     title="Accuracy vs Form Difference (home_gd - away_gd)",
