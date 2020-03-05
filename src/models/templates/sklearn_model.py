@@ -25,6 +25,8 @@ class SKLearnModel(BaseModel):
                          test_mode=test_mode,
                          problem_name=problem_name)
         self.param_grid = None
+        # The metric used to evaluate model performance
+        self.scoring = 'accuracy'
 
     @time_function(logger=logger)
     def optimise_hyperparams(self, X, y, param_grid=None):
@@ -95,6 +97,9 @@ class SKLearnModel(BaseModel):
                 for metric in self.performance_metrics:
                     metric_name = metric.__name__
                     self.performance[metric_name] = metric(actuals, preds)
+            logger.info('Training finished. {}: {}'.format(
+                str(main_performance_metric),
+                str(self.performance.get(main_performance_metric))))
         # Save the trained model, if requested
         if self.save_trained_model and not self.test_mode:
             self.save_model()

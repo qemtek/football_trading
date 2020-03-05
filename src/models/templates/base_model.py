@@ -21,20 +21,24 @@ class BaseModel:
                  load_model_date=None,
                  problem_name=None,
                  ):
-        self.problem_name = problem_name
+        # Store all arguments passed to __init__ inside the class,
+        # so we know what they were later
+        self.model_object = model_object
         self.load_trained_model = load_trained_model
         self.save_trained_model = save_trained_model
         self.test_mode = test_mode
+        self.load_model_date = load_model_date
+        self.problem_name = problem_name
         # The date this class was instantiated
         self.creation_date = str(dt.datetime.today().date())
-        # The class object of the model you want to use
-        self.model_object = model_object
         # The name of the model you want to use
         self.model_type = self.model_object.__name__
         # Store the trained model here
         self.trained_model = self.load_model(load_model_date) if load_trained_model else None
         # The name of all features in the model, specified as a list
         self.model_features = None
+        # Model parameters
+        self.params = None
         # A place to store predictions made by the model
         self.model_predictions = None
         # A unique identifier for this model
@@ -42,8 +46,6 @@ class BaseModel:
             self.model_type, self.creation_date, str(abs(hash(dt.datetime.today()))))
         # What name to give the problem the model is trying to solve
         self.problem_name = problem_name
-        # Model parameters
-        self.params = None
         # A list of performance metrics (pass the functions, they must
         # take actuals, predictions as the first and second arguments
         self.performance_metrics = [balanced_accuracy_score, accuracy_score]
@@ -51,8 +53,6 @@ class BaseModel:
         self.performance = {}
         # Name of the target variable (or variables, stored in a list)
         self.target = None
-        # The metric used to evaluate model performance
-        self.scoring = 'accuracy'
         # A query used to retrieve training data
         self.training_data_query = None
 
@@ -87,7 +87,9 @@ class BaseModel:
         else:
             # Save the model ID inside the model object (so we know which
             # model made which predictions in the DB)
-            self.trained_model.model_id = self.model_id
+            self.trained_model.model_id = self.problem_name + '_' + self.model_id
+            self.trained_model.model_features = self.model_features
+            # ToDo: Check whether model features get stored in the model
             file_name = self.model_id + '.joblib'
             save_dir = os.path.join(model_dir, file_name)
             logger.info("Saving model to {} with joblib.".format(save_dir))
@@ -99,15 +101,14 @@ class BaseModel:
         model = load_model(self.model_type, date=date, keyword=self.problem_name)
         if model is None:
             logger.warning('No available models of type {}.'.format(self.model_type))
-            return False
+            return None
         else:
             # Set the attributes of the model to those of the class
-            self.trained_model = model
-            self.model_id = self.trained_model.model_id
+            self.model_id = model.model_id
             get_params = getattr(self, "get_params", None)
             if callable(get_params):
                 self.params = model.get_params()
             else:
                 logger.warning('The loaded model has no get_params method, '
                                'cannot load model parameters.')
-            return True
+            return model

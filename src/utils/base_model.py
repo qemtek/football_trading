@@ -4,6 +4,7 @@ import os
 import time
 from functools import wraps
 import pandas as pd
+import sys
 
 from configuration import available_models, model_dir, project_dir
 
@@ -39,12 +40,9 @@ def load_model(model_type, date=None, logger=None, keyword=None):
         logger.info("load_model: Loading model with filename: {}".format(model_name))
         model = joblib.load(open(os.path.join(model_dir, model_name), "rb"))
         return model
-    except FileNotFoundError:
-        logger.error("Chosen model could not be loaded, returning None")
-        return None
-    except TypeError:
-        logger.error("No models could be found, returning None")
-        return None
+    except Exception as e:
+        logger.error("Chosen model could not be loaded, returning None. Error message: {}".format(e))
+        sys.exit()
 
 
 def get_logger(log_name='model'):

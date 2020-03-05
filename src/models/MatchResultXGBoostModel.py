@@ -28,6 +28,7 @@ class MatchResultXGBoost(XGBoostModel):
             load_model_date=load_model_date,
             problem_name=problem_name
         )
+        self.apply_sample_weight=False
         self.upload_historic_predictions = upload_historic_predictions
         # Initial model parameters (without tuning)
         self.params = {'n_estimators': 100}
@@ -54,7 +55,7 @@ class MatchResultXGBoost(XGBoostModel):
             'sd_shots_for_home',
             'sd_shots_against_home',
             'avg_yellow_cards_home',
-            'avg_red_cards_home',
+            #'avg_red_cards_home',
             'b365_win_odds_home',
             'avg_perf_vs_bm_home',
             'manager_new_home',
@@ -73,7 +74,7 @@ class MatchResultXGBoost(XGBoostModel):
             'sd_shots_for_away',
             'sd_shots_against_away',
             'avg_yellow_cards_away',
-            'avg_red_cards_away',
+            #'avg_red_cards_away',
             'b365_win_odds_away',
             'avg_perf_vs_bm_away',
             'manager_new_away',
@@ -104,9 +105,10 @@ class MatchResultXGBoost(XGBoostModel):
             logger.info("Training a new model.")
             X, y = self.get_training_data()
             X[self.model_features] = self.preprocess(X[self.model_features])
-
-            sample_weight = np.array(abs(X['avg_goals_for_home'] - ['avg_goals_for_home']))
-
+            if self.apply_sample_weight:
+                sample_weight = np.array(abs(X['avg_goals_for_home'] - ['avg_goals_for_home']))
+            else:
+                sample_weight = np.ones(len(X))
             self.optimise_hyperparams(X[self.model_features], y, param_grid=self.param_grid)
             self.train_model(X=X, y=y, sample_weight=sample_weight)
             # Add profit made if we bet on the game
@@ -207,8 +209,10 @@ class MatchResultXGBoost(XGBoostModel):
         # Predict using the predict method of the parent class
         X, _ = self.get_data(info)
         X[self.model_features] = self.preprocess(X[self.model_features])
-        preds = self.trained_model.predict_proba(np.array(X[self.model_features])) \
-            if self.trained_model is not None else None
+        if self.trained_model is not None:
+            preds = self.trained_model.predict_proba(X[self.model_features])
+        else:
+            preds = None
         # Return predictions
         output = {"H": round(preds[0][2], 2),
                   "D": round(preds[0][1], 2),
@@ -225,4 +229,4 @@ class MatchResultXGBoost(XGBoostModel):
 
 
 if __name__ == '__main__':
-    model = MatchResultXGBoost(save_trained_model=True, upload_historic_predictions=True)
+    model = MatchResultXGBoost(save_trained_model=True, upload_historic_predictions=True, problem_name='match-predict-no-reds')
