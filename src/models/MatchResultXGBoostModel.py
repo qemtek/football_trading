@@ -28,7 +28,7 @@ class MatchResultXGBoost(XGBoostModel):
             load_model_date=load_model_date,
             problem_name=problem_name
         )
-        self.apply_sample_weight = False
+        self.apply_sample_weight = True
         self.upload_historic_predictions = upload_historic_predictions
         # Initial model parameters (without tuning)
         self.params = {'n_estimators': 100}
@@ -86,9 +86,9 @@ class MatchResultXGBoost(XGBoostModel):
             'loss_rate_away',
             'home_advantage_sum_away',
             'home_advantage_avg_away',
-            'b365_home_odds',
-            'b365_draw_odds',
-            'b365_away_odds'
+            'home_odds',
+            'draw_odds',
+            'away_odds'
         ]
         self.training_data_query = \
             """select t1.*, m_h.manager home_manager, m_h.start_date home_manager_start, 
@@ -106,11 +106,11 @@ class MatchResultXGBoost(XGBoostModel):
 
         def apply_profit_weight(x):
             if x['target'] == 'H':
-                return x['b365_home_odds'] - 1
+                return x['home_odds'] - 1
             elif x['target'] == 'D':
-                return x['b365_draw_odds'] - 1
+                return x['draw_odds'] - 1
             elif x['target'] == 'A':
-                return x['b365_away_odds'] - 1
+                return x['away_odds'] - 1
             else:
                 raise Exception('Error in apply_profit_weight()')
 
@@ -120,10 +120,10 @@ class MatchResultXGBoost(XGBoostModel):
             X, y = self.get_training_data()
             X[self.model_features] = self.preprocess(X[self.model_features])
             if self.apply_sample_weight:
-                # sample_weight = np.array(abs(X['avg_goals_for_home'] - X['avg_goals_for_away']))
-                td = X
-                td['target'] = y
-                sample_weight = np.array(td.apply(lambda x: apply_profit_weight(x), axis=1))
+                sample_weight = np.array(abs(X['avg_goals_for_home'] - X['avg_goals_for_away']))
+                # td = X
+                # td['target'] = y
+                # sample_weight = np.array(td.apply(lambda x: apply_profit_weight(x), axis=1))
             else:
                 sample_weight = np.ones(len(X))
             self.optimise_hyperparams(X[self.model_features], y, param_grid=self.param_grid)
@@ -146,6 +146,11 @@ class MatchResultXGBoost(XGBoostModel):
     def get_training_data(self):
         # Get all fixtures after game week 8, excluding the last game week
         df = run_query(self.training_data_query)
+        # Change names of b365 odds
+        df['home_odds'] = df['b365_home_odds']
+        df['draw_odds'] = df['b365_draw_odds']
+        df['away_odds'] = df['b365_away_odds']
+        df = df.drop(['b365_home_odds', 'b365_draw_odds', 'b365_away_odds'], axis=1)
         X, y = self.get_data(df)
         return X, y
 
@@ -189,7 +194,7 @@ class MatchResultXGBoost(XGBoostModel):
 
     @staticmethod
     @time_function(logger=logger)
-    def get_info(home_id, away_id, date, season):
+    def get_info(home_id, away_id, date, season, home_odds, draw_odds, away_odds):
         """Given the data and home/away team id's, get model features"""
         conn = connect_to_db()
         h_manager = get_manager(team_id=home_id, date=date)
@@ -214,7 +219,10 @@ class MatchResultXGBoost(XGBoostModel):
             "fixture_id": max_fixture,
             "home_manager_start": h_manager.loc[0, "start_date"],
             "away_manager_start": a_manager.loc[0, "start_date"],
-            "season": season
+            "season": season,
+            "home_odds": home_odds,
+            "draw_odds": draw_odds,
+            "away_odds": away_odds
         }
         output = pd.DataFrame()
         output = output.append(pd.DataFrame(info_dict, index=[0]))
@@ -228,7 +236,11 @@ class MatchResultXGBoost(XGBoostModel):
             home_id=int(kwargs.get('home_id')),
             away_id=int(kwargs.get('away_id')),
             date=str(pd.to_datetime(kwargs.get('date')).date()),
-            season=str(kwargs.get('season')))
+            season=str(kwargs.get('season')),
+            home_odds=float(kwargs.get('home_odds')),
+            draw_odds=float(kwargs.get('draw_odds')),
+            away_odds=float(kwargs.get('away_odds'))
+        )
         # Predict using the predict method of the parent class
         X, _ = self.get_data(info)
         X[self.model_features] = self.preprocess(X[self.model_features])
@@ -252,4 +264,4 @@ class MatchResultXGBoost(XGBoostModel):
 
 
 if __name__ == '__main__':
-    model = MatchResultXGBoost(save_trained_model=True, upload_historic_predictions=True, problem_name='match-predict-ha-features')
+    model = MatchResultXGBoost(save_trained_model=True, upload_historic_predictions=True, problem_name='match-predict-form-weight')

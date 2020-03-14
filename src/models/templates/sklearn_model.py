@@ -1,8 +1,11 @@
 import numpy as np
 import pandas as pd
+import os
+import joblib
 
 from sklearn.model_selection import train_test_split, GridSearchCV, KFold
 
+from configuration import project_dir
 from src.utils.base_model import time_function, get_logger
 from src.models.templates.base_model import BaseModel
 
@@ -10,7 +13,7 @@ logger = get_logger()
 
 
 class SKLearnModel(BaseModel):
-    """Anything that can be used by any SKLearrn model goes in this class"""
+    """Anything that can be used by any SKLearn model goes in this class"""
     def __init__(self,
                  test_mode=False,
                  model_object=None,
@@ -86,6 +89,8 @@ class SKLearnModel(BaseModel):
                 lambda x: 1 if x['pred'] == x['actual'] else 0, axis=1)
             # Save model predictions to the class
             self.model_predictions = model_predictions
+            # Save training data used to train the model
+            self.training_data = X
             # Assess the model performance using the first performance metric
             main_performance_metric = self.performance_metrics[0].__name__
             performance = self.performance_metrics[0](actuals, preds)
@@ -100,6 +105,11 @@ class SKLearnModel(BaseModel):
             logger.info('Training finished. {}: {}'.format(
                 str(main_performance_metric),
                 str(self.performance.get(main_performance_metric))))
+        # Save the data used to train the model
+        data_save_dir = os.path.join(project_dir, 'data', 'training_data', self.model_id)
+        with open(data_save_dir, 'wb') as f_out:
+            joblib.dump(self.training_data, f_out)
+        self.training_data.to_csv()
         # Save the trained model, if requested
         if self.save_trained_model and not self.test_mode:
             self.save_model()

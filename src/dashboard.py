@@ -9,7 +9,10 @@ import dash_table
 import numpy as np
 import logging
 import plotly.graph_objects as go
+import os
+import joblib
 
+from configuration import project_dir
 from src.utils.base_model import get_logger
 
 logger = get_logger(log_name='dashboard')
@@ -30,6 +33,9 @@ for i in range(10):
         'home_id': data.get('home_id').get(str(i)),
         'away_team': data.get('away_name').get(str(i)),
         'away_id': data.get('away_id').get(str(i)),
+        'home_odds': data.get('home_odds').get(str(i)),
+        'draw_odds': data.get('draw_odds').get(str(i)),
+        'away_odds': data.get('away_odds').get(str(i))
      }, index=[i]))
 
 fixture_list = fixture_list.drop_duplicates()
@@ -38,13 +44,16 @@ pl_teams = [list(fixture_list['home_id']) + list(fixture_list['away_id'])]
 predictions = pd.DataFrame(columns=['H', 'D', 'A'])
 for i in range(len(fixture_list)):
     print(i)
-    input = fixture_list.loc[i, ['kickoff_time', 'home_id', 'away_id']]
+    input = fixture_list.loc[i, ['kickoff_time', 'home_id', 'away_id', 'home_odds', 'draw_odds', 'away_odds']]
     print(input)
     input_dict = {
         "date": str(input['kickoff_time']),
         "home_id": str(input['home_id']),
         "away_id": str(input['away_id']),
         "season": "19/20",
+        "home_odds": str(input['home_odds']),
+        "draw_odds": str(input['draw_odds']),
+        "away_odds": str(input['away_odds'])
     }
     response = requests.post("http://127.0.0.1:12345/predict", json=input_dict).json()
     # Convert the probabilities back to floats
@@ -84,11 +93,19 @@ historic_df['year'] = historic_df['date'].apply(lambda x: get_year(x))
 historic_df['week_num'] = historic_df.apply(
     lambda x: str(x['year']) + str(round(x['rounded_fixture_id'])).zfill(2), axis=1)
 
+historic_df['date'] = pd.to_datetime(historic_df['date'])
 historic_df_all = historic_df
 all_model_ids = historic_df_all['model_id'].unique()
+
+training_data_dir = os.path.join(project_dir, 'data', 'training_data')
+for id in all_model_ids:
+    df = joblib.load(os.path.join(training_data_dir, id))
+    historic_df_all = pd.merge(historic_df_all, df, on=['home_team', 'away_team', 'date', 'season', 'fixture_id'])
+
 response = requests.get("http://127.0.0.1:12345/latest_model_id").json()
 model_id = response.get('model_id')
 historic_df = historic_df[historic_df['model_id'] == model_id]
+
 
 team_df = historic_df[historic_df['season'] == season]
 home_team_perf = team_df.groupby('home_team')['correct'].mean().round(2)
@@ -125,6 +142,9 @@ team_profit_perf = None
 # ToDo: Add Game week, see if it improves the model accuracy on certain weeks
 # ToDo: Add squad value as a feature (probably from wikipedia)
 # ToDo: Add the latest bookmaker odds to latest_preds
+
+# ToDo: Save training data each time a model is trained
+# ToDo: Load training data and join if onto historic_df_all
 
 historic_df_all['home_form'] = historic_df_all['avg_goals_for_home'] - historic_df_all['avg_goals_against_home']
 historic_df_all['away_form'] = historic_df_all['avg_goals_for_away'] - historic_df_all['avg_goals_against_away']

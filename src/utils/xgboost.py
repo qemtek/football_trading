@@ -49,7 +49,7 @@ def get_features(row, index, team_data, identifiers, window_length=8):
         window_length=window_length,
         index=index)
     # Combine identifiers, home features and away features
-    odds_cols = ['b365_home_odds', 'b365_draw_odds', 'b365_away_odds']
+    odds_cols = ['home_odds', 'draw_odds', 'away_odds']
     row_cols = identifiers + odds_cols
     features = pd.concat([
         pd.DataFrame(row[row_cols].to_dict(), columns=row_cols, index=[index]),
@@ -147,11 +147,11 @@ def get_manager_features(df):
 def get_profit(x):
     if x['pred'] == x['actual']:
         if x['actual'] == 'H':
-            return x['b365_home_odds'] - 1
+            return x['home_odds'] - 1
         elif x['actual'] == 'D':
-            return x['b365_draw_odds'] - 1
+            return x['draw_odds'] - 1
         elif x['actual'] == 'A':
-            return x['b365_away_odds'] - 1
+            return x['away_odds'] - 1
         else:
             raise Exception('full_time_result is not H, D or A.')
     else:
@@ -162,11 +162,11 @@ def get_profit2(x):
     if x['pred'] == x['actual']:
         if x['actual'] == 1:
             if x['model1_actual'] == 'H':
-                return x['b365_home_odds'] - 1
+                return x['home_odds'] - 1
             elif x['model1_actual'] == 'D':
-                return x['b365_draw_odds'] - 1
+                return x['draw_odds'] - 1
             elif x['model1_actual'] == 'A':
-                return x['b365_away_odds'] - 1
+                return x['away_odds'] - 1
             else:
                 raise Exception('full_time_result is not H, D or A.')
         elif x['actual'] == 0:
@@ -183,20 +183,20 @@ def get_profit2(x):
 
 
 def get_profit_betting_on_fav(x):
-    min_val = min(x['b365_home_odds'],  x['b365_draw_odds'],  x['b365_away_odds'])
+    min_val = min(x['home_odds'],  x['draw_odds'],  x['away_odds'])
     if x['actual'] == 'H':
-        if x['b365_home_odds'] == min_val:
-            return x['b365_home_odds']-1
+        if x['home_odds'] == min_val:
+            return x['home_odds']-1
         else:
             return -1
     elif x['actual'] == 'D':
-        if x['b365_draw_odds'] == min_val:
-            return x['b365_draw_odds']-1
+        if x['draw_odds'] == min_val:
+            return x['draw_odds']-1
         else:
             return -1
     elif x['actual'] == 'A':
-        if x['b365_away_odds'] == min_val:
-            return x['b365_away_odds']-1
+        if x['away_odds'] == min_val:
+            return x['away_odds']-1
         else:
             return -1
     else:

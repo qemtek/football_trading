@@ -109,3 +109,17 @@ def fetch_alternative_name(team_name):
         return 'Wolves'
     else:
         return ''
+
+
+def fetch_alternative_name2(team_name):
+    """If a team name cannot be found, use this to try an alternative name"""
+    if team_name == 'Manchester United':
+        return 'Man Utd'
+    elif team_name == 'Tottenham Hotspur':
+        return 'Spurs'
+    elif team_name == 'Sheffield United':
+        return 'Sheff Utd'
+    elif team_name == 'Wolverhampton Wonderers':
+        return 'Wolverhampton'
+    else:
+        return ''
