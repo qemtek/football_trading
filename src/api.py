@@ -1,11 +1,14 @@
 from flask import Flask, request, jsonify
 import sys
 import traceback
+import os
+import pandas as pd
 
 from src.models.MatchResultXGBoostModel import MatchResultXGBoost
 from src.utils.api import get_upcoming_games
 from src.update_tables import update_tables
 from src.utils.db import connect_to_db, run_query
+from configuration import project_dir
 
 from src.utils.base_model import get_logger
 
@@ -49,10 +52,15 @@ def historic_predictions():
 @app.route('/all_historic_predictions', methods=['GET'])
 def all_historic_predictions():
     try:
+        # Get the names of models we have
+        model_names = os.listdir(os.path.join(project_dir, 'data', 'models'))
         conn = connect_to_db()
         predictions = run_query('select * from historic_predictions')
+        new_predictions = pd.DataFrame()
+        for model in model_names:
+            new_predictions = new_predictions.append(predictions[predictions['model_id'] == model.split('.')[0]])
         conn.close()
-        return predictions.to_json()
+        return new_predictions.to_json()
     except:
         return jsonify({'trace': traceback.format_exc()})
 
