@@ -28,7 +28,7 @@ class MatchResultXGBoost(XGBoostModel):
             load_model_date=load_model_date,
             problem_name=problem_name
         )
-        self.apply_sample_weight=False
+        self.apply_sample_weight = False
         self.upload_historic_predictions = upload_historic_predictions
         # Initial model parameters (without tuning)
         self.params = {'n_estimators': 100}
@@ -48,6 +48,8 @@ class MatchResultXGBoost(XGBoostModel):
         self.model_features = [
             'avg_goals_for_home',
             'avg_goals_against_home',
+            'avg_goals_for_ha_home',
+            'avg_goals_against_ha_home',
             'sd_goals_for_home',
             'sd_goals_against_home',
             'avg_shots_for_home',
@@ -55,8 +57,7 @@ class MatchResultXGBoost(XGBoostModel):
             'sd_shots_for_home',
             'sd_shots_against_home',
             'avg_yellow_cards_home',
-            #'avg_red_cards_home',
-            'b365_win_odds_home',
+            'avg_red_cards_home',
             'avg_perf_vs_bm_home',
             'manager_new_home',
             'manager_age_home',
@@ -67,6 +68,8 @@ class MatchResultXGBoost(XGBoostModel):
             'home_advantage_avg_home',
             'avg_goals_for_away',
             'avg_goals_against_away',
+            'avg_goals_for_ha_away',
+            'avg_goals_against_ha_away',
             'sd_goals_for_away',
             'sd_goals_against_away',
             'avg_shots_for_away',
@@ -74,8 +77,7 @@ class MatchResultXGBoost(XGBoostModel):
             'sd_shots_for_away',
             'sd_shots_against_away',
             'avg_yellow_cards_away',
-            #'avg_red_cards_away',
-            'b365_win_odds_away',
+            'avg_red_cards_away',
             'avg_perf_vs_bm_away',
             'manager_new_away',
             'manager_age_away',
@@ -83,12 +85,14 @@ class MatchResultXGBoost(XGBoostModel):
             'draw_rate_away',
             'loss_rate_away',
             'home_advantage_sum_away',
-            'home_advantage_avg_away'
+            'home_advantage_avg_away',
+            'b365_home_odds',
+            'b365_draw_odds',
+            'b365_away_odds'
         ]
         self.training_data_query = \
             """select t1.*, m_h.manager home_manager, m_h.start_date home_manager_start, 
-            m_a.manager away_manager, m_a.start_date away_manager_start,
-             b365_home_odds, b365_draw_odds, b365_away_odds 
+            m_a.manager away_manager, m_a.start_date away_manager_start
             from main_fixtures t1 
             left join managers m_h 
             on t1.home_id = m_h.team_id 
@@ -100,13 +104,26 @@ class MatchResultXGBoost(XGBoostModel):
             or t1.date > m_a.start_date and m_a.end_date is NULL) 
             where t1.date > '2013-08-01'"""
 
+        def apply_profit_weight(x):
+            if x['target'] == 'H':
+                return x['b365_home_odds'] - 1
+            elif x['target'] == 'D':
+                return x['b365_draw_odds'] - 1
+            elif x['target'] == 'A':
+                return x['b365_away_odds'] - 1
+            else:
+                raise Exception('Error in apply_profit_weight()')
+
         # Train a model if one was not loaded
         if self.trained_model is None:
             logger.info("Training a new model.")
             X, y = self.get_training_data()
             X[self.model_features] = self.preprocess(X[self.model_features])
             if self.apply_sample_weight:
-                sample_weight = np.array(abs(X['avg_goals_for_home'] - ['avg_goals_for_home']))
+                # sample_weight = np.array(abs(X['avg_goals_for_home'] - X['avg_goals_for_away']))
+                td = X
+                td['target'] = y
+                sample_weight = np.array(td.apply(lambda x: apply_profit_weight(x), axis=1))
             else:
                 sample_weight = np.ones(len(X))
             self.optimise_hyperparams(X[self.model_features], y, param_grid=self.param_grid)
@@ -118,8 +135,10 @@ class MatchResultXGBoost(XGBoostModel):
             self.model_predictions['profit_bof'] = self.model_predictions.apply(
                 lambda x: get_profit_betting_on_fav(x), axis=1)
             if upload_historic_predictions:
+                upload_cols = ['fixture_id', 'home_team', 'away_team', 'season', 'date',
+                               'pred', 'actual', 'profit', 'profit_bof']
                 upload_to_table(
-                    self.model_predictions,
+                    df=self.model_predictions[upload_cols],
                     table_name='historic_predictions',
                     model_id=self.model_id)
 
@@ -141,7 +160,11 @@ class MatchResultXGBoost(XGBoostModel):
         df = df[(df['fixture_id'] > self.window_length * 10) & (df['fixture_id'] < 370)]
         # Filter out games that had red cards
         # ToDo: Test whether removing red card games is beneficial
-        df = df[(df['home_red_cards'] == 0) & (df['away_red_cards'] == 0)]
+        # Remove red cards (this will fail if we are predicting instead of training)
+        # try:
+        #     df = df[(df['home_red_cards'] == 0) & (df['away_red_cards'] == 0)]
+        # except KeyError:
+        #     pass
         identifiers = ['fixture_id', 'date', 'home_team', 'home_id',
                        'away_team', 'away_id', 'season']
         # If in test mode, only calculate the first 100 rows
@@ -229,4 +252,4 @@ class MatchResultXGBoost(XGBoostModel):
 
 
 if __name__ == '__main__':
-    model = MatchResultXGBoost(save_trained_model=True, upload_historic_predictions=True, problem_name='match-predict-no-reds')
+    model = MatchResultXGBoost(save_trained_model=True, upload_historic_predictions=True, problem_name='match-predict-ha-features')

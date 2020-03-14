@@ -5,4 +5,5 @@ src/.DS_STORE
 data/.DS_STORE
 logs/*
 *.pyc
-configuration.py
+configuration_private.py
+Certs/*

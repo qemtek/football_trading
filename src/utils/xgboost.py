@@ -66,6 +66,7 @@ def get_features_ha(row, index, team_data, window_length=8, type='home'):
     df_filtered = team_data[(team_data['team_id'] == team_id) &
                       (team_data['season'] == season) &
                       (team_data['fixture_id'] < fixture_id)]
+
     # Get the last 8 games
     df_filtered = df_filtered.sort_values('date').tail(window_length)
     # Create aggregated features
@@ -73,18 +74,19 @@ def get_features_ha(row, index, team_data, window_length=8, type='home'):
     df_output.loc[index, 'avg_goals_for_' + type] = np.mean(df_filtered['goals_for'])
     df_output.loc[index, 'avg_goals_against_' + type] = np.mean(
         df_filtered['goals_against'])
+    df_output.loc[index, 'avg_goals_for_ha_' + type] = np.mean(
+        df_filtered[df_filtered['is_home'] == (1 if type == 'home' else 0)]['goals_for'])
+    df_output.loc[index, 'avg_goals_against_ha_' + type] = np.mean(
+        df_filtered[df_filtered['is_home'] == (1 if type == 'home' else 0)]['goals_against'])
     df_output.loc[index, 'sd_goals_for_' + type] = np.std(df_filtered['goals_for'])
     df_output.loc[index, 'sd_goals_against_' + type] = np.std(df_filtered['goals_against'])
     df_output.loc[index, 'avg_shots_for_' + type] = np.mean(df_filtered['shots_for'])
-    df_output.loc[index, 'avg_shots_against_' + type] = np.mean(
-        df_filtered['shots_against'])
+    df_output.loc[index, 'avg_shots_against_' + type] = np.mean(df_filtered['shots_against'])
     df_output.loc[index, 'sd_shots_for_' + type] = np.std(df_filtered['shots_for'])
     df_output.loc[index, 'sd_shots_against_' + type] = np.std(df_filtered['shots_against'])
     df_output.loc[index, 'avg_yellow_cards_' + type] = np.mean(df_filtered['yellow_cards'])
     df_output.loc[index, 'avg_red_cards_' + type] = np.mean(df_filtered['red_cards'])
-    df_output.loc[index, 'b365_win_odds_' + type] = np.mean(df_filtered['b365_win_odds'])
-    df_output.loc[index, 'avg_perf_vs_bm_' + type] = get_performance_vs_bookmaker(
-        df_filtered)
+    df_output.loc[index, 'avg_perf_vs_bm_' + type] = get_performance_vs_bookmaker(df_filtered)
     df_output.loc[index, 'manager_new_' + type] = row[type + '_manager_new']
     df_output.loc[index, 'manager_age_' + type] = row[type + '_manager_age']
     df_output.loc[index, 'win_rate_' + type] = np.mean(
@@ -247,7 +249,7 @@ def upload_to_table(df, table_name, model_id=None):
     # Add model ID so we can compare model performances
     if model_id is not None:
         df['model_id'] = model_id
-    df.to_sql(table_name, con=conn, if_exists='append')
+    df.to_sql(table_name, con=conn, if_exists='append', index=False)
     conn.close()
 
 
