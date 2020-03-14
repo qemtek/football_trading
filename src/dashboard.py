@@ -98,9 +98,11 @@ historic_df_all = historic_df
 all_model_ids = historic_df_all['model_id'].unique()
 
 training_data_dir = os.path.join(project_dir, 'data', 'training_data')
+historic_training_data = pd.DataFrame()
 for id in all_model_ids:
-    df = joblib.load(os.path.join(training_data_dir, id))
-    historic_df_all = pd.merge(historic_df_all, df, on=['home_team', 'away_team', 'date', 'season', 'fixture_id'])
+    df = joblib.load(os.path.join(training_data_dir, id + '.joblib'))
+    historic_training_data = historic_training_data.append(df)
+historic_df_all = pd.merge(historic_df_all, historic_training_data, on=['home_team', 'away_team', 'date', 'season', 'fixture_id'])
 
 response = requests.get("http://127.0.0.1:12345/latest_model_id").json()
 model_id = response.get('model_id')
@@ -121,8 +123,12 @@ date_perf = pd.DataFrame(historic_df_all.groupby(['season', 'model_id'])['date']
 time_perf = pd.merge(date_perf, time_perf, on=['season', 'model_id'])
 time_perf.columns = ['Season', 'Model ID', 'Date', 'Accuracy']
 
-profit_perf = pd.DataFrame(historic_df_all.sort_values('date').groupby(
-    ['date', 'model_id'])['profit'].sum().cumsum()).reset_index()
+profit_perf = pd.DataFrame()
+for model in all_model_ids:
+    df = pd.DataFrame(historic_df_all[historic_df_all['model_id'] == model])
+    df = df.sort_values('date').reset_index()
+    profit_perf = profit_perf.append(
+        df.groupby(['date', 'model_id'])['profit'].sum().cumsum().reset_index())
 profit_perf.columns = ['Date', 'Model ID', 'Profit']
 
 profit_perf_bof = pd.DataFrame(historic_df.sort_values('date').groupby(

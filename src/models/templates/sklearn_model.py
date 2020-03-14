@@ -56,7 +56,8 @@ class SKLearnModel(BaseModel):
         # Compare performance
         if clf2_performance > clf_performance:
             logger.info("Hyper-parameter optimisation improves on previous model, "
-                        "saving hyperparameters.")
+                        "saving hyper-parameters.")
+            logger.info("New hyper-parameters: {}".format(str(clf.best_params_)))
             self.params = clf.best_params_
 
     @time_function(logger=logger)
@@ -106,7 +107,7 @@ class SKLearnModel(BaseModel):
                 str(main_performance_metric),
                 str(self.performance.get(main_performance_metric))))
         # Save the data used to train the model
-        data_save_dir = os.path.join(project_dir, 'data', 'training_data', self.model_id)
+        data_save_dir = os.path.join(project_dir, 'data', 'training_data', self.model_id + '.joblib')
         with open(data_save_dir, 'wb') as f_out:
             joblib.dump(self.training_data, f_out)
         self.training_data.to_csv()

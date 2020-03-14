@@ -28,7 +28,7 @@ class MatchResultXGBoost(XGBoostModel):
             load_model_date=load_model_date,
             problem_name=problem_name
         )
-        self.apply_sample_weight = True
+        self.apply_sample_weight = False
         self.upload_historic_predictions = upload_historic_predictions
         # Initial model parameters (without tuning)
         self.params = {'n_estimators': 100}
@@ -120,10 +120,10 @@ class MatchResultXGBoost(XGBoostModel):
             X, y = self.get_training_data()
             X[self.model_features] = self.preprocess(X[self.model_features])
             if self.apply_sample_weight:
-                sample_weight = np.array(abs(X['avg_goals_for_home'] - X['avg_goals_for_away']))
-                # td = X
-                # td['target'] = y
-                # sample_weight = np.array(td.apply(lambda x: apply_profit_weight(x), axis=1))
+                #sample_weight = np.array(1/abs(X['avg_goals_for_home'] - X['avg_goals_for_away']))
+                td = X
+                td['target'] = y
+                sample_weight = np.array(td.apply(lambda x: apply_profit_weight(x), axis=1))
             else:
                 sample_weight = np.ones(len(X))
             self.optimise_hyperparams(X[self.model_features], y, param_grid=self.param_grid)
@@ -264,4 +264,7 @@ class MatchResultXGBoost(XGBoostModel):
 
 
 if __name__ == '__main__':
-    model = MatchResultXGBoost(save_trained_model=True, upload_historic_predictions=True, problem_name='match-predict-form-weight')
+    model = MatchResultXGBoost(
+        save_trained_model=True,
+        upload_historic_predictions=True,
+        problem_name='match-predict-base2')
