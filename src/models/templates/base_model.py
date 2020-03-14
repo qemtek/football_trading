@@ -33,6 +33,9 @@ class BaseModel:
         self.creation_date = str(dt.datetime.today().date())
         # The name of the model you want to use
         self.model_type = self.model_object.__name__
+        # A unique identifier for this model
+        self.model_id = "{}_{}_{}_{}".format(
+            self.problem_name, self.model_type, self.creation_date, str(abs(hash(dt.datetime.today()))))
         # Store the trained model here
         self.trained_model = self.load_model(load_model_date) if load_trained_model else None
         # The name of all features in the model, specified as a list
@@ -41,9 +44,6 @@ class BaseModel:
         self.params = None
         # A place to store predictions made by the model
         self.model_predictions = None
-        # A unique identifier for this model
-        self.model_id = "{}_{}_{}".format(
-            self.model_type, self.creation_date, str(abs(hash(dt.datetime.today()))))
         # What name to give the problem the model is trying to solve
         self.problem_name = problem_name
         # A list of performance metrics (pass the functions, they must
@@ -87,9 +87,8 @@ class BaseModel:
         else:
             # Save the model ID inside the model object (so we know which
             # model made which predictions in the DB)
-            self.trained_model.model_id = self.problem_name + '_' + self.model_id
+            self.trained_model.model_id = self.model_id
             self.trained_model.model_features = self.model_features
-            # ToDo: Check whether model features get stored in the model
             file_name = self.model_id + '.joblib'
             save_dir = os.path.join(model_dir, file_name)
             logger.info("Saving model to {} with joblib.".format(save_dir))
@@ -106,6 +105,7 @@ class BaseModel:
             # Set the attributes of the model to those of the class
             self.model_id = model.model_id
             get_params = getattr(self, "get_params", None)
+            self.model_features = model.model_features
             if callable(get_params):
                 self.params = model.get_params()
             else:
