@@ -7,6 +7,7 @@ from src.data_retrieval.create_team_fixtures_table import create_team_fixtures
 from src.data_retrieval.load_manager_data_from_wiki import get_manager_data
 from src.data_retrieval.load_player_data_from_FPL import get_player_data
 from src.data_retrieval.load_PL_teams_from_wiki import get_teams_from_wiki
+from src.data_retrieval.get_latest_fixtures_from_bfex import get_latest_fixtures
 
 logger = logging.getLogger('API')
 
@@ -30,6 +31,8 @@ def update_tables():
     # Get upcoming fixtures from FPL page
     asyncio.run(get_fpl_fixtures())
     logger.info('get_fpl_fixtures complete [6/6]')
+    # Get latest odds from the Betfair Exchange API
+    get_latest_fixtures()
 
 
 if __name__ == '__main__':
