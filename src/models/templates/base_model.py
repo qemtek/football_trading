@@ -7,6 +7,7 @@ from sklearn.metrics import balanced_accuracy_score, accuracy_score
 from configuration import model_dir
 from src.utils.base_model import load_model, time_function, get_logger
 from src.utils.db import run_query
+from src.utils.general import safe_open
 
 logger = get_logger()
 
@@ -97,7 +98,8 @@ class BaseModel:
             file_name = self.model_id + '.joblib'
             save_dir = os.path.join(model_dir, file_name)
             logger.info("Saving model to {} with joblib.".format(save_dir))
-            joblib.dump(self.trained_model, open(save_dir, "wb"))
+            with safe_open(save_dir, "wb") as f_out:
+                joblib.dump(self.trained_model, f_out)
 
     @time_function(logger=logger)
     def load_model(self, date=None):

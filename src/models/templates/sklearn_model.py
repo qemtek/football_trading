@@ -7,6 +7,7 @@ from sklearn.model_selection import GridSearchCV, KFold
 
 from configuration import project_dir
 from src.utils.base_model import time_function, get_logger
+from src.utils.general import safe_open
 from src.models.templates.base_model import BaseModel
 
 logger = get_logger()
@@ -54,9 +55,10 @@ class SKLearnModel(BaseModel):
         labels = list(np.sort(np.unique(y)))
         model_predictions = pd.DataFrame()
         for train_index, test_index in kf.split(X):
-            model = self.model_object(params=self.params).fit(
+            model = self.model_object(**self.params).fit(
                 X=X.iloc[train_index, :][self.model_features],
-                y=X[train_index], sample_weight=sample_weight[train_index])
+                y=y[train_index],
+                sample_weight=sample_weight[train_index])
             preds = model.predict(X.iloc[test_index, :][self.model_features])
             preds_proba = model.predict_proba(X.iloc[test_index, :][self.model_features])
             actuals = y[test_index]
@@ -80,7 +82,7 @@ class SKLearnModel(BaseModel):
             self.model_predictions = model_predictions
             # Save training data used to train/evaluate the model
             self.training_data = {
-                "X_train": X[train_index, :],
+                "X_train": X.iloc[train_index, :],
                 "y_train": y[train_index],
                 "X_test": X.iloc[test_index, :],
                 "y_test": y[test_index]
@@ -102,6 +104,5 @@ class SKLearnModel(BaseModel):
         # Save the data used to train the model
         data_save_dir = os.path.join(
             project_dir, 'data', 'training_data', self.model_id + '.joblib')
-        with open(data_save_dir, 'wb') as f_out:
+        with safe_open(data_save_dir, 'wb') as f_out:
             joblib.dump(self.training_data, f_out)
-        self.training_data.to_csv()

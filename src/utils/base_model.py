@@ -4,9 +4,9 @@ import os
 import time
 from functools import wraps
 import pandas as pd
-import sys
 
 from configuration import available_models, model_dir, project_dir
+from src.utils.general import safe_open
 
 
 # Check if the model type is an accepted one
@@ -38,8 +38,8 @@ def load_model(model_type, date=None, logger=None, keyword=None):
         models_filtered.sort(reverse=True)
         model_name = models_filtered[0]
         logger.info("load_model: Loading model with filename: {}".format(model_name))
-        model = joblib.load(open(os.path.join(model_dir, model_name), "rb"))
-        return model
+        with safe_open(os.path.join(model_dir, model_name), "rb") as f_in:
+            return joblib.load(f_in)
     else:
         return None
 
