@@ -253,5 +253,16 @@ def upload_to_table(df, table_name, model_id=None):
     conn.close()
 
 
+def apply_profit_weight(x):
+    if x['target'] == 'H':
+        return x['home_odds'] - 1
+    elif x['target'] == 'D':
+        return x['draw_odds'] - 1
+    elif x['target'] == 'A':
+        return x['away_odds'] - 1
+    else:
+        raise Exception('Error in apply_profit_weight()')
+
+
 # ToDo: Player features
 # Missing key players (top 3)
