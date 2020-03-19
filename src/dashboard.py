@@ -101,8 +101,12 @@ training_data_dir = os.path.join(project_dir, 'data', 'training_data')
 historic_training_data = pd.DataFrame()
 for id in all_model_ids:
     df = joblib.load(os.path.join(training_data_dir, id + '.joblib'))
-    historic_training_data = historic_training_data.append(df)
-historic_df_all = pd.merge(historic_df_all, historic_training_data, on=['home_team', 'away_team', 'date', 'season', 'fixture_id'])
+    try:
+        historic_training_data = historic_training_data.append(df)
+    except TypeError:
+        historic_training_data = historic_training_data.append(df.get('X_train'))
+historic_df_all = pd.merge(historic_df_all, historic_training_data,
+                           on=['home_team', 'away_team', 'date', 'season', 'fixture_id'])
 
 response = requests.get("http://127.0.0.1:12345/latest_model_id").json()
 model_id = response.get('model_id')

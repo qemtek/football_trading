@@ -86,5 +86,5 @@ if __name__ == '__main__':
         port = int(sys.argv[1])  # This is for a command-line input
     except:
         port = 12345  # If you don't provide any port the port will be set to 12345
-    model = MatchResultXGBoost(load_trained_model=True, problem_name='match-predict')
+    model = MatchResultXGBoost(load_trained_model=True, problem_name='match-predict-base')
     app.run(port=port, debug=False)
