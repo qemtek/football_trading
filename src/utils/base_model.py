@@ -29,20 +29,19 @@ def load_model(model_type, date=None, logger=None, keyword=None):
     models_filtered = [model for model in models if model.find(model_type) != -1]
     # Filter for keyword
     if keyword is not None:
-        models_filtered = [model for model in models if model.find(keyword) != -1]
+        models_filtered = [model for model in models if model.split('_')[0] == keyword]
     # Filter for the date (if requested)
     if date is not None:
         models_filtered = [model for model in models if model.find(date) != -1]
     # Order models by date and pick the latest one
-    try:
+    if len(models_filtered) > 0:
         models_filtered.sort(reverse=True)
         model_name = models_filtered[0]
         logger.info("load_model: Loading model with filename: {}".format(model_name))
         model = joblib.load(open(os.path.join(model_dir, model_name), "rb"))
         return model
-    except Exception as e:
-        logger.error("Chosen model could not be loaded, returning None. Error message: {}".format(e))
-        sys.exit()
+    else:
+        return None
 
 
 def get_logger(log_name='model'):

@@ -6,7 +6,8 @@ from src.utils.base_model import get_logger, suspend_logging
 from src.utils.base_model import time_function
 from src.utils.db import run_query, connect_to_db
 from src.utils.xgboost import get_features, get_manager_features, \
-    get_feature_data, get_manager, get_profit, upload_to_table, get_profit_betting_on_fav
+    get_feature_data, get_manager, get_profit, upload_to_table, \
+    get_profit_betting_on_fav, apply_profit_weight
 from src.utils.team_id_functions import fetch_name
 
 logger = get_logger()
@@ -20,15 +21,18 @@ class MatchResultXGBoost(XGBoostModel):
                  load_model_date=None,
                  save_trained_model=True,
                  upload_historic_predictions=None,
+                 apply_sample_weight=False,
+                 compare_models=False,
                  problem_name='match_predict'):
-        super().__init__(
-            test_mode=test_mode,
-            save_trained_model=save_trained_model,
-            load_trained_model=load_trained_model,
-            load_model_date=load_model_date,
-            problem_name=problem_name
-        )
-        self.apply_sample_weight = False
+        super().__init__(test_mode=test_mode,
+                         save_trained_model=save_trained_model,
+                         load_trained_model=load_trained_model,
+                         load_model_date=load_model_date,
+                         compare_models=compare_models,
+                         problem_name=problem_name)
+        # Random seed for reproducibility
+        self.random_seed = 42
+        self.apply_sample_weight = apply_sample_weight
         self.upload_historic_predictions = upload_historic_predictions
         # Initial model parameters (without tuning)
         self.params = {'n_estimators': 100}
@@ -103,22 +107,12 @@ class MatchResultXGBoost(XGBoostModel):
             and (t1.date between m_a.start_date and date(m_a.end_date, '+1 day') 
             or t1.date > m_a.start_date and m_a.end_date is NULL) 
             where t1.date > '2013-08-01'"""
-
-        def apply_profit_weight(x):
-            if x['target'] == 'H':
-                return x['home_odds'] - 1
-            elif x['target'] == 'D':
-                return x['draw_odds'] - 1
-            elif x['target'] == 'A':
-                return x['away_odds'] - 1
-            else:
-                raise Exception('Error in apply_profit_weight()')
-
         # Train a model if one was not loaded
         if self.trained_model is None:
             logger.info("Training a new model.")
             X, y = self.get_training_data()
             X[self.model_features] = self.preprocess(X[self.model_features])
+            # Apply sample weights (if requsted)
             if self.apply_sample_weight:
                 #sample_weight = np.array(1/abs(X['avg_goals_for_home'] - X['avg_goals_for_away']))
                 td = X
@@ -126,21 +120,30 @@ class MatchResultXGBoost(XGBoostModel):
                 sample_weight = np.array(td.apply(lambda x: apply_profit_weight(x), axis=1))
             else:
                 sample_weight = np.ones(len(X))
-            self.optimise_hyperparams(X[self.model_features], y, param_grid=self.param_grid)
+            # Optimise hyper-parameters using a grid search
+            self.optimise_hyperparams(X=X, y=y, param_grid=self.param_grid)
+            # Train the model
             self.train_model(X=X, y=y, sample_weight=sample_weight)
-            # Add profit made if we bet on the game
-            self.model_predictions['profit'] = self.model_predictions.apply(
-                lambda x: get_profit(x), axis=1)
-            # Add profit made betting on the favourite
-            self.model_predictions['profit_bof'] = self.model_predictions.apply(
-                lambda x: get_profit_betting_on_fav(x), axis=1)
-            if upload_historic_predictions:
-                upload_cols = ['fixture_id', 'home_team', 'away_team', 'season', 'date',
-                               'pred', 'actual', 'profit', 'profit_bof']
-                upload_to_table(
-                    df=self.model_predictions[upload_cols],
-                    table_name='historic_predictions',
-                    model_id=self.model_id)
+            # Compare model performance vs the latest model, save model data
+            # if the new model has a better performance
+            use_model = True if not self.compare_models else self.compare_latest_model()
+            if use_model:
+                # Save the trained model, if requested
+                if self.save_trained_model and not self.test_mode:
+                    self.save_model()
+                # Add profit made if we bet on the game
+                self.model_predictions['profit'] = self.model_predictions.apply(lambda x: get_profit(x), axis=1)
+                # Add profit made betting on the favourite
+                self.model_predictions['profit_bof'] = self.model_predictions.apply(
+                    lambda x: get_profit_betting_on_fav(x), axis=1)
+                # Upload predictions to the local db
+                if upload_historic_predictions:
+                    upload_cols = ['fixture_id', 'home_team', 'away_team', 'season',
+                                   'date', 'pred', 'actual', 'profit', 'profit_bof']
+                    upload_to_table(
+                        df=self.model_predictions[upload_cols],
+                        table_name='historic_predictions',
+                        model_id=self.model_id)
 
     @time_function(logger=logger)
     def get_training_data(self):
@@ -163,13 +166,6 @@ class MatchResultXGBoost(XGBoostModel):
         df2 = get_feature_data(self.min_training_data_date)
         # Filter out the first window_length and last game weeks from the data
         df = df[(df['fixture_id'] > self.window_length * 10) & (df['fixture_id'] < 370)]
-        # Filter out games that had red cards
-        # ToDo: Test whether removing red card games is beneficial
-        # Remove red cards (this will fail if we are predicting instead of training)
-        # try:
-        #     df = df[(df['home_red_cards'] == 0) & (df['away_red_cards'] == 0)]
-        # except KeyError:
-        #     pass
         identifiers = ['fixture_id', 'date', 'home_team', 'home_id',
                        'away_team', 'away_id', 'season']
         # If in test mode, only calculate the first 100 rows
@@ -267,4 +263,4 @@ if __name__ == '__main__':
     model = MatchResultXGBoost(
         save_trained_model=True,
         upload_historic_predictions=True,
-        problem_name='match-predict-base2')
+        problem_name='match-predict-base')

@@ -20,7 +20,7 @@ class BaseModel:
                  test_mode=False,
                  load_model_date=None,
                  problem_name=None,
-                 ):
+                 compare_models=True):
         # Store all arguments passed to __init__ inside the class,
         # so we know what they were later
         self.model_object = model_object
@@ -29,6 +29,7 @@ class BaseModel:
         self.test_mode = test_mode
         self.load_model_date = load_model_date
         self.problem_name = problem_name
+        self.compare_models = compare_models
         # The date this class was instantiated
         self.creation_date = str(dt.datetime.today().date())
         # The name of the model you want to use
@@ -38,6 +39,8 @@ class BaseModel:
             self.problem_name, self.model_type, self.creation_date, str(abs(hash(dt.datetime.today()))))
         # Store the trained model here
         self.trained_model = self.load_model(load_model_date) if load_trained_model else None
+        # Load previous best model
+        self.previous_model = self.load_model()
         # The name of all features in the model, specified as a list
         self.model_features = None
         # Model parameters
@@ -89,6 +92,8 @@ class BaseModel:
             # model made which predictions in the DB)
             self.trained_model.model_id = self.model_id
             self.trained_model.model_features = self.model_features
+            self.trained_model.performance_metrics = self.performance_metrics
+            self.trained_model.performance = self.performance
             file_name = self.model_id + '.joblib'
             save_dir = os.path.join(model_dir, file_name)
             logger.info("Saving model to {} with joblib.".format(save_dir))
@@ -112,3 +117,21 @@ class BaseModel:
                 logger.warning('The loaded model has no get_params method, '
                                'cannot load model parameters.')
             return model
+
+    @time_function(logger=logger)
+    def compare_latest_model(self):
+        main_performance_metric = self.performance_metrics[0].__name__
+        new_performance = self.performance.get(main_performance_metric)
+        old_performance = self.previous_model.performance.get(main_performance_metric)
+        if new_performance > old_performance:
+            logger.info('New model beats previous model. Replacing this model')
+            logger.info('{}: Previous Model: {}, New Model: {}'.format(
+                main_performance_metric, old_performance, new_performance
+            ))
+            return True
+        else:
+            logger.info('New model does not beat previous model.')
+            logger.info('{}: Previous Model: {}, New Model: {}'.format(
+                main_performance_metric, old_performance, new_performance
+            ))
+            return False

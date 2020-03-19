@@ -14,15 +14,15 @@ class XGBoostModel(SKLearnModel):
                  save_trained_model=True,
                  load_trained_model=False,
                  load_model_date=None,
+                 compare_models=False,
                  problem_name=None):
-        super().__init__(
-            test_mode=test_mode,
-            model_object=xgb.XGBClassifier,
-            save_trained_model=save_trained_model,
-            load_trained_model=load_trained_model,
-            load_model_date=load_model_date,
-            problem_name=problem_name
-        )
+        super().__init__(test_mode=test_mode,
+                         model_object=xgb.XGBClassifier,
+                         save_trained_model=save_trained_model,
+                         load_trained_model=load_trained_model,
+                         load_model_date=load_model_date,
+                         compare_models=compare_models,
+                         problem_name=problem_name)
         # Initial model parameters (without tuning)
         self.params = {'n_estimators': 100}
         # Define a grid for hyper-parameter tuning
