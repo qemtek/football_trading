@@ -111,10 +111,14 @@ class BaseModel:
         else:
             # Set the attributes of the model to those of the class
             self.model_id = model.model_id
-            get_params = getattr(self, "get_params", None)
-            self.model_features = model.model_features
-            if callable(get_params):
-                self.params = model.get_params()
+            if hasattr(model, 'params'):
+                self.params = model.params
+            if hasattr(model, 'model_features'):
+                self.model_features = model.model_features
+            if hasattr(model, 'performance_metrics'):
+                self.performance_metrics = model.performance_metrics
+            if hasattr(model, 'performance'):
+                self.performance = model.performance
             else:
                 logger.warning('The loaded model has no get_params method, '
                                'cannot load model parameters.')
