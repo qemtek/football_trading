@@ -1,5 +1,6 @@
 import xgboost as xgb
 import shap
+from sklearn.metrics import accuracy_score, balanced_accuracy_score, mean_squared_error, r2_score
 
 from src.models.templates.sklearn_model import SKLearnModel
 from src.utils.base_model import get_logger
@@ -15,14 +16,17 @@ class XGBoostModel(SKLearnModel):
                  load_trained_model=False,
                  load_model_date=None,
                  compare_models=False,
-                 problem_name=None):
+                 problem_name=None,
+                 is_classifier=True):
         super().__init__(test_mode=test_mode,
-                         model_object=xgb.XGBClassifier,
                          save_trained_model=save_trained_model,
                          load_trained_model=load_trained_model,
                          load_model_date=load_model_date,
                          compare_models=compare_models,
                          problem_name=problem_name)
+        self.model_object = xgb.XGBClassifier if is_classifier else xgb.XGBRegressor
+        self.performance_metrics = [accuracy_score, balanced_accuracy_score] \
+            if is_classifier else [mean_squared_error, r2_score]
         # Initial model parameters (without tuning)
         self.params = {'n_estimators': 100}
         # Define a grid for hyper-parameter tuning
