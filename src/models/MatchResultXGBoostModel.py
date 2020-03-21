@@ -20,7 +20,7 @@ class MatchResultXGBoost(XGBoostModel):
 
     def __init__(self, test_mode=False, load_trained_model=False, load_model_date=None,
                  save_trained_model=True, upload_historic_predictions=None, apply_sample_weight=False,
-                 compare_models=False, problem_name='match_predict'):
+                 compare_models=False, problem_name='match_predict', production_model=True):
         super().__init__(test_mode=test_mode, save_trained_model=save_trained_model,
                          load_trained_model=load_trained_model, load_model_date=load_model_date,
                          compare_models=compare_models,  problem_name=problem_name)
@@ -112,10 +112,12 @@ class MatchResultXGBoost(XGBoostModel):
             use_model = True if not self.compare_models else self.compare_latest_model()
             if use_model:
                 # Save the trained model, if requested
-                if self.save_trained_model and not self.test_mode:
-                    self.save_model()
+                save_to_production = True if not self.test_mode and production_model else False
+                if self.save_trained_model and not test_mode:
+                    self.save_model(save_to_production=save_to_production)
                 # Add profit made if we bet on the game
-                self.model_predictions['profit'] = self.model_predictions.apply(lambda x: get_profit(x), axis=1)
+                self.model_predictions['profit'] = self.model_predictions.apply(
+                    lambda x: get_profit(x), axis=1)
                 # Add profit made betting on the favourite
                 self.model_predictions['profit_bof'] = self.model_predictions.apply(
                     lambda x: get_profit_betting_on_fav(x), axis=1)
@@ -239,9 +241,8 @@ class MatchResultXGBoost(XGBoostModel):
     @time_function(logger=logger)
     def get_historic_predictions(self):
         """Get predictions on historic data for a particular model"""
-        df = run_query(
-            "select * from historic_predictions where "
-            "model_id = '{}'".format(self.model_id))
+        df = run_query(query="select * from historic_predictions where "
+                             "model_id = '{}'".format(self.model_id))
         return df
 
 

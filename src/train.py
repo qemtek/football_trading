@@ -9,6 +9,7 @@ def train():
     MatchResultXGBoost(
         upload_historic_predictions=True,
         problem_name='match-predict-base',
+        production_model=True,
         compare_models=True)
 
 

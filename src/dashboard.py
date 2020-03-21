@@ -1,4 +1,11 @@
-import requests
+# ToDo: Model performance after an unexpected loss
+# ToDo: Run t-tests to find out whether the accuracy on any of the weeks is significantly different
+# ToDo: Cluster the matchups, look for similar groups. Look at the accuracy of each cluster
+# ToDo: Add Game week, see if it improves the model accuracy on certain weeks
+# ToDo: Add squad value as a feature (probably from wikipedia)
+# ToDo: Add the latest bookmaker odds to latest_preds
+# ToDo: Load training data and join if onto historic_df_all
+
 import pandas as pd
 import dash
 from flask import Flask
@@ -7,57 +14,47 @@ import dash_core_components as dcc
 import dash_html_components as html
 import dash_table
 import numpy as np
-import logging
 import plotly.graph_objects as go
 import os
 import joblib
 
 from configuration import project_dir
 from src.utils.base_model import get_logger
+from src.utils.dashboard import (
+    get_form_dif_view, get_team_home_away_performance, get_performance_by_season,
+    get_cumulative_profit_view, get_cumulative_profit_from_bof)
+from src.utils.db import run_query, connect_to_db
 
 logger = get_logger(log_name='dashboard')
 
-#requests.post("http://127.0.0.1:12345/update")
-response = requests.get("http://127.0.0.1:12345/next_games")
-data = response.json()
+# Get the latest predictions
+latest_preds = run_query(query='select * from latest_predictions')
+# Get the names of models saved in the models directory
+models_dir = os.path.join(project_dir, 'data', 'models')
+model_names = os.listdir(models_dir)
+with connect_to_db() as conn:
+    predictions = run_query(query='select * from historic_predictions')
+historic_df_all = pd.DataFrame()
+for model in model_names:
+    historic_df_all = historic_df_all.append(predictions[predictions['model_id'] == model.split('.')[0]])
 
-    print(response)
-
-# Combine the latest fixtures and the predictions DataFrames()
-df_cols = ['kickoff_time', 'home_team', 'away_team', 'H', 'D', 'A']
-latest_preds = pd.concat([fixture_list, predictions], axis=1)[df_cols]
-# # Add odds for convenience
-# latest_preds['H_odds'] = round(1/latest_preds['H'], 2)
-# latest_preds['D_odds'] = round(1/latest_preds['D'], 2)
-# latest_preds['A_odds'] = round(1/latest_preds['A'], 2)
-
-# Get the models performance on past data
-response = requests.get("http://127.0.0.1:12345/all_historic_predictions").json()
-historic_df = pd.DataFrame()
-for (k, v) in response.items():
-    historic_df[k] = pd.Series(np.transpose(pd.DataFrame(v, index=[0]))[0])
-
-
-def get_model_correct(x):
-    return 1 if x['pred'] == x['actual'] else 0
-
-
-def get_year(x):
-    return pd.to_datetime(x).year
-
-
-historic_df = historic_df.sort_values('date')
-historic_df['correct'] = historic_df.apply(lambda x: get_model_correct(x), axis=1)
-historic_df['rounded_fixture_id'] = np.ceil(historic_df['fixture_id']/10)
-historic_df['year'] = historic_df['date'].apply(lambda x: get_year(x))
-
-historic_df['week_num'] = historic_df.apply(
+# Sort rows by date
+historic_df_all['date'] = pd.to_datetime(historic_df_all['date'])
+historic_df_all = historic_df_all.sort_values('date')
+# Add on a column stating whether the model was correct or not
+historic_df_all['correct'] = historic_df_all.apply(
+    lambda x: 1 if x['pred'] == x['actual'] else 0, axis=1)
+# Add on a rounded fixture ID (grouping fixtures into sets of 10)
+historic_df_all['rounded_fixture_id'] = np.ceil(historic_df_all['fixture_id']/10)
+# Add on the year (to group data by year)
+historic_df_all['year'] = historic_df_all['date'].apply(lambda x: pd.to_datetime(x).year)
+# Add on the week number (to group data by week)
+historic_df_all['week_num'] = historic_df_all.apply(
     lambda x: str(x['year']) + str(round(x['rounded_fixture_id'])).zfill(2), axis=1)
-
-historic_df['date'] = pd.to_datetime(historic_df['date'])
-historic_df_all = historic_df
+# Get the IDs of all models in the data
 all_model_ids = historic_df_all['model_id'].unique()
 
+# Get the training data corresponding to all models
 training_data_dir = os.path.join(project_dir, 'data', 'training_data')
 historic_training_data = pd.DataFrame()
 for id in all_model_ids:
@@ -66,102 +63,78 @@ for id in all_model_ids:
         historic_training_data = historic_training_data.append(df)
     except TypeError:
         historic_training_data = historic_training_data.append(df.get('X_train'))
-historic_df_all = pd.merge(historic_df_all, historic_training_data,
-                           on=['home_team', 'away_team', 'date', 'season', 'fixture_id'])
+historic_df_all = pd.merge(
+    historic_df_all, historic_training_data,
+    on=['home_team', 'away_team', 'date', 'season', 'fixture_id'])
 
-response = requests.get("http://127.0.0.1:12345/latest_model_id").json()
-model_id = response.get('model_id')
-historic_df = historic_df[historic_df['model_id'] == model_id]
-
-
-team_df = historic_df[historic_df['season'] == season]
-home_team_perf = team_df.groupby('home_team')['correct'].mean().round(2)
-away_team_perf = team_df.groupby('away_team')['correct'].mean().round(2)
-combined_team_perf = pd.concat([home_team_perf, away_team_perf], axis=1).reset_index()
-combined_team_perf.columns = ['Team Name', 'Accuracy when Home', 'Accuracy when Away']
-
-home_season_team_perf = historic_df.groupby(['home_team', 'season'])['correct'].mean()
-away_season_team_perf = historic_df.groupby(['away_team', 'season'])['correct'].mean()
-
-time_perf = pd.DataFrame(historic_df_all.groupby(['season', 'model_id'])['correct'].mean().round(2)).reset_index()
-date_perf = pd.DataFrame(historic_df_all.groupby(['season', 'model_id'])['date'].max()).reset_index()
-time_perf = pd.merge(date_perf, time_perf, on=['season', 'model_id'])
-time_perf.columns = ['Season', 'Model ID', 'Date', 'Accuracy']
-
-profit_perf = pd.DataFrame()
-for model in all_model_ids:
-    df = pd.DataFrame(historic_df_all[historic_df_all['model_id'] == model])
-    df = df.sort_values('date').reset_index()
-    profit_perf = profit_perf.append(
-        df.groupby(['date', 'model_id'])['profit'].sum().cumsum().reset_index())
-profit_perf.columns = ['Date', 'Model ID', 'Profit']
-
-profit_perf_bof = pd.DataFrame(historic_df.sort_values('date').groupby(
-    ['date'])['profit_bof'].sum().cumsum()).reset_index()
-profit_perf_bof.columns = ['Date', 'Profit']
-
-
-
+# Load the in-production model
+production_model_dir = os.path.join(models_dir, 'in_production')
+production_model = os.listdir(production_model_dir)
+if len(production_model) > 0:
+    logger.warning('There are two models in the in_production folder.. Picking the first one.')
+production_model_dir = os.path.join(production_model_dir, production_model[0])
+logger.info(f'Loading production model from {production_model_dir}')
+with open(production_model_dir, 'rb') as f_in:
+    production_model = joblib.load(f_in)
+# Get the ID of the production model
+production_model_id = production_model.model_id
+# Get the current season
+current_season = run_query(query='select max(season) from main_fixtures').iloc[0, 0]
+# Get the historic predictions for the production model
+historic_df = historic_df_all[historic_df_all['model_id'] == production_model_id]
+# Get the performance of the model for each team, at home and away
+combined_team_perf = get_team_home_away_performance(historic_df=historic_df, current_season=current_season)
+# Get the performance of all models, grouped by season
+time_perf = get_performance_by_season(historic_df_all=historic_df_all)
+# Get the cumulative profit gained form each model over time
+profit_perf = get_cumulative_profit_view(historic_df_all=historic_df_all, all_model_ids=all_model_ids)
+# Get the cumulative profit from betting on the favourite
+profit_perf_bof = get_cumulative_profit_from_bof(historic_df=historic_df)
+# Get the performance of each model, grouped by the difference in form between teams
+form_diff_acc = get_form_dif_view(historic_df_all=historic_df_all)
 
 # ToDo: Get a view of historic predictions where its 1 row per team.. Then
 #  look at the profit from betting on each team
 team_profit_perf = None
-
-# ToDo: Model performance after an unexpected loss
-# ToDo: Run t-tests to find out whether the accuracy on any of the weeks is significantly different
-# ToDo: Cluster the matchups, look for similar groups. Look at the accuracy of each group
-# ToDo: Add Game week, see if it improves the model accuracy on certain weeks
-# ToDo: Add squad value as a feature (probably from wikipedia)
-# ToDo: Add the latest bookmaker odds to latest_preds
-
-# ToDo: Save training data each time a model is trained
-# ToDo: Load training data and join if onto historic_df_all
-
-historic_df_all['home_form'] = historic_df_all['avg_goals_for_home'] - historic_df_all['avg_goals_against_home']
-historic_df_all['away_form'] = historic_df_all['avg_goals_for_away'] - historic_df_all['avg_goals_against_away']
-historic_df_all['form_dif'] = historic_df_all['home_form'] - historic_df_all['away_form']
-historic_df_all.loc[historic_df_all['form_dif'] > 2, 'form_dif'] = 2
-historic_df_all.loc[historic_df_all['form_dif'] < -2, 'form_dif'] = -2
-historic_df_all['form_dif'] = round(historic_df_all['form_dif']*5)/5
-form_dif_acc = historic_df_all.groupby(['form_dif', 'model_id'])['correct'].mean().reset_index()
-form_dif_acc.columns = ['Form Dif', 'Model ID', 'Correct']
-
-from sklearn.cluster import DBSCAN
-from sklearn.preprocessing import StandardScaler
-
-
-def cluster_features(df):
-    historic_df_features = df.drop(
-        ['index', 'fixture_id', 'date', 'home_id', 'away_id',
-        'home_team', 'away_team', 'season', 'year',
-        'week_num', 'full_time_result', 'pred', 'model_id'],
-        axis=1)
-    cluster = DBSCAN()
-    scaler = StandardScaler()
-    historic_df_features = scaler.fit_transform(historic_df_features)
-    res = cluster.fit(historic_df_features)
-    return res
-
 
 # Create the dashboard
 server = Flask(__name__)
 app = dash.Dash(__name__, server=server, external_stylesheets=[dbc.themes.BOOTSTRAP])
 app.config.suppress_callback_exceptions = True
 
+if len(latest_preds) > 0:
+    upcoming_fixture_table = dash_table.DataTable(
+        id='next_fixtures',
+        columns=[{"name": i, "id": i} for i in latest_preds.columns],
+        data=latest_preds.to_dict('records'))
+else:
+    upcoming_fixture_table = html.P('No upcoming fixtures available. Was there a pandemic recently?')
+
 app.layout = html.Div(
     children=[
         dbc.Row([
             dbc.Col([
                 html.H2("Upcoming Fixtures"),
-                dash_table.DataTable(
-                    id='next_fixtures',
-                    columns=[{"name": i, "id": i} for i in latest_preds.columns],
-                    data=latest_preds.to_dict('records'),
-                )]
-            )]),
+                upcoming_fixture_table,
+            ])
+        ]),
         dbc.Row([
             dbc.Col([
-                html.H2("Model Performance Plots"),
+                html.H4("Model Performance Plots"),
+                html.P("The following sections show the performance of the model, split into different views. "
+                       "These views allow us to see where the model is underperforming, so that we can "
+                       "design new features to help mitigate its shortcomings.")
+            ])
+        ]),
+        dbc.Row([
+            dbc.Col([
+
+                html.H4("Profit Over Time (Cumulative Sum)"),
+                html.P("This section shows the cumulative profit by date of the different "
+                       "models. We use 10-fold cross-validation to train the model, saving the "
+                        "predictions in each fold. Because of this, we have predictions for 100% "
+                        "of the data which is very useful for analysing model performance"
+                        "when you don't have much data."),
                 dcc.Graph(
                         id='profit_by_date',
                         figure={
@@ -189,6 +162,12 @@ app.layout = html.Div(
         ]),
         dbc.Row([
             dbc.Col([
+                html.H4("Model Accuracy for PL Teams - Home and Away"),
+                html.P("Below you can see the accuracy of the model at predicting "
+                        "for each team, split by whether the team was at home or away. "
+                        "Future strategies may involve only betting on teams that the "
+                        "model has a good accuracy with. The accuracy of the model is "
+                        "mainly down to the consistency of results for the team."),
                 dcc.Graph(
                     id='accuracy_home_away',
                     figure={
@@ -208,7 +187,11 @@ app.layout = html.Div(
             ], width=12)
         ]),
         dbc.Row(
-            dbc.Col(
+            dbc.Col([
+                html.H4("Model Accuracy Over Time"),
+                html.P("Below you can see the accuracy of each model over time. Notice how "
+                       "the model underperforms in certain seasons. The outlier is the year "
+                       "Leicester won the league."),
                 dcc.Graph(
                         id='accuracy_over_time',
                         figure={
@@ -226,33 +209,37 @@ app.layout = html.Div(
                                     clickmode='event+select',
                                     height=600,
                                 )
-                        }),
+                        })],
                 width=12)
         ),
         dbc.Row(
-            dbc.Col(
+            dbc.Col([
+                html.H4("Accuracy vs Form Difference"),
+                html.P("This figure shows the performance of the model, split by the "
+                               "average goal difference of the opponents in the last 8 games. "
+                               "The more difficult matchups are when the teams have similar performance. "
+                               "We can also see the effect of the home advantage here."),
                 dcc.Graph(
                         id='form_diff_acc',
                         figure={
                             'data': [
                                 go.Scatter(
-                                    x=form_dif_acc[form_dif_acc['Model ID'] ==
+                                    x=form_diff_acc[form_diff_acc['Model ID'] ==
                                                 model_id].sort_values('Form Dif')['Form Dif'],
-                                    y=form_dif_acc[form_dif_acc['Model ID'] ==
+                                    y=form_diff_acc[form_diff_acc['Model ID'] ==
                                                 model_id].sort_values('Form Dif')['Correct'],
                                     mode="lines+markers",
                                     name='_'.join(model_id.split('_')[:-1])
                                 ) for model_id in all_model_ids],
                             'layout': go.Layout(
-                                    title="Accuracy vs Form Difference (home_gd - away_gd)",
+                                    title="Accuracy vs Form Difference (home_goal_dif_last_7 - away_goal_dif_last_7)",
                                     clickmode='event+select',
                                     height=600,
                                 )
-                        }),
+                        })],
                 width=12)
         )
     ]
 )
-
-
+# Start the server
 app.run_server(debug=False, port=8050)
