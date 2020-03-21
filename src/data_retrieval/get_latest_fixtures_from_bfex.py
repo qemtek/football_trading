@@ -10,13 +10,8 @@ def get_latest_fixtures():
     trading = betfair_login()
     trading.login()
     # Define what type of data to retrieve from the API
-    market_projection = [
-        "MARKET_START_TIME",
-        "RUNNER_DESCRIPTION",
-        "COMPETITION",
-        "EVENT",
-        "MARKET_DESCRIPTION"
-    ]
+    market_projection = ["MARKET_START_TIME", "RUNNER_DESCRIPTION", "COMPETITION",
+                         "EVENT", "MARKET_DESCRIPTION"]
     # Create a market filter
     event_filter = betfairlightweight.filters.market_filter(
                 event_type_ids=[1],
@@ -38,8 +33,10 @@ def get_latest_fixtures():
     for market in prem_markets:
         names = market.event.name.split(' v ')
         # Get the selection IDs for home/draw/away
-        home_id = [runner for runner in market.runners if runner.runner_name == names[0]][0].selection_id
-        away_id = [runner for runner in market.runners if runner.runner_name == names[1]][0].selection_id
+        home_id = [runner for runner in market.runners
+                   if runner.runner_name == names[0]][0].selection_id
+        away_id = [runner for runner in market.runners
+                   if runner.runner_name == names[1]][0].selection_id
         # Add everything to a DataFrame
         df_odds = df_odds.append(
             pd.DataFrame({
@@ -62,24 +59,31 @@ def get_latest_fixtures():
             sid = {
                 'market_id': book.market_id,
                 'selection_id': runner.selection_id,
-                'odds': runner.last_price_traded if runner.last_price_traded is not None else None
+                'odds': runner.last_price_traded
+                if runner.last_price_traded is not None else None
             }
             df_mb = df_mb.append(pd.DataFrame(sid, index=[len(df_mb)]))
-    # Merge the dataframes containing market catalogue and market book info
-    df_output = pd.merge(df_odds, df_mb,
-        left_on=['market_id', 'home_id'],
-        right_on=['market_id', 'selection_id'])
-    df_output = pd.merge(df_output, df_mb[df_mb['selection_id'] == 58805],
-        on='market_id')
-    df_output = pd.merge(df_output, df_mb,
-         left_on=['market_id', 'away_id'],
-         right_on=['market_id', 'selection_id'])
-    df_output = df_output.drop(['selection_id', 'selection_id_x', 'selection_id_y'], axis=1)
-    df_output.columns = ['away_id', 'away_team', 'home_id', 'home_team',
-                         'market_id', 'market_start_time', 'home_odds', 'draw_odds', 'away_odds']
-    df_output = df_output[['market_id', 'market_start_time', 'home_team', 'home_id', 'away_id',
-                           'away_team', 'home_odds', 'draw_odds', 'away_odds']]
-    # ToDo: Check how accurate last price traded is, look into getting odds the normal way if its crap
-    conn = connect_to_db()
-    df_output.to_sql('bfex_latest_fixtures', conn, if_exists='replace')
-
+    output_cols = ['market_id', 'market_start_time', 'home_team', 'home_id', 'away_id',
+                   'away_team', 'home_odds', 'draw_odds', 'away_odds']
+    # Check whether there are any markets open
+    if len(df_odds) == 0 or len(df_mb) == 0:
+        df_output = pd.DataFrame(columns=output_cols)
+    else:
+        # Merge the DataFrames containing market catalogue and market book info
+        df_output = pd.merge(df_odds, df_mb,
+                             left_on=['market_id', 'home_id'],
+                             right_on=['market_id', 'selection_id'])
+        df_output = pd.merge(df_output, df_mb[df_mb['selection_id'] == 58805],
+                             on='market_id')
+        df_output = pd.merge(df_output, df_mb,
+                             left_on=['market_id', 'away_id'],
+                             right_on=['market_id', 'selection_id'])
+        df_output = df_output.drop(['selection_id', 'selection_id_x', 'selection_id_y'], axis=1)
+        df_output.columns = ['away_id', 'away_team', 'home_id', 'home_team',
+                             'market_id', 'market_start_time', 'home_odds', 'draw_odds', 'away_odds']
+        df_output = df_output[['market_id', 'market_start_time', 'home_team', 'home_id', 'away_id',
+                               'away_team', 'home_odds', 'draw_odds', 'away_odds']]
+        # ToDo: Check how accurate last price traded is, look into getting odds the normal way
+        #  if these odds arent similar to the betfair odds
+    with connect_to_db() as conn:
+        df_output.to_sql('bfex_latest_fixtures', conn, if_exists='replace')

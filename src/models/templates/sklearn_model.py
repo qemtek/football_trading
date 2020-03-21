@@ -15,28 +15,20 @@ logger = get_logger()
 
 class SKLearnModel(BaseModel):
     """Anything that can be used by any SKLearn model goes in this class"""
-    def __init__(self,
-                 test_mode=False,
-                 model_object=None,
-                 save_trained_model=True,
-                 load_trained_model=False,
-                 load_model_date=None,
-                 compare_models=False,
-                 problem_name=None):
-        super().__init__(model_object=model_object,
-                         load_trained_model=load_trained_model,
-                         save_trained_model=save_trained_model,
-                         load_model_date=load_model_date,
-                         compare_models=compare_models,
-                         test_mode=test_mode,
-                         problem_name=problem_name)
+
+    def __init__(self, test_mode=False, model_object=None, save_trained_model=True, load_trained_model=False,
+                 load_model_date=None, compare_models=False, problem_name=None) -> None:
+        super().__init__(model_object=model_object, load_trained_model=load_trained_model,
+                         save_trained_model=save_trained_model, load_model_date=load_model_date,
+                         compare_models=compare_models, test_mode=test_mode, problem_name=problem_name)
         self.param_grid = None
         # The metric used to evaluate model performance
         self.scoring = 'accuracy'
 
     @time_function(logger=logger)
-    def optimise_hyperparams(self, X, y, param_grid=None):
-        """Hyperparameter optimisation function using GridSearchCV. Works for any sklearn models"""
+    def optimise_hyperparams(self, *, X, y, param_grid=None) -> None:
+        """Hyper-parameter optimisation function using GridSearchCV. Works for any SKLearn models"""
+
         logger.info("Optimising hyper-parameters. Param grid: {}".format(self.param_grid))
         param_grid = self.param_grid if param_grid is None else param_grid
         model = self.model_object() if self.params is None else self.model_object(**self.params)
@@ -46,11 +38,12 @@ class SKLearnModel(BaseModel):
         logger.info('Best hyper-parameters: {}'.format(self.params))
 
     @time_function(logger=logger)
-    def train_model(self, X, y, sample_weight=None):
+    def train_model(self, *, X, y, sample_weight=None, n_splits=10) -> None:
         """Train a model on 90% of the data and predict 10% using KFold validation,
         such that a prediction is made for all data"""
+
         logger.info("Training model.")
-        kf = KFold(n_splits=10)
+        kf = KFold(n_splits=n_splits)
         y = np.ravel(np.array(y))
         labels = list(np.sort(np.unique(y)))
         model_predictions = pd.DataFrame()
@@ -65,28 +58,18 @@ class SKLearnModel(BaseModel):
             model_predictions = model_predictions.append(
                 pd.concat([
                     X.iloc[test_index, :],
-                    pd.DataFrame(preds,
-                                 columns=['pred'],
+                    pd.DataFrame(preds, columns=['pred'], index=X.iloc[test_index, :].index),
+                    pd.DataFrame(preds_proba, columns=['predict_proba_' + str(label) for label in labels],
                                  index=X.iloc[test_index, :].index),
-                    pd.DataFrame(preds_proba,
-                                 columns=['predict_proba_' + str(label) for label in labels],
-                                 index=X.iloc[test_index, :].index),
-                    pd.DataFrame(actuals,
-                                 columns=['actual'],
-                                 index=X.iloc[test_index, :].index)],
-                    axis=1))
+                    pd.DataFrame(actuals, columns=['actual'], index=X.iloc[test_index, :].index)], axis=1))
             # Add on a column to indicate whether the prediction was correct or not
             model_predictions['correct'] = model_predictions.apply(
                 lambda x: 1 if x['pred'] == x['actual'] else 0, axis=1)
             # Save model predictions to the class
             self.model_predictions = model_predictions
             # Save training data used to train/evaluate the model
-            self.training_data = {
-                "X_train": X.iloc[train_index, :],
-                "y_train": y[train_index],
-                "X_test": X.iloc[test_index, :],
-                "y_test": y[test_index]
-            }
+            self.training_data = {"X_train": X.iloc[train_index, :], "y_train": y[train_index],
+                                  "X_test": X.iloc[test_index, :], "y_test": y[test_index]}
             # Assess the model performance using the first performance metric
             main_performance_metric = self.performance_metrics[0].__name__
             performance = self.performance_metrics[0](actuals, preds)

@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import os
 
 from src.models.templates.XGBoostModel import XGBoostModel
 from src.utils.base_model import get_logger, suspend_logging
@@ -9,27 +10,20 @@ from src.utils.xgboost import get_features, get_manager_features, \
     get_feature_data, get_manager, get_profit, upload_to_table, \
     get_profit_betting_on_fav, apply_profit_weight
 from src.utils.team_id_functions import fetch_name
+from configuration import project_dir
 
 logger = get_logger()
 
 
 class MatchResultXGBoost(XGBoostModel):
     """Everything specific to SKLearn models goes in this class"""
-    def __init__(self,
-                 test_mode=False,
-                 load_trained_model=False,
-                 load_model_date=None,
-                 save_trained_model=True,
-                 upload_historic_predictions=None,
-                 apply_sample_weight=False,
-                 compare_models=False,
-                 problem_name='match_predict'):
-        super().__init__(test_mode=test_mode,
-                         save_trained_model=save_trained_model,
-                         load_trained_model=load_trained_model,
-                         load_model_date=load_model_date,
-                         compare_models=compare_models,
-                         problem_name=problem_name)
+
+    def __init__(self, test_mode=False, load_trained_model=False, load_model_date=None,
+                 save_trained_model=True, upload_historic_predictions=None, apply_sample_weight=False,
+                 compare_models=False, problem_name='match_predict'):
+        super().__init__(test_mode=test_mode, save_trained_model=save_trained_model,
+                         load_trained_model=load_trained_model, load_model_date=load_model_date,
+                         compare_models=compare_models,  problem_name=problem_name)
         # Random seed for reproducibility
         self.random_seed = 42
         self.apply_sample_weight = apply_sample_weight
@@ -94,19 +88,8 @@ class MatchResultXGBoost(XGBoostModel):
             'draw_odds',
             'away_odds'
         ]
-        self.training_data_query = \
-            """select t1.*, m_h.manager home_manager, m_h.start_date home_manager_start, 
-            m_a.manager away_manager, m_a.start_date away_manager_start
-            from main_fixtures t1 
-            left join managers m_h 
-            on t1.home_id = m_h.team_id 
-            and (t1.date between m_h.start_date and date(m_h.end_date, '+1 day') 
-            or t1.date > m_h.start_date and m_h.end_date is NULL) 
-            left join managers m_a 
-            on t1.away_id = m_a.team_id 
-            and (t1.date between m_a.start_date and date(m_a.end_date, '+1 day') 
-            or t1.date > m_a.start_date and m_a.end_date is NULL) 
-            where t1.date > '2013-08-01'"""
+        # Specify the query itself, or the location of the query to retrieve the training data
+        self.training_data_query = os.path.join(project_dir, 'sql', 'get_training_data.sql')
         # Train a model if one was not loaded
         if self.trained_model is None:
             logger.info("Training a new model.")
@@ -140,15 +123,18 @@ class MatchResultXGBoost(XGBoostModel):
                 if upload_historic_predictions:
                     upload_cols = ['fixture_id', 'home_team', 'away_team', 'season',
                                    'date', 'pred', 'actual', 'profit', 'profit_bof']
-                    upload_to_table(
-                        df=self.model_predictions[upload_cols],
-                        table_name='historic_predictions',
-                        model_id=self.model_id)
+                    self.save_prediction_data(cols_to_save=upload_cols)
+
+    def save_prediction_data(self, *, cols_to_save):
+        upload_to_table(
+            df=self.model_predictions[cols_to_save],
+            table_name='historic_predictions',
+            model_id=self.model_id)
 
     @time_function(logger=logger)
     def get_training_data(self):
         # Get all fixtures after game week 8, excluding the last game week
-        df = run_query(self.training_data_query)
+        df = run_query(query=self.training_data_query)
         # Change names of b365 odds
         df['home_odds'] = df['b365_home_odds']
         df['draw_odds'] = df['b365_draw_odds']

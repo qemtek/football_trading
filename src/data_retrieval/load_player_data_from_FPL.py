@@ -28,7 +28,7 @@ async def get_player_data():
             summary_df = summary_df.append(player_history)
 
     # Upload the data to a table in the database
-    run_query('DROP TABLE IF EXISTS player_data', return_data=False)
+    run_query(query='DROP TABLE IF EXISTS player_data', return_data=False)
     summary_df.to_sql('player_data', conn)
 
 

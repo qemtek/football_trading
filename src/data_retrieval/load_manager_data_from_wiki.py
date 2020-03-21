@@ -151,9 +151,9 @@ def get_manager_data():
     manager_dates = manager_dates.groupby(
         ['team', 'team_id', 'manager', 'manager_num', 'from'])['until'].max().reset_index()
     # Drop and recreate the table we are going to populate
-    run_query("DROP TABLE IF EXISTS managers", return_data=False)
-    run_query("CREATE TABLE managers (manager INT, team TEXT, "
-                      "team_id INTEGER, start_date DATE, end_date DATE)",
+    run_query(query="DROP TABLE IF EXISTS managers", return_data=False)
+    run_query(query="CREATE TABLE managers (manager INT, team TEXT, "
+                    "team_id INTEGER, start_date DATE, end_date DATE)",
               return_data=False)
     for row in manager_dates.iterrows():
         params = [
@@ -163,11 +163,8 @@ def get_manager_data():
             str(row[1]["from"].date()),
             str(row[1]["until"].date()),
         ]
-        run_query(
-            "INSERT INTO managers (manager, team, team_id, start_date, end_date) VALUES("
-            "?, ?, ?, ?, ?)",
-            params, return_data=False
-        )
+        run_query(query="INSERT INTO managers (manager, team, team_id, start_date, end_date) "
+                        "VALUES(?, ?, ?, ?, ?)", params=params, return_data=False)
     conn.commit()
     conn.close()
 

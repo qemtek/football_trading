@@ -20,46 +20,7 @@ logger = get_logger(log_name='dashboard')
 #requests.post("http://127.0.0.1:12345/update")
 response = requests.get("http://127.0.0.1:12345/next_games")
 data = response.json()
-fixture_list = pd.DataFrame()
 
-season = '19/20'
-
-logger = logging.getLogger('API')
-
-for i in range(10):
-    fixture_list = fixture_list.append(pd.DataFrame({
-        'kickoff_time': data.get('kickoff_time').get(str(i)),
-        'home_team': data.get('home_name').get(str(i)),
-        'home_id': data.get('home_id').get(str(i)),
-        'away_team': data.get('away_name').get(str(i)),
-        'away_id': data.get('away_id').get(str(i)),
-        'home_odds': data.get('home_odds').get(str(i)),
-        'draw_odds': data.get('draw_odds').get(str(i)),
-        'away_odds': data.get('away_odds').get(str(i))
-     }, index=[i]))
-
-fixture_list = fixture_list.drop_duplicates()
-
-pl_teams = [list(fixture_list['home_id']) + list(fixture_list['away_id'])]
-predictions = pd.DataFrame(columns=['H', 'D', 'A'])
-for i in range(len(fixture_list)):
-    print(i)
-    input = fixture_list.loc[i, ['kickoff_time', 'home_id', 'away_id', 'home_odds', 'draw_odds', 'away_odds']]
-    print(input)
-    input_dict = {
-        "date": str(input['kickoff_time']),
-        "home_id": str(input['home_id']),
-        "away_id": str(input['away_id']),
-        "season": "19/20",
-        "home_odds": str(input['home_odds']),
-        "draw_odds": str(input['draw_odds']),
-        "away_odds": str(input['away_odds'])
-    }
-    response = requests.post("http://127.0.0.1:12345/predict", json=input_dict).json()
-    # Convert the probabilities back to floats
-    response = {k: float(v) for (k, v) in response.items()}
-    response_df = pd.DataFrame(response, index=[i])
-    predictions = predictions.append(response_df)
     print(response)
 
 # Combine the latest fixtures and the predictions DataFrames()

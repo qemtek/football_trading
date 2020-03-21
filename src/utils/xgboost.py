@@ -111,7 +111,7 @@ def calculate_win_streak(last_games):
 def get_manager(team_id, date):
     """Find the sitting manager for a given team_id and date"""
     # Get the latest date in the db
-    max_date = run_query("select max(end_date) date from managers").loc[0, 'date']
+    max_date = run_query(query="select max(end_date) date from managers").loc[0, 'date']
     # If we are predicting past our data
     if date > max_date:
         # Take the latest manager for the team
@@ -120,7 +120,7 @@ def get_manager(team_id, date):
     else:
         query = """select * from managers where team_id = {} 
                     and '{}' between start_date and end_date""".format(team_id, date)
-    df = run_query(query)
+    df = run_query(query=query)
     rows = len(df)
     if rows != 1:
         logger.warning("get_manager: Expected 1 row but got {}. Is the manager "
@@ -204,7 +204,7 @@ def get_profit_betting_on_fav(x):
 
 
 def get_feature_data(min_training_data_date='2013-08-01'):
-    df = run_query("""select t1.*, m_h.manager home_manager,
+    df = run_query(query="""select t1.*, m_h.manager home_manager,
      m_h.start_date home_manager_start, 
      m_a.manager away_manager, m_a.start_date away_manager_start 
      from main_fixtures t1 
@@ -235,8 +235,7 @@ def get_team_model_performance(x, model_id, home_team=True):
     team_id = x['home_id'] if home_team else x['away_id']
     date = x['date']
     season = x['season']
-    perf = run_query(
-        """select avg(correct) from historic_predictions where 
+    perf = run_query(query="""select avg(correct) from historic_predictions where 
         model_id = '{}' and season = '{}' and home_id = {} 
         or away_id = {} and date < '{}'""".format(
             model_id, season, team_id, team_id, date))

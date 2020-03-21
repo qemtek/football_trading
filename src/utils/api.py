@@ -18,5 +18,5 @@ def get_upcoming_games(n=10):
     where started = 0 and home_odds is not NULL
     order by kickoff_time limit {}
     """.format(n)
-    df = run_query(query)
+    df = run_query(query=query)
     return df

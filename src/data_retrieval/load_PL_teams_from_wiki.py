@@ -12,7 +12,7 @@ def get_teams_from_wiki():
     conn = connect_to_db()
     website_url = requests.get(
         'https://en.wikipedia.org/wiki/List_of_Premier_League_clubs').text
-    soup = BeautifulSoup(website_url)
+    soup = BeautifulSoup(website_url, features="lxml")
     My_table = soup.find('div', {'class': 'timeline-wrapper'})
     links = My_table.findAll('area')
     teams = []
@@ -33,15 +33,15 @@ def get_teams_from_wiki():
     df = df.sort_values('team_name')
     df['team_id'] = np.arange(len(df))+1
     # Load the names into the database
-    run_query('drop table if exists team_ids', return_data=False)
-    run_query('create table team_ids (team_name TEXT, team_id INTEGER, '
+    run_query(query='drop table if exists team_ids', return_data=False)
+    run_query(query='create table team_ids (team_name TEXT, team_id INTEGER, '
               'alternate_name TEXT, alternate_name2 TEXT)',
               return_data=False)
     for row in df.iterrows():
         params = [row[1]['team_name'], row[1]['team_id']]
         params.append(fetch_alternative_name(row[1]['team_name']))
         params.append(fetch_alternative_name2(row[1]['team_name']))
-        run_query('insert into team_ids(team_name, team_id, '
+        run_query(query='insert into team_ids(team_name, team_id, '
                   'alternate_name, alternate_name2) values(?, ?, ?, ?)',
                   params=params, return_data=False)
     conn.commit()

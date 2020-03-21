@@ -1,6 +1,7 @@
 import os
 import datetime as dt
 import joblib
+import pandas as pd
 
 from sklearn.metrics import balanced_accuracy_score, accuracy_score
 
@@ -14,6 +15,7 @@ logger = get_logger()
 
 class BaseModel:
     """Anything that can be used by any model goes in this class"""
+
     def __init__(self,
                  model_object=None,
                  load_trained_model=True,
@@ -60,34 +62,40 @@ class BaseModel:
         # A query used to retrieve training data
         self.training_data_query = None
 
-    @time_function(logger=logger)
-    def get_training_data(self):
+    def get_training_data(self) -> pd.DataFrame:
         df = run_query(self.training_data_query)
         return df
 
-    @time_function(logger=logger)
-    def preprocess(self, X):
+    def generate_features(self):
+        return NotImplemented
+
+    def preprocess(self, X) -> pd.DataFrame:
         return X
 
-    @time_function(logger=logger)
-    def optimise_hyperparams(self, X, y, param_grid=None):
+    def optimise_hyperparams(self, X, y, param_grid=None) -> None:
         return NotImplemented
 
-    @time_function(logger=logger)
-    def train_model(self, X, y):
+    def train_model(self, X, y) -> None:
         return NotImplemented
 
-    @time_function(logger=logger)
-    def predict(self, X):
+    def predict(self, X):  # ToDo: Find out what datatype is output
         """Predict on a new set of data"""
+
         X = self.preprocess(X[self.model_features])
         return self.trained_model.predict(X[self.model_features])
 
+    def save_training_data(self) -> None:
+        return NotImplemented
+
+    def save_prediction_data(self, *, cols_to_save) -> None:
+        return NotImplemented
+
     @time_function(logger=logger)
-    def save_model(self):
+    def save_model(self) -> None:
         """Save a trained model to the models directory"""
+
         if self.trained_model is None:
-            logger.error("Trying to save a model that is None, aborting.")
+            logger.error("There is no model to save, aborting.")
         else:
             # Save the model ID inside the model object (so we know which
             # model made which predictions in the DB)
@@ -102,8 +110,9 @@ class BaseModel:
                 joblib.dump(self.trained_model, f_out)
 
     @time_function(logger=logger)
-    def load_model(self, date=None):
-        """Wrapper for the load model function in utils"""
+    def load_model(self, date=None) -> None:
+        """Load model from the local filesystem"""
+
         model = load_model(self.model_type, date=date, keyword=self.problem_name)
         if model is None:
             logger.warning('No available models of type {}.'.format(self.model_type))
@@ -125,7 +134,10 @@ class BaseModel:
             return model
 
     @time_function(logger=logger)
-    def compare_latest_model(self):
+    def compare_latest_model(self) -> bool:
+        """Compare the newly trained model with the previous model of the same name (if one exists).
+            Return True if the new model performs best, otherwise return False """
+
         main_performance_metric = self.performance_metrics[0].__name__
         new_performance = self.performance.get(main_performance_metric)
         old_performance = self.previous_model.performance.get(main_performance_metric)

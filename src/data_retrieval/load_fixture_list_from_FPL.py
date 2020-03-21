@@ -19,7 +19,7 @@ async def get_fpl_fixtures():
         fixture_list = fixture_list.append(pd.DataFrame(fixture, index=[0]))
 
     # Upload the data to a table in the database
-    run_query('DROP TABLE IF EXISTS fpl_fixtures', return_data=False)
+    run_query(query='DROP TABLE IF EXISTS fpl_fixtures', return_data=False)
     fixture_list.to_sql('fpl_fixtures', conn)
 
 
