@@ -91,7 +91,7 @@ class BaseModel:
         return NotImplemented
 
     @time_function(logger=logger)
-    def save_model(self) -> None:
+    def save_model(self, save_to_production=False) -> None:
         """Save a trained model to the models directory"""
 
         if self.trained_model is None:
@@ -108,6 +108,10 @@ class BaseModel:
             logger.info("Saving model to {} with joblib.".format(save_dir))
             with safe_open(save_dir, "wb") as f_out:
                 joblib.dump(self.trained_model, f_out)
+            if save_to_production:
+                save_dir = os.path.join(model_dir, 'in_production', file_name)
+                with safe_open(save_dir, "wb") as f_out:
+                    joblib.dump(self.trained_model, f_out)
 
     @time_function(logger=logger)
     def load_model(self, date=None) -> None:
