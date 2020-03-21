@@ -98,17 +98,6 @@ def suspend_logging(logger):
     return decorator
 
 
-def get_categorical_features(X, dummify=False):
-    """Get a list of categorical features in the data"""
-    categoricals = []
-    for col, col_type in X.dtypes.iteritems():
-        if col_type == 'O':
-            categoricals.append(col)
-    if dummify:
-        X = pd.get_dummies(X, columns=categoricals)
-    return categoricals, X if dummify else None
-
-
 def fill_na_values(X):
     """Fill NA values in the data"""
     # ToDo: Add a data structure that specifies how to fill NA's for every column

@@ -61,6 +61,8 @@ class BaseModel:
         self.target = None
         # A query used to retrieve training data
         self.training_data_query = None
+        # Store names of categorical features that we want to one-hot encode
+        self.categorical_features = None
 
     def get_training_data(self) -> pd.DataFrame:
         df = run_query(self.training_data_query)
@@ -70,6 +72,20 @@ class BaseModel:
         return NotImplemented
 
     def preprocess(self, X) -> pd.DataFrame:
+        return X
+
+    def encode_cateogrical_features(self, X):
+        """One-hot encode categorical features and add them to the feature list"""
+
+        for feature in self.categorical_features:
+            X_dummies = pd.get_dummies(X[feature], prefix=feature)
+            # Get encoded features
+            X = pd.concat([X.drop(feature, axis=1), X_dummies], axis=1)
+            # Add encoded features to the feature list
+            self.model_features.append(X_dummies.columns)
+        # Remove categorical features from the feature list
+        self.model_features = [
+            feature for feature in self.model_features if feature not in self.categorical_features]
         return X
 
     def optimise_hyperparams(self, X, y, param_grid=None) -> None:
