@@ -1,0 +1,10 @@
+MANIFEST.in
+readme.txt
+requirements.txt
+setup.py
+./requirements.txt
+football_trading.egg-info/PKG-INFO
+football_trading.egg-info/SOURCES.txt
+football_trading.egg-info/dependency_links.txt
+football_trading.egg-info/requires.txt
+football_trading.egg-info/top_level.txt

@@ -1,0 +1,9 @@
+../venv/bin
+.idea/*
+.DS_STORE
+football_trading/src/.DS_STORE
+football_trading/data/.DS_STORE
+football_trading/logs/*
+*.pyc
+football_trading/configuration_private.py
+football_trading/certs/*

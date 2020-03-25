@@ -1,0 +1,16 @@
+include *.txt
+include *.joblib
+include *.sqlite
+include *.md
+recursive-include ./football_trading/*
+
+include football_trading/data/db.sqlite
+include football_trading/training_data/*
+include football_trading/models/*
+include football_trading/VERSION
+
+include ./requirements.txt
+exclude *.log
+
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]

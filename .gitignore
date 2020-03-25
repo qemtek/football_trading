@@ -1,9 +1,10 @@
-venv/*
+../venv/bin
+/venv/*
 .idea/*
 .DS_STORE
-src/.DS_STORE
-data/.DS_STORE
-logs/*
+football_trading/src/.DS_STORE
+football_trading/data/.DS_STORE
+football_trading/logs/*
 *.pyc
-configuration_private.py
-Certs/*
+football_trading/configuration_private.py
+football_trading/certs/*
