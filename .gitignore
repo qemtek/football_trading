@@ -1,5 +1,8 @@
-../venv/bin
+configuration.py
 /venv/*
+.DS_Store
+.__pycache__
+.pyc
 .idea/*
 .DS_STORE
 football_trading/src/.DS_STORE
