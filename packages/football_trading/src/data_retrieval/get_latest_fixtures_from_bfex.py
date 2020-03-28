@@ -1,13 +1,13 @@
 import betfairlightweight
 import pandas as pd
 
-from packages.football_trading.src.utils.betfair_tools import betfair_login
-from packages.football_trading.src.utils.db import connect_to_db
+from src.utils.betfair_tools import connect_to_betfair
+from src.utils.db import connect_to_db
 
 
 def get_latest_fixtures():
     """Get the latest premier league fixtures from the Betfair Exchange API"""
-    trading = betfair_login()
+    trading = connect_to_betfair()
     trading.login()
     # Define what type of data to retrieve from the API
     market_projection = ["MARKET_START_TIME", "RUNNER_DESCRIPTION", "COMPETITION",

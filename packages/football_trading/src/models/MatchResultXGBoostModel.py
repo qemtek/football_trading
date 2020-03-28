@@ -2,16 +2,16 @@ import pandas as pd
 import numpy as np
 import os
 
-from packages.football_trading.src.models.templates.XGBoostModel import XGBoostModel
-from packages.football_trading.src.utils.base_model import suspend_logging
-from packages.football_trading.src.utils.base_model import time_function
-from packages.football_trading.src.utils.db import run_query, connect_to_db
-from packages.football_trading.src.utils.xgboost import get_features, get_manager_features, \
+from src.models.templates.XGBoostModel import XGBoostModel
+from src.utils.base_model import suspend_logging
+from src.utils.base_model import time_function
+from src.utils.db import run_query, connect_to_db
+from src.utils.xgboost import get_features, get_manager_features, \
     get_feature_data, get_manager, get_profit, upload_to_table, \
     get_profit_betting_on_fav, apply_profit_weight
-from packages.football_trading.src.utils.team_id_functions import fetch_name
-from packages.football_trading.configuration import project_dir
-from packages.football_trading.logging_config import get_logger
+from src.utils.team_id_functions import fetch_name
+from settings import PROJECTSPATH
+from src.utils.logging import get_logger
 
 logger = get_logger()
 
@@ -56,7 +56,7 @@ class MatchResultXGBoost(XGBoostModel):
             'manager_new_away', 'manager_age_away', 'win_rate_away', 'draw_rate_away', 'loss_rate_away',
             'home_advantage_sum_away', 'home_advantage_avg_away', 'home_odds', 'draw_odds',  'away_odds']
         # Specify the query itself, or the location of the query to retrieve the training data
-        self.training_data_query = os.path.join(project_dir, 'sql', 'get_training_data.sql')
+        self.training_data_query = os.path.join(PROJECTSPATH, 'sql', 'get_training_data.sql')
         # Train a model if one was not loaded
         if self.trained_model is None:
             logger.info("Training a new model.")

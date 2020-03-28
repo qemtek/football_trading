@@ -2,7 +2,7 @@ import xgboost as xgb
 import shap
 from sklearn.metrics import accuracy_score, balanced_accuracy_score, mean_squared_error, r2_score
 
-from packages.football_trading.src.models.templates.sklearn_model import SKLearnModel
+from src.models.templates.sklearn_model import SKLearnModel
 
 
 class XGBoostModel(SKLearnModel):

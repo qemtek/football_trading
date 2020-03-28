@@ -20,22 +20,22 @@ import plotly.graph_objects as go
 import os
 import joblib
 
-from packages.football_trading import project_dir
-from packages.football_trading.logging_config import get_logger
-from packages.football_trading import (
+from settings import PROJECTSPATH
+from src.utils.logging import get_logger
+from src.utils.dashboard import (
     get_form_dif_view, get_team_home_away_performance, get_performance_by_season,
     get_cumulative_profit_view, get_cumulative_profit_from_bof)
-from packages.football_trading.src.utils.db import run_query
+from src.utils.db import run_query
 
 logger = get_logger(logger_name='dashboard')
 
 
-def get_dashboard_app():
+def get_dashboard_app(server=None):
 
     # Get the latest predictions
     latest_preds = run_query(query='select * from latest_predictions')
     # Get the names of models saved in the models directory
-    models_dir = os.path.join(project_dir, 'data', 'models')
+    models_dir = os.path.join(PROJECTSPATH, 'data', 'models')
     model_names = os.listdir(models_dir)
     predictions = run_query(query='select * from historic_predictions')
     historic_df_all = pd.DataFrame()
@@ -59,7 +59,7 @@ def get_dashboard_app():
     all_model_ids = historic_df_all['model_id'].unique()
 
     # Get the training data corresponding to all models
-    training_data_dir = os.path.join(project_dir, 'data', 'training_data')
+    training_data_dir = os.path.join(PROJECTSPATH, 'data', 'training_data')
     historic_training_data = pd.DataFrame()
     for id in all_model_ids:
         df = joblib.load(os.path.join(training_data_dir, id + '.joblib'))
@@ -98,8 +98,11 @@ def get_dashboard_app():
     form_diff_acc = get_form_dif_view(historic_df_all=historic_df_all)
 
     # Create the dashboard
-    server = Flask(__name__)
-    app = dash.Dash(__name__, server=server, external_stylesheets=[dbc.themes.BOOTSTRAP])
+    app = dash.Dash(__name__,
+                    # Use the server if its a Flask object, else create our own
+                    server=server if isinstance(server, Flask) else True,
+                    external_stylesheets=[dbc.themes.BOOTSTRAP],
+                    routes_pathname_prefix='/dash/')
     app.config.suppress_callback_exceptions = True
 
     if len(latest_preds) > 0:
@@ -242,7 +245,7 @@ def get_dashboard_app():
             )
         ]
     )
-    # Return the app
+    # Return the api
     return app
 
 

@@ -1,7 +1,8 @@
 import numpy as np
 import pandas as pd
 import logging
-from packages.football_trading.src.utils.db import run_query, connect_to_db
+
+from src.utils.db import run_query, connect_to_db
 
 logger = logging.getLogger()
 

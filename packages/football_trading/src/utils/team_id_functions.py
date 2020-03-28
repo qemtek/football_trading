@@ -1,5 +1,6 @@
-from packages.football_trading.src.utils.db import run_query, connect_to_db
 import Levenshtein
+
+from src.utils.db import run_query, connect_to_db
 
 
 def fetch_id(team_name):

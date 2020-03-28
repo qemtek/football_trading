@@ -1,4 +1,4 @@
-from packages.football_trading.src.utils.db import run_query
+from src.utils.db import run_query
 
 
 def get_upcoming_games(n=10):

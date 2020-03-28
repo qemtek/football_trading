@@ -3,8 +3,8 @@ import aiohttp
 import pandas as pd
 import asyncio
 
-from packages.football_trading.src.utils.team_id_functions import find_closest_match
-from packages.football_trading.src.utils.db import connect_to_db, run_query
+from src.utils.team_id_functions import find_closest_match
+from src.utils.db import connect_to_db, run_query
 
 
 async def get_fpl_teams():

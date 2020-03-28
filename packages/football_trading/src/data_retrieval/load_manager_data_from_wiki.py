@@ -4,8 +4,8 @@ from bs4 import BeautifulSoup
 import re
 import datetime as dt
 
-from packages.football_trading.src.utils.db import run_query, connect_to_db
-from packages.football_trading.src.utils.team_id_functions import fetch_id, fetch_name
+from src.utils.db import run_query, connect_to_db
+from src.utils.team_id_functions import fetch_id, fetch_name
 
 # Connect to database
 conn = connect_to_db()

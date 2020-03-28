@@ -1,6 +1,6 @@
-from packages.football_trading.src.models.templates.XGBoostModel import XGBoostModel
-from packages.football_trading.logging_config import get_logger
-from packages.football_trading.src.utils.xgboost import get_team_model_performance, upload_to_table, get_profit2
+from src.models.templates.XGBoostModel import XGBoostModel
+from src.utils.logging import get_logger
+from src.utils.xgboost import get_team_model_performance, upload_to_table, get_profit2
 
 logger = get_logger()
 

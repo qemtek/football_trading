@@ -2,7 +2,7 @@ import sqlite3
 import pandas as pd
 import os
 
-from packages.football_trading.configuration import db_dir
+from settings import db_dir
 
 
 def connect_to_db(path_to_db=None):

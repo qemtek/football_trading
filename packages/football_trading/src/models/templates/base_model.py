@@ -5,11 +5,11 @@ import pandas as pd
 
 from sklearn.metrics import balanced_accuracy_score, accuracy_score
 
-from packages.football_trading.configuration import model_dir
-from packages.football_trading.src.utils.base_model import load_model, time_function
-from packages.football_trading.logging_config import get_logger
-from packages.football_trading.src.utils.db import run_query
-from packages.football_trading.src.utils.general import safe_open
+from settings import model_dir
+from src.utils.base_model import load_model, time_function
+from src.utils.logging import get_logger
+from src.utils.db import run_query
+from src.utils.general import safe_open
 
 logger = get_logger()
 
@@ -162,6 +162,9 @@ class BaseModel:
         main_performance_metric = self.performance_metrics[0].__name__
         new_performance = self.performance.get(main_performance_metric)
         old_performance = self.previous_model.performance.get(main_performance_metric)
+        if old_performance is None:
+            logger.info('No performance data for previous model, using new model.')
+            return True
         if new_performance > old_performance:
             logger.info('New model beats previous model. Replacing this model')
             logger.info('{}: Previous Model: {}, New Model: {}'.format(

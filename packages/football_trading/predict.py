@@ -1,19 +1,19 @@
 import pandas as pd
 
-from packages.football_trading.src.models.MatchResultXGBoostModel import MatchResultXGBoost
-from packages.football_trading.src.utils.api import get_upcoming_games
-from packages.football_trading.src.update_tables import update_tables
-from packages.football_trading.src.utils.db import run_query, connect_to_db
-from packages.football_trading.logging_config import get_logger
+from src.models.MatchResultXGBoostModel import MatchResultXGBoost
+from src.utils.api import get_upcoming_games
+from src.update_tables import update_tables
+from src.utils.db import run_query, connect_to_db
+from src.utils.logging import get_logger
 
 logger = get_logger()
 
 
-def predict():
-    # Get the current season
-    current_season = run_query(query='select max(season) from main_fixtures').iloc[0, 0]
+def make_predictions():
     # Update tables
     update_tables()
+    # Get the current season
+    current_season = run_query(query='select max(season) from main_fixtures').iloc[0, 0]
     # Load the in-production model
     model = MatchResultXGBoost(load_trained_model=True, problem_name='match-predict-base')
     # Get upcoming games (that we haven't predicted)
@@ -47,4 +47,4 @@ def predict():
 
 
 if __name__ == '__main__':
-    predict()
+    make_predictions()

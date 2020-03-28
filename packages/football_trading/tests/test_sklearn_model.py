@@ -1,4 +1,4 @@
-from packages.football_trading.logging_config import get_logger
+from src.utils.logging import get_logger
 from packages.football_trading.src.models.templates.sklearn_model import SKLearnModel
 from sklearn.linear_model import LogisticRegression
 

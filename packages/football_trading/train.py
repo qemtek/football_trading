@@ -1,20 +1,20 @@
-from packages.football_trading.src.models.MatchResultXGBoostModel import MatchResultXGBoost
-from packages.football_trading.src.update_tables import update_tables
-from packages.football_trading.logging_config import get_logger
+from src.models.MatchResultXGBoostModel import MatchResultXGBoost
+from src.update_tables import update_tables
+from src.utils.logging import get_logger
 
 logger = get_logger()
 
 
-def train():
+def train_new_model(problem_name='match_predict_base'):
     # Update tables
     update_tables()
     # Train new model
     MatchResultXGBoost(
         upload_historic_predictions=True,
-        problem_name='match-predict-base',
+        problem_name=problem_name,
         production_model=True,
         compare_models=True)
 
 
 if __name__ == '__main__':
-    train()
+    train_new_model()

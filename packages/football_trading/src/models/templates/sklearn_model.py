@@ -5,11 +5,11 @@ import joblib
 
 from sklearn.model_selection import GridSearchCV, KFold
 
-from packages.football_trading.configuration import project_dir
-from packages.football_trading.src.utils.base_model import time_function
-from packages.football_trading.src.utils.general import safe_open
-from packages.football_trading.src.models.templates.base_model import BaseModel
-from packages.football_trading.logging_config import get_logger
+from settings import PROJECTSPATH
+from src.utils.base_model import time_function
+from src.utils.general import safe_open
+from src.models.templates.base_model import BaseModel
+from src.utils.logging import get_logger
 
 logger = get_logger()
 
@@ -88,6 +88,6 @@ class SKLearnModel(BaseModel):
                 str(self.performance.get(main_performance_metric))))
         # Save the data used to train the model
         data_save_dir = os.path.join(
-            project_dir, 'data', 'training_data', self.model_id + '.joblib')
+            PROJECTSPATH, 'data', 'training_data', self.model_id + '.joblib')
         with safe_open(data_save_dir, 'wb') as f_out:
             joblib.dump(self.training_data, f_out)

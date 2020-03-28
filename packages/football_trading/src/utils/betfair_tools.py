@@ -1,12 +1,10 @@
-from packages.football_trading.configuration_private import betfair_credentials
 import betfairlightweight
 
+from settings import BFEX_USER, BFEX_PASSWORD, BFEX_APP_KEY, BFEX_CERTS_PATH
 
-def betfair_login():
-    """Log into the Betfair Exchange API using credentials stored in configuration.py"""
-    usr = betfair_credentials["betfairlightweight"]["username"]
-    pw = betfair_credentials["betfairlightweight"]["password"]
-    app_key = betfair_credentials["betfairlightweight"]["app_key"]
-    certs = betfair_credentials["betfairlightweight"]["certs"]
-    trading = betfairlightweight.APIClient(usr, pw, app_key=app_key, certs=certs)
+
+def connect_to_betfair():
+    """Log into the Betfair Exchange API using credentials stored in the environment/configuration.py"""
+    trading = betfairlightweight.APIClient(
+        username=BFEX_USER, password=BFEX_PASSWORD, app_key=BFEX_APP_KEY, certs=BFEX_CERTS_PATH)
     return trading

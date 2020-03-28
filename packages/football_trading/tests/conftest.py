@@ -2,13 +2,13 @@ import os
 import pandas as pd
 import pytest
 
-from packages.api.api import app
-from packages.football_trading import project_dir
+from packages.api.api_old import app
+from packages.football_trading import PROJECTSPATH
 
 
 @pytest.fixture
 def test_dataset():
-    test_data_dir = os.path.join(project_dir, 'tests', 'test_data.csv')
+    test_data_dir = os.path.join(PROJECTSPATH, 'tests', 'test_data.csv')
     yield pd.read_csv(test_data_dir)
 
 

@@ -1,6 +1,6 @@
 import os
 
-from packages.football_trading.configuration import project_dir
+from packages.football_trading.configuration import PROJECTSPATH
 
-with open(os.path.join(project_dir, 'VERSION')) as version_file:
+with open(os.path.join(PROJECTSPATH, 'VERSION')) as version_file:
     __version__ = version_file.read().strip()

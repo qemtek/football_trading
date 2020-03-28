@@ -4,8 +4,8 @@ import os
 import time
 from functools import wraps
 
-from packages.football_trading.configuration import available_models, model_dir
-from packages.football_trading.src.utils.general import safe_open
+from settings import available_models, model_dir
+from src.utils.general import safe_open
 
 
 # Check if the model type is an accepted one
