@@ -8,7 +8,7 @@ from pathlib import Path
 from setuptools import find_packages, setup
 
 # Package meta-data
-NAME = 'footballtrading'
+NAME = 'football_trading'
 DESCRIPTION = 'Football prediction model for football markets.'
 URL = 'https://github.com/qemtek/football_trading'
 EMAIL = 'qemtek@gmail.com'
@@ -32,7 +32,7 @@ except FileNotFoundError:
     long_description = DESCRIPTION
 
 ROOT_DIR = Path(__file__).resolve().parent
-PACKAGE_DIR = f"{ROOT_DIR}"
+PACKAGE_DIR = f"{ROOT_DIR}/football_trading"
 about = {}
 with open(f"{PACKAGE_DIR}/VERSION") as f:
     _version = f.read().strip()
@@ -49,7 +49,7 @@ setup(
     python_requires=REQUIRES_PYTHON,
     url=URL,
     packages=find_packages(exclude=('tests',)),
-    package_data={'footballtrading': ['VERSION']},
+    package_data={'football_trading': ['VERSION']},
     install_requires=list_reqs(),
     extras_require={},
     include_package_data=True,

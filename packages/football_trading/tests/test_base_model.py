@@ -5,7 +5,7 @@ import pytest
 
 from sklearn.linear_model import LogisticRegression
 
-from packages.football_trading.src.models.templates.base_model import BaseModel
+from football_trading.src.models.templates.base_model import BaseModel
 from packages.football_trading import model_dir
 
 

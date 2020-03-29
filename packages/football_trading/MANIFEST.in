@@ -1,12 +1,14 @@
 include *.txt
-include *.joblib
-include *.sqlite
 include *.md
+include *.cfg
+include *.pkl
 recursive-include ./football_trading/*
 
-include football_trading/data/db.sqlite
-include football_trading/training_data/*
+include football_trading/data/*
 include football_trading/models/*
+include football_trading/sql/*
+include football_trading/src/*
+
 include football_trading/VERSION
 
 include ./requirements.txt

@@ -31,9 +31,9 @@ def train():
         train_new_model()
 
 
-@prediction_app.route('/v1/run_dashboard', methods=['POST'])
+@prediction_app.route('/v1/update_dashboard', methods=['GET'])
 def dashboard():
-    if request.method == 'POST':
+    if request.method == 'GET':
         _logger.info(f'Starting/refreshing model performance dashboard')
-        app = get_dashboard_app()
+        app = get_dashboard_app(server=prediction_app)
         return app.index()
