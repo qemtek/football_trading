@@ -13,10 +13,12 @@ scheduler.init_app(application)
 
 # Add scheduled jobs
 # Run the train method every week (it wont actually train if there are no new games)
-application.apscheduler.add_job(func=train_new_model, trigger='cron', day_of_week=2,
-                                hour=1, id=1, replace_existing=True, max_instances=1)
+application.apscheduler.add_job(
+    func=train_new_model, trigger='cron', day_of_week=2, hour=1, id=1, replace_existing=True, max_instances=1)
 # Run the predict method every day (it wont actually run if there are no new games)
-application.apscheduler.add_job(func=make_predictions, trigger='cron', hour=2, id=2,
-                                replace_existing=True, max_instances=1)
-scheduler.start()
-application.run()
+application.apscheduler.add_job(
+    func=make_predictions, trigger='cron', hour=2, id=2, replace_existing=True, max_instances=1)
+
+if __name__ == '__main__':
+    scheduler.start()
+    application.run()
