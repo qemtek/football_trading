@@ -1,8 +1,9 @@
 import logging
 from logging.handlers import TimedRotatingFileHandler
 import pathlib
-import os
 import sys
+
+from utils.configuration import get_attribute
 
 PACKAGE_ROOT = pathlib.Path(__file__).resolve().parent.parent
 
@@ -49,16 +50,25 @@ def get_logger(*, logger_name):
 class Config:
     DEBUG = False
     TESTING = False
+    DEVELOPMENT = False
     CSRF_ENABLED = True
     SECRET_KEY = 'this-really-needs-to-be-changed'
-    SERVER_PORT = 5000
     UPLOAD_FOLDER = UPLOAD_FOLDER
+    SERVER_ADDRESS = get_attribute('SERVER_ADDRESS')
+    SERVER_PORT = get_attribute('SERVER_PORT')
+    JOBS = [
+        {
+            'id': 'job1',
+            'func': 'jobs:job1',
+            'args': (1, 2),
+            'trigger': 'interval',
+            'seconds': 10
+        }
+    ]
 
 
 class ProductionConfig(Config):
     DEBUG = False
-    SERVER_ADDRESS: os.environ.get('SERVER_ADDRESS', '0.0.0.0')
-    SERVER_PORT: os.environ.get('SERVER_PORT', '5000')
 
 
 class DevelopmentConfig(Config):
