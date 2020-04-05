@@ -1,0 +1,8 @@
+jupyter_notebooks*
+*/env/*
+.circleci*
+packages/football_trading
+*.env
+*.log
+.git
+.gitignore
