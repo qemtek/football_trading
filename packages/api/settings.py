@@ -15,7 +15,4 @@ elif MODE == 'dev':
 elif MODE == 'test':
     config = TestingConfig
 
-FORMATTER = logging.Formatter(
-    "%(asctime)s - %(name)s - %(levelname)s - "
-    "%(funcName)s:%(lineno)d - %(message)s")
-LOG_FILE = f"{PROJECTSPATH}/logs/model.log"
+

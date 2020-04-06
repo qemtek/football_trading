@@ -11,3 +11,4 @@ football_trading/logs/*
 *.pyc
 football_trading/configuration_private.py
 football_trading/certs/*
+packages/football_trading/.tox/*

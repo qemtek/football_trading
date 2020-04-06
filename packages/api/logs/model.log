@@ -1,0 +1,144 @@
+2020-04-06 10:02:54,074 - utils.configuration - WARNING - get_attribute:20 - SERVER_ADDRESS is not specified as an environment variable
+2020-04-06 10:02:54,074 - utils.configuration - WARNING - get_attribute:22 - Retrieving SERVER_ADDRESS from configuration.py file
+2020-04-06 10:02:54,074 - utils.configuration - WARNING - get_attribute:20 - SERVER_PORT is not specified as an environment variable
+2020-04-06 10:02:54,075 - utils.configuration - WARNING - get_attribute:22 - Retrieving SERVER_PORT from configuration.py file
+2020-04-06 10:06:48,620 - utils.configuration - WARNING - get_attribute:14 - SERVER_ADDRESS is not specified as an environment variable
+2020-04-06 10:06:48,620 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_ADDRESS from configuration.py file
+2020-04-06 10:06:48,620 - utils.configuration - WARNING - get_attribute:14 - SERVER_PORT is not specified as an environment variable
+2020-04-06 10:06:48,620 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_PORT from configuration.py file
+2020-04-06 10:10:41,777 - utils.configuration - WARNING - get_attribute:14 - SERVER_ADDRESS is not specified as an environment variable
+2020-04-06 10:10:41,777 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_ADDRESS from configuration.py file
+2020-04-06 10:10:41,777 - utils.configuration - WARNING - get_attribute:14 - SERVER_PORT is not specified as an environment variable
+2020-04-06 10:10:41,778 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_PORT from configuration.py file
+2020-04-06 10:11:16,009 - utils.configuration - WARNING - get_attribute:14 - SERVER_ADDRESS is not specified as an environment variable
+2020-04-06 10:11:16,009 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_ADDRESS from configuration.py file
+2020-04-06 10:11:16,009 - utils.configuration - WARNING - get_attribute:14 - SERVER_PORT is not specified as an environment variable
+2020-04-06 10:11:16,009 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_PORT from configuration.py file
+2020-04-06 10:11:19,241 - utils.configuration - WARNING - get_attribute:14 - SERVER_ADDRESS is not specified as an environment variable
+2020-04-06 10:11:19,241 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_ADDRESS from configuration.py file
+2020-04-06 10:11:19,241 - utils.configuration - WARNING - get_attribute:14 - SERVER_PORT is not specified as an environment variable
+2020-04-06 10:11:19,241 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_PORT from configuration.py file
+2020-04-06 10:11:19,241 - utils.configuration - WARNING - get_attribute:14 - PROJECTSPATH is not specified as an environment variable
+2020-04-06 10:11:19,241 - utils.configuration - WARNING - get_attribute:16 - Retrieving PROJECTSPATH from configuration.py file
+2020-04-06 10:11:19,241 - utils.configuration - WARNING - get_attribute:14 - MODE is not specified as an environment variable
+2020-04-06 10:11:19,241 - utils.configuration - WARNING - get_attribute:16 - Retrieving MODE from configuration.py file
+2020-04-06 10:13:22,851 - utils.configuration - WARNING - get_attribute:14 - SERVER_ADDRESS is not specified as an environment variable
+2020-04-06 10:13:22,851 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_ADDRESS from configuration.py file
+2020-04-06 10:13:22,851 - utils.configuration - WARNING - get_attribute:14 - SERVER_PORT is not specified as an environment variable
+2020-04-06 10:13:22,851 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_PORT from configuration.py file
+2020-04-06 10:13:24,290 - utils.configuration - WARNING - get_attribute:14 - SERVER_ADDRESS is not specified as an environment variable
+2020-04-06 10:13:24,290 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_ADDRESS from configuration.py file
+2020-04-06 10:13:24,290 - utils.configuration - WARNING - get_attribute:14 - SERVER_PORT is not specified as an environment variable
+2020-04-06 10:13:24,290 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_PORT from configuration.py file
+2020-04-06 10:13:24,290 - utils.configuration - WARNING - get_attribute:14 - PROJECTSPATH is not specified as an environment variable
+2020-04-06 10:13:24,290 - utils.configuration - WARNING - get_attribute:16 - Retrieving PROJECTSPATH from configuration.py file
+2020-04-06 10:13:24,291 - utils.configuration - WARNING - get_attribute:14 - MODE is not specified as an environment variable
+2020-04-06 10:13:24,291 - utils.configuration - WARNING - get_attribute:16 - Retrieving MODE from configuration.py file
+2020-04-06 10:13:56,266 - utils.configuration - WARNING - get_attribute:14 - SERVER_ADDRESS is not specified as an environment variable
+2020-04-06 10:13:56,267 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_ADDRESS from configuration.py file
+2020-04-06 10:13:56,267 - utils.configuration - WARNING - get_attribute:14 - SERVER_PORT is not specified as an environment variable
+2020-04-06 10:13:56,267 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_PORT from configuration.py file
+2020-04-06 10:13:57,647 - utils.configuration - WARNING - get_attribute:14 - SERVER_ADDRESS is not specified as an environment variable
+2020-04-06 10:13:57,647 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_ADDRESS from configuration.py file
+2020-04-06 10:13:57,647 - utils.configuration - WARNING - get_attribute:14 - SERVER_PORT is not specified as an environment variable
+2020-04-06 10:13:57,647 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_PORT from configuration.py file
+2020-04-06 10:13:57,647 - utils.configuration - WARNING - get_attribute:14 - PROJECTSPATH is not specified as an environment variable
+2020-04-06 10:13:57,647 - utils.configuration - WARNING - get_attribute:16 - Retrieving PROJECTSPATH from configuration.py file
+2020-04-06 10:13:57,647 - utils.configuration - WARNING - get_attribute:14 - MODE is not specified as an environment variable
+2020-04-06 10:13:57,647 - utils.configuration - WARNING - get_attribute:16 - Retrieving MODE from configuration.py file
+2020-04-06 10:16:38,021 - utils.configuration - WARNING - get_attribute:14 - SERVER_ADDRESS is not specified as an environment variable
+2020-04-06 10:16:38,021 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_ADDRESS from configuration.py file
+2020-04-06 10:16:38,021 - utils.configuration - WARNING - get_attribute:14 - SERVER_PORT is not specified as an environment variable
+2020-04-06 10:16:38,021 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_PORT from configuration.py file
+2020-04-06 10:16:39,504 - utils.configuration - WARNING - get_attribute:14 - SERVER_ADDRESS is not specified as an environment variable
+2020-04-06 10:16:39,505 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_ADDRESS from configuration.py file
+2020-04-06 10:16:39,505 - utils.configuration - WARNING - get_attribute:14 - SERVER_PORT is not specified as an environment variable
+2020-04-06 10:16:39,505 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_PORT from configuration.py file
+2020-04-06 10:16:39,505 - utils.configuration - WARNING - get_attribute:14 - PROJECTSPATH is not specified as an environment variable
+2020-04-06 10:16:39,505 - utils.configuration - WARNING - get_attribute:16 - Retrieving PROJECTSPATH from configuration.py file
+2020-04-06 10:16:39,505 - utils.configuration - WARNING - get_attribute:14 - MODE is not specified as an environment variable
+2020-04-06 10:16:39,505 - utils.configuration - WARNING - get_attribute:16 - Retrieving MODE from configuration.py file
+2020-04-06 11:19:17,016 - utils.configuration - WARNING - get_attribute:14 - SERVER_ADDRESS is not specified as an environment variable
+2020-04-06 11:19:17,016 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_ADDRESS from configuration.py file
+2020-04-06 11:19:17,017 - utils.configuration - WARNING - get_attribute:14 - SERVER_PORT is not specified as an environment variable
+2020-04-06 11:19:17,017 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_PORT from configuration.py file
+2020-04-06 11:19:18,209 - utils.configuration - WARNING - get_attribute:14 - SERVER_ADDRESS is not specified as an environment variable
+2020-04-06 11:19:18,210 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_ADDRESS from configuration.py file
+2020-04-06 11:19:18,210 - utils.configuration - WARNING - get_attribute:14 - SERVER_PORT is not specified as an environment variable
+2020-04-06 11:19:18,210 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_PORT from configuration.py file
+2020-04-06 11:19:18,210 - utils.configuration - WARNING - get_attribute:14 - PROJECTSPATH is not specified as an environment variable
+2020-04-06 11:19:18,210 - utils.configuration - WARNING - get_attribute:16 - Retrieving PROJECTSPATH from configuration.py file
+2020-04-06 11:19:18,210 - utils.configuration - WARNING - get_attribute:14 - MODE is not specified as an environment variable
+2020-04-06 11:19:18,210 - utils.configuration - WARNING - get_attribute:16 - Retrieving MODE from configuration.py file
+2020-04-06 11:45:14,370 - utils.configuration - WARNING - get_attribute:14 - SERVER_ADDRESS is not specified as an environment variable
+2020-04-06 11:45:14,371 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_ADDRESS from configuration.py file
+2020-04-06 11:45:14,372 - utils.configuration - WARNING - get_attribute:14 - SERVER_PORT is not specified as an environment variable
+2020-04-06 11:45:14,372 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_PORT from configuration.py file
+2020-04-06 11:45:17,037 - utils.configuration - WARNING - get_attribute:14 - SERVER_ADDRESS is not specified as an environment variable
+2020-04-06 11:45:17,037 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_ADDRESS from configuration.py file
+2020-04-06 11:45:17,037 - utils.configuration - WARNING - get_attribute:14 - SERVER_PORT is not specified as an environment variable
+2020-04-06 11:45:17,037 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_PORT from configuration.py file
+2020-04-06 11:45:17,037 - utils.configuration - WARNING - get_attribute:14 - PROJECTSPATH is not specified as an environment variable
+2020-04-06 11:45:17,037 - utils.configuration - WARNING - get_attribute:16 - Retrieving PROJECTSPATH from configuration.py file
+2020-04-06 11:45:17,037 - utils.configuration - WARNING - get_attribute:14 - MODE is not specified as an environment variable
+2020-04-06 11:45:17,037 - utils.configuration - WARNING - get_attribute:16 - Retrieving MODE from configuration.py file
+2020-04-06 12:43:18,335 - utils.configuration - WARNING - get_attribute:14 - SERVER_ADDRESS is not specified as an environment variable
+2020-04-06 12:43:18,335 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_ADDRESS from configuration.py file
+2020-04-06 12:43:18,335 - utils.configuration - WARNING - get_attribute:14 - SERVER_PORT is not specified as an environment variable
+2020-04-06 12:43:18,335 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_PORT from configuration.py file
+2020-04-06 12:43:21,205 - utils.configuration - WARNING - get_attribute:14 - SERVER_ADDRESS is not specified as an environment variable
+2020-04-06 12:43:21,205 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_ADDRESS from configuration.py file
+2020-04-06 12:43:21,205 - utils.configuration - WARNING - get_attribute:14 - SERVER_PORT is not specified as an environment variable
+2020-04-06 12:43:21,205 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_PORT from configuration.py file
+2020-04-06 12:43:21,205 - utils.configuration - WARNING - get_attribute:14 - PROJECTSPATH is not specified as an environment variable
+2020-04-06 12:43:21,205 - utils.configuration - WARNING - get_attribute:16 - Retrieving PROJECTSPATH from configuration.py file
+2020-04-06 12:43:21,205 - utils.configuration - WARNING - get_attribute:14 - MODE is not specified as an environment variable
+2020-04-06 12:43:21,205 - utils.configuration - WARNING - get_attribute:16 - Retrieving MODE from configuration.py file
+2020-04-06 12:46:57,931 - utils.configuration - WARNING - get_attribute:14 - SERVER_ADDRESS is not specified as an environment variable
+2020-04-06 12:46:57,931 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_ADDRESS from configuration.py file
+2020-04-06 12:46:57,931 - utils.configuration - WARNING - get_attribute:14 - SERVER_PORT is not specified as an environment variable
+2020-04-06 12:46:57,931 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_PORT from configuration.py file
+2020-04-06 12:47:00,678 - utils.configuration - WARNING - get_attribute:14 - SERVER_ADDRESS is not specified as an environment variable
+2020-04-06 12:47:00,679 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_ADDRESS from configuration.py file
+2020-04-06 12:47:00,679 - utils.configuration - WARNING - get_attribute:14 - SERVER_PORT is not specified as an environment variable
+2020-04-06 12:47:00,679 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_PORT from configuration.py file
+2020-04-06 12:47:00,679 - utils.configuration - WARNING - get_attribute:14 - PROJECTSPATH is not specified as an environment variable
+2020-04-06 12:47:00,679 - utils.configuration - WARNING - get_attribute:16 - Retrieving PROJECTSPATH from configuration.py file
+2020-04-06 12:47:00,679 - utils.configuration - WARNING - get_attribute:14 - MODE is not specified as an environment variable
+2020-04-06 12:47:00,679 - utils.configuration - WARNING - get_attribute:16 - Retrieving MODE from configuration.py file
+2020-04-06 12:48:37,365 - utils.configuration - WARNING - get_attribute:14 - SERVER_ADDRESS is not specified as an environment variable
+2020-04-06 12:48:37,366 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_ADDRESS from configuration.py file
+2020-04-06 12:48:37,366 - utils.configuration - WARNING - get_attribute:14 - SERVER_PORT is not specified as an environment variable
+2020-04-06 12:48:37,366 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_PORT from configuration.py file
+2020-04-06 12:48:38,817 - utils.configuration - WARNING - get_attribute:14 - SERVER_ADDRESS is not specified as an environment variable
+2020-04-06 12:48:38,817 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_ADDRESS from configuration.py file
+2020-04-06 12:48:38,817 - utils.configuration - WARNING - get_attribute:14 - SERVER_PORT is not specified as an environment variable
+2020-04-06 12:48:38,817 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_PORT from configuration.py file
+2020-04-06 12:48:38,817 - utils.configuration - WARNING - get_attribute:14 - PROJECTSPATH is not specified as an environment variable
+2020-04-06 12:48:38,817 - utils.configuration - WARNING - get_attribute:16 - Retrieving PROJECTSPATH from configuration.py file
+2020-04-06 12:48:38,817 - utils.configuration - WARNING - get_attribute:14 - MODE is not specified as an environment variable
+2020-04-06 12:48:38,818 - utils.configuration - WARNING - get_attribute:16 - Retrieving MODE from configuration.py file
+2020-04-06 12:50:28,208 - utils.configuration - WARNING - get_attribute:14 - SERVER_ADDRESS is not specified as an environment variable
+2020-04-06 12:50:28,208 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_ADDRESS from configuration.py file
+2020-04-06 12:50:28,208 - utils.configuration - WARNING - get_attribute:14 - SERVER_PORT is not specified as an environment variable
+2020-04-06 12:50:28,208 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_PORT from configuration.py file
+2020-04-06 12:50:29,850 - utils.configuration - WARNING - get_attribute:14 - SERVER_ADDRESS is not specified as an environment variable
+2020-04-06 12:50:29,850 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_ADDRESS from configuration.py file
+2020-04-06 12:50:29,850 - utils.configuration - WARNING - get_attribute:14 - SERVER_PORT is not specified as an environment variable
+2020-04-06 12:50:29,851 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_PORT from configuration.py file
+2020-04-06 12:50:29,851 - utils.configuration - WARNING - get_attribute:14 - PROJECTSPATH is not specified as an environment variable
+2020-04-06 12:50:29,851 - utils.configuration - WARNING - get_attribute:16 - Retrieving PROJECTSPATH from configuration.py file
+2020-04-06 12:50:29,851 - utils.configuration - WARNING - get_attribute:14 - MODE is not specified as an environment variable
+2020-04-06 12:50:29,851 - utils.configuration - WARNING - get_attribute:16 - Retrieving MODE from configuration.py file
+2020-04-06 12:51:23,921 - utils.configuration - WARNING - get_attribute:14 - SERVER_ADDRESS is not specified as an environment variable
+2020-04-06 12:51:23,921 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_ADDRESS from configuration.py file
+2020-04-06 12:51:23,921 - utils.configuration - WARNING - get_attribute:14 - SERVER_PORT is not specified as an environment variable
+2020-04-06 12:51:23,921 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_PORT from configuration.py file
+2020-04-06 12:51:25,529 - utils.configuration - WARNING - get_attribute:14 - SERVER_ADDRESS is not specified as an environment variable
+2020-04-06 12:51:25,529 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_ADDRESS from configuration.py file
+2020-04-06 12:51:25,529 - utils.configuration - WARNING - get_attribute:14 - SERVER_PORT is not specified as an environment variable
+2020-04-06 12:51:25,530 - utils.configuration - WARNING - get_attribute:16 - Retrieving SERVER_PORT from configuration.py file
+2020-04-06 12:51:25,530 - utils.configuration - WARNING - get_attribute:14 - PROJECTSPATH is not specified as an environment variable
+2020-04-06 12:51:25,530 - utils.configuration - WARNING - get_attribute:16 - Retrieving PROJECTSPATH from configuration.py file
+2020-04-06 12:51:25,530 - utils.configuration - WARNING - get_attribute:14 - MODE is not specified as an environment variable
+2020-04-06 12:51:25,530 - utils.configuration - WARNING - get_attribute:16 - Retrieving MODE from configuration.py file

@@ -21,3 +21,4 @@ dash-html-components==1.0.2
 plotly==4.5.0
 setuptools==40.6.3
 wheel==0.32.3
+tox==3.14.6

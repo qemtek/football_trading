@@ -20,7 +20,7 @@ import plotly.graph_objects as go
 import os
 import joblib
 
-from football_trading.settings import PROJECTSPATH, model_dir
+from football_trading.settings import model_dir, training_data_dir
 from football_trading.src.utils.logging import get_logger
 from football_trading.src.utils.dashboard import (
     get_form_dif_view, get_team_home_away_performance, get_performance_by_season,
@@ -58,7 +58,6 @@ def get_dashboard_app(server=None):
     all_model_ids = historic_df_all['model_id'].unique()
 
     # Get the training data corresponding to all models
-    training_data_dir = os.path.join(PROJECTSPATH, 'data', 'training_data')
     historic_training_data = pd.DataFrame()
     for id in all_model_ids:
         df = joblib.load(os.path.join(training_data_dir, id + '.joblib'))
@@ -103,7 +102,7 @@ def get_dashboard_app(server=None):
                     # Use the server if its a Flask object, else create our own
                     server=server if isinstance(server, Flask) else True,
                     external_stylesheets=[dbc.themes.BOOTSTRAP],
-                    url_base_pathname='/')
+                    url_base_pathname='/dashboard/')
     app.config.suppress_callback_exceptions = True
 
     if len(latest_preds) > 0:

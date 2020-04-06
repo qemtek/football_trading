@@ -5,7 +5,7 @@ import sys
 
 from utils.configuration import get_attribute
 
-PACKAGE_ROOT = pathlib.Path(__file__).resolve().parent.parent
+PACKAGE_ROOT = pathlib.Path(__file__).resolve().parent
 
 FORMATTER = logging.Formatter(
     "%(asctime)s — %(name)s — %(levelname)s —"
@@ -56,15 +56,6 @@ class Config:
     UPLOAD_FOLDER = UPLOAD_FOLDER
     SERVER_ADDRESS = get_attribute('SERVER_ADDRESS')
     SERVER_PORT = get_attribute('SERVER_PORT')
-    JOBS = [
-        {
-            'id': 'job1',
-            'func': 'jobs:job1',
-            'args': (1, 2),
-            'trigger': 'interval',
-            'seconds': 10
-        }
-    ]
 
 
 class ProductionConfig(Config):

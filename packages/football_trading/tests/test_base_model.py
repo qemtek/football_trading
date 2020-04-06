@@ -6,7 +6,7 @@ import pytest
 from sklearn.linear_model import LogisticRegression
 
 from football_trading.src.models.templates.base_model import BaseModel
-from packages.football_trading import model_dir
+from football_trading.settings import model_dir
 
 
 @pytest.mark.basemodel
@@ -18,13 +18,12 @@ def test_save_model():
     model.trained_model.model_id = model.model_id
     model.save_model()
     # Try loading the dummy model and check that everything is correct
-    file_name = '{}_{}_{}.joblib'.format(
-        model.problem_name, model.model_type, str(dt.datetime.today().date()))
+    file_name = f'{model.model_id}.joblib'
     save_dir = os.path.join(model_dir, file_name)
     loaded_model = joblib.load(open(save_dir, "rb"))
     # Clean up file
     os.remove(save_dir)
-    assert model.trained_model is loaded_model.trained_model
+    assert model.model_id == loaded_model.model_id, 'Save model has not worked correctly'
 
 
 @pytest.mark.basemodel
@@ -40,12 +39,11 @@ def test_load_model():
         problem_name='test',
         load_trained_model=True)
     # Clean up files
-    file_name = '{}_{}_{}.joblib'.format(
-        model.problem_name, model.model_type, str(dt.datetime.today().date()))
+    file_name = f'{model.model_id}.joblib'
     save_dir = os.path.join(model_dir, file_name)
     # Clean up file
     os.remove(save_dir)
-    assert model is model2
+    assert model.model_id == model2.model_id, 'Load model has not worked correctly'
 
 
 def test_get_logger():

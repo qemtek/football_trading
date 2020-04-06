@@ -15,11 +15,13 @@ def test_optimise_hyperparameters(test_dataset):
         "penalty": ["l2", "none"],
         "solver": ["newton-cg", "lbfgs", "sag", "saga"],
     }
-    X = test_dataset.drop('full_time_result_A')
-    y = test_dataset['full_time_result_a']
+    model.model_features = ['avg_goals_for_home', 'avg_goals_for_away']
+    X = test_dataset.drop('full_time_result_H', axis=1)
+    y = test_dataset['full_time_result_H']
     model.optimise_hyperparams(X=X, y=y)
-    # ToDo: Pick a dataset where optimization improves thee model,
+    # ToDo: Pick a dataset where optimization improves the model,
     #  then ensure it does this in the test
+
 
 def test_train_model():
     pass
