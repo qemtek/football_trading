@@ -1,7 +1,7 @@
 from flask_apscheduler import APScheduler
 
 from api.app import get_api
-from settings import SERVER_ADDRESS, SERVER_PORT
+from api.settings import SERVER_ADDRESS, SERVER_PORT
 from football_trading.predict import make_predictions
 from football_trading.train import train_new_model
 from football_trading.dashboard import get_dashboard_app

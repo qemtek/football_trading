@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import logging
 
-from football_trading.src.utils.db import run_query, connect_to_db
+from football_trading.src.utils.db import run_query
 
 logger = logging.getLogger()
 
@@ -240,17 +240,7 @@ def get_team_model_performance(x, model_id, home_team=True):
         model_id = '{}' and season = '{}' and home_id = {} 
         or away_id = {} and date < '{}'""".format(
             model_id, season, team_id, team_id, date))
-    return perf.iloc[0,0]
-
-
-def upload_to_table(df, table_name, model_id=None):
-    # Upload the predictions to the model_predictions table
-    conn = connect_to_db()
-    # Add model ID so we can compare model performances
-    if model_id is not None:
-        df['model_id'] = model_id
-    df.to_sql(table_name, con=conn, if_exists='append', index=False)
-    conn.close()
+    return perf.iloc[0, 0]
 
 
 def apply_profit_weight(x):

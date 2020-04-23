@@ -5,8 +5,8 @@ from api import __version__ as api_version
 from football_trading.predict import make_predictions
 from football_trading.train import train_new_model
 from football_trading.dashboard import get_dashboard_app
-from settings import config
-from api.config import get_logger
+from api.settings import config
+from api.utils.logging import get_logger
 
 _logger = get_logger(logger_name=__name__)
 

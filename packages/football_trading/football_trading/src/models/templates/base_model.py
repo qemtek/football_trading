@@ -5,10 +5,10 @@ import pandas as pd
 
 from sklearn.metrics import balanced_accuracy_score, accuracy_score
 
-from football_trading.settings import model_dir
+from football_trading.settings import model_dir, PRODUCTION_MODEL_NAME
 from football_trading.src.utils.base_model import load_model, time_function
 from football_trading.src.utils.logging import get_logger
-from football_trading.src.utils.db import run_query
+from football_trading.src.utils.db import run_query, connect_to_db
 from football_trading.src.utils.general import safe_open
 
 logger = get_logger()
@@ -108,7 +108,7 @@ class BaseModel:
         return NotImplemented
 
     @time_function(logger=logger)
-    def save_model(self, save_to_production=False) -> None:
+    def save_model(self) -> None:
         """Save a trained model to the models directory"""
 
         if self.trained_model is None:
@@ -125,7 +125,7 @@ class BaseModel:
             logger.info("Saving model to {} with joblib.".format(save_dir))
             with safe_open(save_dir, "wb") as f_out:
                 joblib.dump(self.trained_model, f_out)
-            if save_to_production:
+            if self.problem_name == PRODUCTION_MODEL_NAME:
                 save_dir = os.path.join(model_dir, 'in_production', file_name)
                 with safe_open(save_dir, "wb") as f_out:
                     joblib.dump(self.trained_model, f_out)
@@ -161,19 +161,33 @@ class BaseModel:
 
         main_performance_metric = self.performance_metrics[0].__name__
         new_performance = self.performance.get(main_performance_metric)
-        old_performance = self.previous_model.performance.get(main_performance_metric)
-        if old_performance is None:
+        try:
+            old_performance = self.previous_model.performance.get(main_performance_metric)
+            if old_performance is None:
+                logger.info('No performance data for previous model, using new model.')
+                return True
+            if new_performance > old_performance:
+                logger.info('New model beats previous model. Replacing this model')
+                logger.info('{}: Previous Model: {}, New Model: {}'.format(
+                    main_performance_metric, old_performance, new_performance
+                ))
+                return True
+            else:
+                logger.info('New model does not beat previous model.')
+                logger.info('{}: Previous Model: {}, New Model: {}'.format(
+                    main_performance_metric, old_performance, new_performance
+                ))
+                return False
+        except AttributeError:
             logger.info('No performance data for previous model, using new model.')
             return True
-        if new_performance > old_performance:
-            logger.info('New model beats previous model. Replacing this model')
-            logger.info('{}: Previous Model: {}, New Model: {}'.format(
-                main_performance_metric, old_performance, new_performance
-            ))
-            return True
-        else:
-            logger.info('New model does not beat previous model.')
-            logger.info('{}: Previous Model: {}, New Model: {}'.format(
-                main_performance_metric, old_performance, new_performance
-            ))
-            return False
+
+    @time_function(logger=logger)
+    def upload_to_table(self, df, table_name, model_id=None):
+        # Upload the predictions to the model_predictions table
+        conn = connect_to_db()
+        # Add model ID so we can compare model performances
+        if model_id is not None:
+            df['model_id'] = model_id
+        df.to_sql(table_name, con=conn, if_exists='append', index=False)
+        conn.close()

@@ -1,0 +1,23 @@
+version: 2
+jobs:
+  test_model:
+    working_directory: ~/project
+    docker:
+      - image: circleci/python:3.7.2
+    steps:
+      - checkout
+      - run:
+          name: Running Tests
+          command: |
+            virtualenv venv
+            . venv/bin/activate
+            pip install --upgrade pip
+            pip install -r packages/football_trading/requirements.txt
+            # Should we download any data here?
+            py.test -vv packages/football_trading/tests
+
+workflows:
+  version: 2
+  test-all:
+    jobs:
+      - test_model

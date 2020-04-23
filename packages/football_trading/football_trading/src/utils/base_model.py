@@ -79,3 +79,5 @@ def fill_na_values(X):
     """Fill NA values in the data"""
     # ToDo: Add a data structure that specifies how to fill NA's for every column
     pass
+
+

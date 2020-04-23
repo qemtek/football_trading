@@ -1,16 +1,14 @@
 import pandas as pd
 import numpy as np
-import os
 
 from football_trading.src.models.templates.XGBoostModel import XGBoostModel
 from football_trading.src.utils.base_model import suspend_logging
 from football_trading.src.utils.base_model import time_function
 from football_trading.src.utils.db import run_query, connect_to_db
 from football_trading.src.utils.xgboost import get_features, get_manager_features, \
-    get_feature_data, get_manager, get_profit, upload_to_table, \
-    get_profit_betting_on_fav, apply_profit_weight
+    get_feature_data, get_manager, get_profit, get_profit_betting_on_fav, apply_profit_weight
 from football_trading.src.utils.team_id_functions import fetch_name
-from football_trading.settings import PROJECTSPATH
+from football_trading.settings import sql_dir, data_dir, plots_dir
 from football_trading.src.utils.logging import get_logger
 
 logger = get_logger()
@@ -21,7 +19,7 @@ class MatchResultXGBoost(XGBoostModel):
 
     def __init__(self, test_mode=False, load_trained_model=False, load_model_date=None,
                  save_trained_model=True, upload_historic_predictions=None, apply_sample_weight=False,
-                 compare_models=False, problem_name='match_predict', production_model=True):
+                 compare_models=False, problem_name='match_predict', production_model=True, create_plots=True):
         super().__init__(test_mode=test_mode, save_trained_model=save_trained_model,
                          load_trained_model=load_trained_model, load_model_date=load_model_date,
                          compare_models=compare_models,  problem_name=problem_name)
@@ -56,7 +54,7 @@ class MatchResultXGBoost(XGBoostModel):
             'manager_new_away', 'manager_age_away', 'win_rate_away', 'draw_rate_away', 'loss_rate_away',
             'home_advantage_sum_away', 'home_advantage_avg_away', 'home_odds', 'draw_odds',  'away_odds']
         # Specify the query itself, or the location of the query to retrieve the training data
-        self.training_data_query = os.path.join(PROJECTSPATH, 'sql', 'get_training_data.sql')
+        self.training_data_query = f"{sql_dir}/get_training_data.sql"
         # Train a model if one was not loaded
         if self.trained_model is None:
             logger.info("Training a new model.")
@@ -79,9 +77,8 @@ class MatchResultXGBoost(XGBoostModel):
             use_model = True if not self.compare_models else self.compare_latest_model()
             if use_model:
                 # Save the trained model, if requested
-                save_to_production = True if not self.test_mode and production_model else False
                 if self.save_trained_model and not test_mode:
-                    self.save_model(save_to_production=save_to_production)
+                    self.save_model()
                 # Add profit made if we bet on the game
                 self.model_predictions['profit'] = self.model_predictions.apply(
                     lambda x: get_profit(x), axis=1)
@@ -93,9 +90,19 @@ class MatchResultXGBoost(XGBoostModel):
                     upload_cols = ['fixture_id', 'home_team', 'away_team', 'season',
                                    'date', 'pred', 'actual', 'profit', 'profit_bof']
                     self.save_prediction_data(cols_to_save=upload_cols)
+            # Create plots if requested
+            if create_plots:
+                logger.info('Generating plots')
+                from football_trading.src.ModelEvaluator import ModelEvaluator
+                training_data = self.training_data
+                training_data['X_train'] = training_data['X_train'][self.model_features]
+                training_data['X_test'] = training_data['X_test'][self.model_features]
+                ModelEvaluator(training_data=training_data, trained_model=self.trained_model,
+                               model_id=self.model_id, is_classifier=False, plots_dir=plots_dir,
+                               data_dir=f"{data_dir}")
 
     def save_prediction_data(self, *, cols_to_save):
-        upload_to_table(
+        self.upload_to_table(
             df=self.model_predictions[cols_to_save],
             table_name='historic_predictions',
             model_id=self.model_id)

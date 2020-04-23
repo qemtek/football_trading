@@ -1,7 +1,7 @@
 import pytest
 
 from api.app import get_api
-from api.config import TestingConfig
+from api.configuration import TestingConfig
 
 
 @pytest.fixture
