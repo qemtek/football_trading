@@ -1,12 +1,9 @@
 import os
 
-from football_trading.settings import PROJECTSPATH
-
-if os.path.exists(f"{PROJECTSPATH}/configuration.py"):
+try:
     from football_trading import configuration
-else:
+except ModuleNotFoundError:
     configuration = {}
-
 
 def get_attribute(attribute_name, fail_if_not_found=True, accepts=None):
     """Get credentials attribute required in the project. First
