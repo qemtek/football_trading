@@ -1,7 +1,7 @@
 import os
 import logging
 
-from football_trading.src.utils.configuration import get_attribute
+from football_trading.src.utils.config import get_attribute
 
 PROJECTSPATH = get_attribute('PROJECTSPATH')
 IN_PRODUCTION = get_attribute('IN_PRODUCTION')
