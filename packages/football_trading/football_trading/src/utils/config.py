@@ -2,7 +2,7 @@ import os
 
 try:
     from football_trading import configuration
-except ModuleNotFoundError:
+except ImportError:
     configuration = {}
 
 def get_attribute(attribute_name, fail_if_not_found=True, accepts=None):
