@@ -1,6 +1,6 @@
 import os
 
-from football_trading.src.utils.configuration import get_attribute
+from football_trading.src.utils.config import get_attribute
 
 PROJECTSPATH = get_attribute('PROJECTSPATH')
 data_dir = os.path.join(PROJECTSPATH, 'football_trading', 'data')
