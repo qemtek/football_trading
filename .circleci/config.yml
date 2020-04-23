@@ -13,7 +13,7 @@ jobs:
             . venv/bin/activate
             pip install --upgrade pip
             pip install -r packages/football_trading/requirements.txt
-            echo 'export PROJECTSPATH=$CCI_PROJECTSPATH' >> $BASH_ENV
+            export PROJECTSPATH=$CCI_PROJECTSPATH
             # Should we download any data here?
             py.test -vv packages/football_trading/tests
 
