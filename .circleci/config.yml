@@ -14,6 +14,12 @@ jobs:
             pip install --upgrade pip
             pip install -r packages/football_trading/requirements.txt
             export PROJECTSPATH=$CCI_PROJECTSPATH
+            export IN_PRODUCTION=false
+            export BFEX_USER=$CCI_BFEX_USER
+            export BFEX_PASS=$CCI_BFEX_PASS
+            export BFEX_APP_KEY=$CCI_BFEX_APP_KEY
+            export BFEX_CERTS_PATH=$CCI_BFEX_CERTS_PATH
+            export RECREATE_DB=false
             # Should we download any data here?
             py.test -vv packages/football_trading/tests
 
