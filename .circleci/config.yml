@@ -5,7 +5,7 @@ jobs:
     docker:
       - image: circleci/python:3.7.2
     environment:
-      PROJECTSPATH: .
+      PROJECTSPATH: home/circleci/project/packages/football_trading
     steps:
       - checkout
       - run:
@@ -30,7 +30,7 @@ jobs:
     docker:
       - image: circleci/python:3.7.2
     environment:
-      PROJECTSPATH: .
+      PROJECTSPATH: home/circleci/project/packages/football_trading
     steps:
       - checkout
       - run:
