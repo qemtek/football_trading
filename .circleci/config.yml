@@ -12,6 +12,8 @@ jobs:
       - run:
           name: Running Tests
           command: |
+            echo $PROJECTSPATH
+            echo $DB_DIR
             virtualenv venv
             . venv/bin/activate
             pip install --upgrade pip
@@ -44,6 +46,8 @@ jobs:
       - run:
           name: Publish model
           command: |
+            echo $PROJECTSPATH
+            echo $DB_DIR
             . venv/bin/activate
             export IN_PRODUCTION=false
             export BFEX_USER=$CCI_BFEX_USER
