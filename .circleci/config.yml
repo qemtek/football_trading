@@ -28,21 +28,21 @@ jobs:
     working_directory: ~/project
     docker:
       - image: circleci/python:3.7.2
-      steps:
-        - checkout
-        - run:
-            name: Setup end
-            command: |
-              virtualenv venv
-              . venv/bin/activate
-              pip install -r packages/football_trading/requirements.txt
-        - run:
-            name: Publish model
-            command: |
-              . venv/bin/activate
-              chmod +x ./scripts/publish_model.sh
-              PYTHONPATH=./packages/football_trading python3 packages/football_trading/football_trading/train.py
-              ./scripts/publish_model.sh ./packages/football_trading/
+    steps:
+      - checkout
+      - run:
+          name: Setup end
+          command: |
+            virtualenv venv
+            . venv/bin/activate
+            pip install -r packages/football_trading/requirements.txt
+      - run:
+          name: Publish model
+          command: |
+            . venv/bin/activate
+            chmod +x ./scripts/publish_model.sh
+            PYTHONPATH=./packages/football_trading python3 packages/football_trading/football_trading/train.py
+            ./scripts/publish_model.sh ./packages/football_trading/
 workflows:
   version: 2
   test-all:
