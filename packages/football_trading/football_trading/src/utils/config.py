@@ -7,19 +7,19 @@ except ImportError:
 
 def get_attribute(attribute_name, fail_if_not_found=True, accepts=None):
     """Get credentials attribute required in the project. First
-    check the environment variables, then the logging.py file"""
+    check the environment variables, then the configuration file"""
 
     if os.environ.get(attribute_name) is None:
         print(f'{attribute_name} is not specified as an environment variable')
         if hasattr(configuration, attribute_name):
-            print(f'Retrieving {attribute_name} from logging.py file')
+            print(f'Retrieving {attribute_name} from configuration file')
             return getattr(configuration, attribute_name)
         else:
             if fail_if_not_found:
                 raise AttributeError(f'Cannot get {attribute_name} from environment or logging.py file')
             else:
                 print(f'Cannot get {attribute_name} from the environment or '
-                      f'logging.py file, returning None')
+                      f'configuration file, returning None')
                 return None
     else:
         attribute = os.environ.get(attribute_name)

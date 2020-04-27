@@ -31,12 +31,16 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Setup end
+          name: Setup env
           command: |
             virtualenv venv
             . venv/bin/activate
             pip install --upgrade pip
             pip install -r packages/football_trading/requirements.txt
+      - run:
+          name: Publish model
+          command: |
+            . venv/bin/activate
             export PROJECTSPATH=$CCI_PROJECTSPATH
             export IN_PRODUCTION=false
             export DB_DIR=$CCI_DB_DIR
@@ -46,10 +50,6 @@ jobs:
             export BFEX_CERTS_PATH=$CCI_BFEX_CERTS_PATH
             export PRODUCTION_MODEL_NAME=match-predict-base
             export RECREATE_DB=false
-      - run:
-          name: Publish model
-          command: |
-            . venv/bin/activate
             chmod +x ./scripts/publish_model.sh
             PYTHONPATH=./packages/football_trading python3 packages/football_trading/football_trading/train.py
             ./scripts/publish_model.sh ./packages/football_trading/
