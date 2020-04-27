@@ -43,6 +43,8 @@ class MatchResultXGBoost(XGBoostModel):
         self.model_predictions = None
         # A list of features used in the model
         self.model_features = [
+            # ToDo: Add home 1/0 to l1>5
+            # ToDo: Add yellows/reds to l1>5
             'avg_goals_for_home', 'avg_goals_against_home', 'avg_goals_for_ha_home', 'avg_goals_against_ha_home',
             'sd_goals_for_home', 'sd_goals_against_home', 'avg_shots_for_home', 'avg_shots_against_home',
             'sd_shots_for_home', 'sd_shots_against_home', 'avg_yellow_cards_home', 'avg_red_cards_home',
