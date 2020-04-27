@@ -49,6 +49,3 @@ workflows:
     jobs:
       - test_model
       - train_and_upload_model
-      - train_and_upload_model:
-          requires:
-            test_model
