@@ -5,8 +5,8 @@ jobs:
     docker:
       - image: circleci/python:3.7.2
     environment:
-      PROJECTSPATH: home/circleci/project/packages/football_trading
-      DB_DIR: home/circleci/project/packages/football_trading/db.sqlite
+      PROJECTSPATH: packages/football_trading
+      DB_DIR: db.sqlite
     steps:
       - checkout
       - run:
@@ -30,8 +30,8 @@ jobs:
     docker:
       - image: circleci/python:3.7.2
     environment:
-      PROJECTSPATH: home/circleci/project/packages/football_trading
-      DB_DIR: home/circleci/project/packages/football_trading/db.sqlite
+      PROJECTSPATH: packages/football_trading
+      DB_DIR: db.sqlite
     steps:
       - checkout
       - run:
