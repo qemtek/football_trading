@@ -20,6 +20,7 @@ dash-bootstrap-components==0.8.3
 dash-core-components==1.8.0
 dash-html-components==1.0.2
 plotly==4.5.0
+yellowbrick==1.1
 # Packaging
 setuptools==40.6.3
 wheel==0.32.3
