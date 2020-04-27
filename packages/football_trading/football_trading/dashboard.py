@@ -46,6 +46,7 @@ def get_dashboard_app(server=None):
     # Load the in-production model
     production_model_dir = os.path.join(model_dir, 'in_production')
     production_model = os.listdir(production_model_dir)
+    production_model = [m for m in production_model if '.DS' not in m]
     if len(production_model) > 0:
         logger.warning('There are two models in the in_production folder.. Picking the first one.')
     production_model_dir = os.path.join(production_model_dir, production_model[0])

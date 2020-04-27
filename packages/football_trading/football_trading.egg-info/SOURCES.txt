@@ -16,11 +16,10 @@ football_trading.egg-info/dependency_links.txt
 football_trading.egg-info/requires.txt
 football_trading.egg-info/top_level.txt
 football_trading/data/.DS_Store
+football_trading/data/match-predict-new-features_XGBClassifier_2020-04-27_1994276482785066659.joblib
 football_trading/models/.DS_Store
-football_trading/models/match-predict-base_XGBClassifier_2020-03-19_9043841277632698831.joblib
-football_trading/models/match-predict-form-weight_XGBClassifier_2020-03-14_6453249537459744634.joblib
-football_trading/models/match-predict-profit-weight_XGBClassifier_2020-03-14_4750080978856282696.joblib
-football_trading/models/match-predict-remove-redcards_XGBClassifier_2020-03-14_3232310003741256940.joblib
+football_trading/models/match-predict-new-features_XGBClassifier_2020-04-27_1994276482785066659.joblib
 football_trading/sql/get_training_data.sql
 football_trading/src/.DS_Store
+football_trading/src/ModelEvaluator.py
 football_trading/src/update_tables.py

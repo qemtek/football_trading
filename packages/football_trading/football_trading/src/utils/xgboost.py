@@ -69,7 +69,7 @@ def get_features_ha(row, index, team_data, window_length=8, type='home'):
                       (team_data['fixture_id'] < fixture_id)]
 
     # Get the last 8 games
-    df_filtered = df_filtered.sort_values('date').tail(window_length)
+    df_filtered = df_filtered.sort_values('date').tail(window_length).reset_index()
     # Create aggregated features
     df_output = pd.DataFrame()
     df_output.loc[index, 'avg_goals_for_' + type] = np.mean(df_filtered['goals_for'])
@@ -99,6 +99,18 @@ def get_features_ha(row, index, team_data, window_length=8, type='home'):
     ha_features = get_home_away_advantage(df_filtered, type)
     df_output.loc[index, 'home_advantage_sum_' + type] = ha_features[0]
     df_output.loc[index, 'home_advantage_avg_' + type] = ha_features[1]
+    # ToDo: Add win streak
+
+    # ToDo: Add game level metrics for the last 5 games
+    for i in range(1, 6):
+        df_output.loc[index, f'goals_for_l{i}_{type}'] = df_filtered.loc[int(len(df_filtered)-i), 'goals_for']
+        df_output.loc[index, f'goals_against_l{i}_{type}'] = df_filtered.loc[int(len(df_filtered)-i), 'goals_against']
+        df_output.loc[index, f'goal_difference_l{i}_{type}'] = df_output.loc[index, f'goals_for_l{i}_{type}'] - \
+                                                         df_output.loc[index, f'goals_against_l{i}_{type}']
+        df_output.loc[index, f'shots_for_l{i}_{type}'] = df_filtered.loc[int(len(df_filtered)-i), 'goals_for']
+        df_output.loc[index, f'shots_against_l{i}_{type}'] = df_filtered.loc[int(len(df_filtered)-i), 'shots_against']
+        df_output.loc[index, f'shot_difference_l{i}_{type}'] = df_output.loc[index, f'shots_for_l{i}_{type}'] - \
+                                                         df_output.loc[index, f'shots_against_l{i}_{type}']
     return df_output
 
 

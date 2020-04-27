@@ -5,7 +5,7 @@ import joblib
 
 from sklearn.model_selection import GridSearchCV, KFold
 
-from football_trading.settings import PROJECTSPATH
+from football_trading.settings import PROJECTSPATH, training_data_dir
 from football_trading.src.utils.base_model import time_function
 from football_trading.src.utils.general import safe_open
 from football_trading.src.models.templates.base_model import BaseModel
@@ -87,7 +87,6 @@ class SKLearnModel(BaseModel):
                 str(main_performance_metric),
                 str(self.performance.get(main_performance_metric))))
         # Save the data used to train the model
-        data_save_dir = os.path.join(
-            PROJECTSPATH, 'data', 'training_data', self.model_id + '.joblib')
+        data_save_dir = f"{training_data_dir}/{self.model_id}.joblib"
         with safe_open(data_save_dir, 'wb') as f_out:
             joblib.dump(self.training_data, f_out)

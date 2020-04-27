@@ -52,7 +52,26 @@ class MatchResultXGBoost(XGBoostModel):
             'sd_goals_against_away', 'avg_shots_for_away', 'avg_shots_against_away', 'sd_shots_for_away',
             'sd_shots_against_away', 'avg_yellow_cards_away', 'avg_red_cards_away', 'avg_perf_vs_bm_away',
             'manager_new_away', 'manager_age_away', 'win_rate_away', 'draw_rate_away', 'loss_rate_away',
-            'home_advantage_sum_away', 'home_advantage_avg_away', 'home_odds', 'draw_odds',  'away_odds']
+            'home_advantage_sum_away', 'home_advantage_avg_away', 'home_odds', 'draw_odds',  'away_odds',
+
+            'goals_for_l1_home', 'goals_for_l2_home','goals_for_l3_home','goals_for_l4_home','goals_for_l5_home',
+            'goals_against_l1_home', 'goals_against_l2_home','goals_against_l3_home','goals_against_l4_home',
+            'goals_against_l5_home', 'goal_difference_l1_home', 'goal_difference_l2_home',
+            'goal_difference_l3_home', 'goal_difference_l4_home', 'goal_difference_l5_home',
+            'shots_for_l1_home', 'shots_for_l2_home', 'shots_for_l3_home', 'shots_for_l4_home', 'shots_for_l5_home',
+            'shots_against_l1_home', 'shots_against_l2_home', 'shots_against_l3_home', 'shots_against_l4_home',
+            'shots_against_l5_home', 'shot_difference_l1_home', 'shot_difference_l2_home',
+            'shot_difference_l3_home', 'shot_difference_l4_home', 'shot_difference_l5_home',
+
+            'goals_for_l1_away', 'goals_for_l2_away', 'goals_for_l3_away', 'goals_for_l4_away', 'goals_for_l5_away',
+            'goals_against_l1_away', 'goals_against_l2_away', 'goals_against_l3_away', 'goals_against_l4_away',
+            'goals_against_l5_away', 'goal_difference_l1_away', 'goal_difference_l2_away',
+            'goal_difference_l3_away', 'goal_difference_l4_away', 'goal_difference_l5_away',
+            'shots_for_l1_away', 'shots_for_l2_away', 'shots_for_l3_away', 'shots_for_l4_away', 'shots_for_l5_away',
+            'shots_against_l1_away', 'shots_against_l2_away', 'shots_against_l3_away', 'shots_against_l4_away', 'shots_against_l5_away',
+            'shot_difference_l1_away', 'shot_difference_l2_away', 'shot_difference_l3_away', 'shot_difference_l4_away',
+            'shot_difference_l5_away'
+        ]
         # Specify the query itself, or the location of the query to retrieve the training data
         self.training_data_query = f"{sql_dir}/get_training_data.sql"
         # Train a model if one was not loaded
@@ -98,7 +117,7 @@ class MatchResultXGBoost(XGBoostModel):
                 training_data['X_train'] = training_data['X_train'][self.model_features]
                 training_data['X_test'] = training_data['X_test'][self.model_features]
                 ModelEvaluator(training_data=training_data, trained_model=self.trained_model,
-                               model_id=self.model_id, is_classifier=False, plots_dir=plots_dir,
+                               model_id=self.model_id, is_classifier=True, plots_dir=plots_dir,
                                data_dir=f"{data_dir}")
 
     def save_prediction_data(self, *, cols_to_save):
@@ -226,4 +245,4 @@ if __name__ == '__main__':
     model = MatchResultXGBoost(
         save_trained_model=True,
         upload_historic_predictions=True,
-        problem_name='match-predict-base')
+        problem_name='match-predict-new-features')
