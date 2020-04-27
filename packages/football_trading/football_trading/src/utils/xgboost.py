@@ -103,12 +103,13 @@ def get_features_ha(row, index, team_data, window_length=8, type='home'):
 
     # ToDo: Add game level metrics for the last 5 games
     for i in range(1, 6):
-        df_output.loc[index, f'goals_for_l{i}_{type}'] = df_filtered.loc[int(len(df_filtered)-i), 'goals_for']
-        df_output.loc[index, f'goals_against_l{i}_{type}'] = df_filtered.loc[int(len(df_filtered)-i), 'goals_against']
+        df_output.loc[index, f'is_home_l{i}_{type}'] = df_filtered.loc[len(df_filtered)-i, 'is_home']
+        df_output.loc[index, f'goals_for_l{i}_{type}'] = df_filtered.loc[len(df_filtered)-i, 'goals_for']
+        df_output.loc[index, f'goals_against_l{i}_{type}'] = df_filtered.loc[len(df_filtered)-i, 'goals_against']
         df_output.loc[index, f'goal_difference_l{i}_{type}'] = df_output.loc[index, f'goals_for_l{i}_{type}'] - \
                                                          df_output.loc[index, f'goals_against_l{i}_{type}']
-        df_output.loc[index, f'shots_for_l{i}_{type}'] = df_filtered.loc[int(len(df_filtered)-i), 'goals_for']
-        df_output.loc[index, f'shots_against_l{i}_{type}'] = df_filtered.loc[int(len(df_filtered)-i), 'shots_against']
+        df_output.loc[index, f'shots_for_l{i}_{type}'] = df_filtered.loc[len(df_filtered)-i, 'goals_for']
+        df_output.loc[index, f'shots_against_l{i}_{type}'] = df_filtered.loc[len(df_filtered)-i, 'shots_against']
         df_output.loc[index, f'shot_difference_l{i}_{type}'] = df_output.loc[index, f'shots_for_l{i}_{type}'] - \
                                                          df_output.loc[index, f'shots_against_l{i}_{type}']
     return df_output

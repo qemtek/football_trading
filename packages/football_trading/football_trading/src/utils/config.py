@@ -13,9 +13,7 @@ def get_attribute(attribute_name, fail_if_not_found=True, accepts=None):
         print(f'{attribute_name} is not specified as an environment variable')
         if hasattr(configuration, attribute_name):
             print(f'Retrieving {attribute_name} from configuration file')
-            attribute = getattr(configuration, attribute_name)
-            os.environ[attribute_name] = attribute
-            return attribute
+            return getattr(configuration, attribute_name)
         else:
             if fail_if_not_found:
                 raise AttributeError(f'Cannot get {attribute_name} from environment or logging.py file')

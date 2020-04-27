@@ -1,43 +1,16 @@
-2020-04-27 14:59:32,447 - football_trading.src.utils.logging - WARNING - load_model:139 - No available models of type XGBClassifier.
-2020-04-27 14:59:32,448 - football_trading.src.utils.logging - INFO - __init__:79 - Training a new model.
-2020-04-27 14:59:32,546 - football_trading.src.utils.logging - INFO - get_data:143 - Pre-processing data and generating features.
-2020-04-27 15:01:10,791 - football_trading.src.utils.logging - WARNING - load_model:139 - No available models of type XGBClassifier.
-2020-04-27 15:01:10,792 - football_trading.src.utils.logging - INFO - __init__:79 - Training a new model.
-2020-04-27 15:01:10,880 - football_trading.src.utils.logging - INFO - get_data:143 - Pre-processing data and generating features.
-2020-04-27 15:08:50,531 - football_trading.src.utils.logging - INFO - optimise_hyperparams:33 - Optimising hyper-parameters. Param grid: {'max_depth': [2, 4, 6], 'n_estimators': [50, 100, 200]}
-2020-04-27 15:10:43,391 - football_trading.src.utils.logging - INFO - optimise_hyperparams:39 - Best hyper-parameters: {'max_depth': 2, 'n_estimators': 100}
-2020-04-27 15:11:19,993 - football_trading.src.utils.logging - INFO - train_model:46 - Training model.
-2020-04-27 15:11:21,484 - football_trading.src.utils.logging - INFO - train_model:88 - Training finished. accuracy_score: 0.5641025641025641
-2020-04-27 15:11:22,949 - football_trading.src.utils.logging - INFO - train_model:88 - Training finished. accuracy_score: 0.6256410256410256
-2020-04-27 15:11:24,375 - football_trading.src.utils.logging - INFO - train_model:88 - Training finished. accuracy_score: 0.6256410256410256
-2020-04-27 15:11:25,818 - football_trading.src.utils.logging - INFO - train_model:88 - Training finished. accuracy_score: 0.6256410256410256
-2020-04-27 15:11:27,261 - football_trading.src.utils.logging - INFO - train_model:88 - Training finished. accuracy_score: 0.6256410256410256
-2020-04-27 15:11:28,729 - football_trading.src.utils.logging - INFO - train_model:88 - Training finished. accuracy_score: 0.634020618556701
-2020-04-27 15:11:30,378 - football_trading.src.utils.logging - INFO - train_model:88 - Training finished. accuracy_score: 0.634020618556701
-2020-04-27 15:11:32,106 - football_trading.src.utils.logging - INFO - train_model:88 - Training finished. accuracy_score: 0.634020618556701
-2020-04-27 15:11:33,908 - football_trading.src.utils.logging - INFO - train_model:88 - Training finished. accuracy_score: 0.634020618556701
-2020-04-27 15:11:35,618 - football_trading.src.utils.logging - INFO - train_model:88 - Training finished. accuracy_score: 0.634020618556701
-2020-04-27 15:14:40,792 - football_trading.src.utils.logging - INFO - save_model:125 - Saving model to /Users/chriscollins/Documents/GitHub/football_trading/packages/football_trading/football_trading/models/match-predict-new-features_XGBClassifier_2020-04-27_1994276482785066659.joblib with joblib.
-2020-04-27 15:14:41,553 - football_trading.src.utils.logging - INFO - __init__:114 - Generating plots
-2020-04-27 15:16:31,043 - dashboard - WARNING - get_dashboard_app:50 - There are two models in the in_production folder.. Picking the first one.
-2020-04-27 15:16:31,044 - dashboard - INFO - get_dashboard_app:52 - Loading production model from /Users/chriscollins/Documents/GitHub/football_trading/packages/football_trading/football_trading/models/in_production/.DS_Store
-2020-04-27 15:17:24,242 - dashboard - WARNING - get_dashboard_app:51 - There are two models in the in_production folder.. Picking the first one.
-2020-04-27 15:17:24,242 - dashboard - INFO - get_dashboard_app:53 - Loading production model from /Users/chriscollins/Documents/GitHub/football_trading/packages/football_trading/football_trading/models/in_production/match-predict-new-features_XGBClassifier_2020-04-27_1994276482785066659.joblib
-2020-04-27 15:21:07,682 - football_trading.src.utils.logging - WARNING - load_model:139 - No available models of type LogisticRegression.
-2020-04-27 15:21:07,683 - football_trading.src.utils.logging - WARNING - load_model:139 - No available models of type LogisticRegression.
-2020-04-27 15:21:07,683 - football_trading.src.utils.logging - INFO - save_model:125 - Saving model to ./football_trading/models/test_LogisticRegression_2020-04-27_3701734241502181764.joblib with joblib.
-2020-04-27 15:21:07,700 - football_trading.src.utils.logging - WARNING - load_model:139 - No available models of type LogisticRegression.
-2020-04-27 15:21:07,700 - football_trading.src.utils.logging - WARNING - load_model:139 - No available models of type LogisticRegression.
-2020-04-27 15:21:07,700 - football_trading.src.utils.logging - INFO - save_model:125 - Saving model to ./football_trading/models/test_LogisticRegression_2020-04-27_531995769650925276.joblib with joblib.
-2020-04-27 15:21:07,709 - football_trading.src.utils.logging - WARNING - load_model:139 - No available models of type LogisticRegression.
-2020-04-27 15:21:07,710 - football_trading.src.utils.logging - INFO - optimise_hyperparams:33 - Optimising hyper-parameters. Param grid: {'penalty': ['l2', 'none'], 'solver': ['newton-cg', 'lbfgs', 'sag', 'saga']}
-2020-04-27 15:21:07,889 - football_trading.src.utils.logging - INFO - optimise_hyperparams:39 - Best hyper-parameters: {'penalty': 'l2', 'solver': 'newton-cg'}
-2020-04-27 15:30:01,049 - football_trading.src.utils.logging - WARNING - load_model:139 - No available models of type LogisticRegression.
-2020-04-27 15:30:01,049 - football_trading.src.utils.logging - WARNING - load_model:139 - No available models of type LogisticRegression.
-2020-04-27 15:30:01,049 - football_trading.src.utils.logging - INFO - save_model:125 - Saving model to ./football_trading/models/test_LogisticRegression_2020-04-27_3711743593352204128.joblib with joblib.
-2020-04-27 15:30:01,052 - football_trading.src.utils.logging - WARNING - load_model:139 - No available models of type LogisticRegression.
-2020-04-27 15:30:01,052 - football_trading.src.utils.logging - WARNING - load_model:139 - No available models of type LogisticRegression.
-2020-04-27 15:30:01,052 - football_trading.src.utils.logging - INFO - save_model:125 - Saving model to ./football_trading/models/test_LogisticRegression_2020-04-27_7064525442542994734.joblib with joblib.
-2020-04-27 15:30:01,059 - football_trading.src.utils.logging - WARNING - load_model:139 - No available models of type LogisticRegression.
-2020-04-27 15:30:01,059 - football_trading.src.utils.logging - INFO - optimise_hyperparams:33 - Optimising hyper-parameters. Param grid: {'penalty': ['l2', 'none'], 'solver': ['newton-cg', 'lbfgs', 'sag', 'saga']}
-2020-04-27 15:30:01,192 - football_trading.src.utils.logging - INFO - optimise_hyperparams:39 - Best hyper-parameters: {'penalty': 'l2', 'solver': 'newton-cg'}
+2020-04-28 00:09:31,059 - football_trading.src.utils.logging - INFO - optimise_hyperparams:39 - Best hyper-parameters: {'learning_rate': 0.01, 'max_depth': 2, 'n_estimators': 100}
+2020-04-28 00:09:31,062 - football_trading.src.utils.logging - INFO - train_model:46 - Training model.
+2020-04-28 00:09:32,467 - football_trading.src.utils.logging - INFO - train_model:88 - Training finished. accuracy_score: 0.5783132530120482
+2020-04-28 00:09:33,865 - football_trading.src.utils.logging - INFO - train_model:88 - Training finished. accuracy_score: 0.6024096385542169
+2020-04-28 00:09:35,274 - football_trading.src.utils.logging - INFO - train_model:88 - Training finished. accuracy_score: 0.5421686746987951
+2020-04-28 00:09:36,719 - football_trading.src.utils.logging - INFO - train_model:88 - Training finished. accuracy_score: 0.5575757575757576
+2020-04-28 00:09:38,118 - football_trading.src.utils.logging - INFO - train_model:88 - Training finished. accuracy_score: 0.6424242424242425
+2020-04-28 00:09:39,521 - football_trading.src.utils.logging - INFO - train_model:88 - Training finished. accuracy_score: 0.6060606060606061
+2020-04-28 00:09:40,926 - football_trading.src.utils.logging - INFO - train_model:88 - Training finished. accuracy_score: 0.5151515151515151
+2020-04-28 00:09:42,364 - football_trading.src.utils.logging - INFO - train_model:88 - Training finished. accuracy_score: 0.5818181818181818
+2020-04-28 00:09:43,781 - football_trading.src.utils.logging - INFO - train_model:88 - Training finished. accuracy_score: 0.6
+2020-04-28 00:09:45,252 - football_trading.src.utils.logging - INFO - train_model:88 - Training finished. accuracy_score: 0.5333333333333333
+2020-04-28 00:09:45,266 - football_trading.src.utils.logging - INFO - save_model:125 - Saving model to /Users/chriscollins/Documents/GitHub/football_trading/packages/football_trading/football_trading/models/match-predict-new-features_XGBClassifier_2020-04-27_1994276482785066659.joblib with joblib.
+2020-04-28 00:09:45,662 - football_trading.src.utils.logging - INFO - __init__:120 - Generating plots
+2020-04-28 00:12:36,315 - dashboard - WARNING - get_dashboard_app:51 - There are two models in the in_production folder.. Picking the first one.
+2020-04-28 00:12:36,315 - dashboard - INFO - get_dashboard_app:53 - Loading production model from /Users/chriscollins/Documents/GitHub/football_trading/packages/football_trading/football_trading/models/in_production/match-predict-new-features_XGBClassifier_2020-04-27_1994276482785066659.joblib

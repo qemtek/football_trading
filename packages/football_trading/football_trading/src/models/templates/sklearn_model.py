@@ -85,7 +85,7 @@ class SKLearnModel(BaseModel):
                     self.performance[metric_name] = metric(actuals, preds)
             logger.info('Training finished. {}: {}'.format(
                 str(main_performance_metric),
-                str(self.performance.get(main_performance_metric))))
+                str(performance)))
         # Save the data used to train the model
         data_save_dir = f"{training_data_dir}/{self.model_id}.joblib"
         with safe_open(data_save_dir, 'wb') as f_out:

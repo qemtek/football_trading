@@ -30,7 +30,8 @@ class MatchResultXGBoost(XGBoostModel):
         # Initial model parameters (without tuning)
         self.params = {'n_estimators': 100}
         # Define a grid for hyper-parameter tuning
-        self.param_grid = {'max_depth': [2, 4, 6], 'n_estimators': [50, 100, 200]}
+        self.param_grid = {'max_depth': [2, 5, 10, 15], 'n_estimators': [100, 500, 1000],
+                           'learning_rate': [0.01, 0.1, 0.2]}
         # The minimum date to get training data from
         self.min_training_data_date = '2013-08-01'
         # How many games to go back when generating training data
@@ -72,7 +73,10 @@ class MatchResultXGBoost(XGBoostModel):
             'shots_for_l1_away', 'shots_for_l2_away', 'shots_for_l3_away', 'shots_for_l4_away', 'shots_for_l5_away',
             'shots_against_l1_away', 'shots_against_l2_away', 'shots_against_l3_away', 'shots_against_l4_away', 'shots_against_l5_away',
             'shot_difference_l1_away', 'shot_difference_l2_away', 'shot_difference_l3_away', 'shot_difference_l4_away',
-            'shot_difference_l5_away'
+            'shot_difference_l5_away',
+
+            'is_home_l1_home','is_home_l2_home','is_home_l3_home','is_home_l4_home','is_home_l5_home',
+            'is_home_l1_away', 'is_home_l2_away', 'is_home_l3_away', 'is_home_l4_away', 'is_home_l5_away',
         ]
         # Specify the query itself, or the location of the query to retrieve the training data
         self.training_data_query = f"{sql_dir}/get_training_data.sql"

@@ -1,9 +1,7 @@
 import logging
-import os
 
+from football_trading.settings import PROJECTSPATH
 from football_trading.src.utils.logging import get_console_handler
-
-PROJECTSPATH = os.environ['PROJECTSPATH']
 
 # Configure logger for use in package
 logger = logging.getLogger(__name__)
