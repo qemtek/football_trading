@@ -35,7 +35,17 @@ jobs:
           command: |
             virtualenv venv
             . venv/bin/activate
+            pip install --upgrade pip
             pip install -r packages/football_trading/requirements.txt
+            export PROJECTSPATH=$CCI_PROJECTSPATH
+            export IN_PRODUCTION=false
+            export DB_DIR=$CCI_DB_DIR
+            export BFEX_USER=$CCI_BFEX_USER
+            export BFEX_PASSWORD=$CCI_BFEX_PASS
+            export BFEX_APP_KEY=$CCI_BFEX_APP_KEY
+            export BFEX_CERTS_PATH=$CCI_BFEX_CERTS_PATH
+            export PRODUCTION_MODEL_NAME=match-predict-base
+            export RECREATE_DB=false
       - run:
           name: Publish model
           command: |
