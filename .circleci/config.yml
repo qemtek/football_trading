@@ -9,6 +9,7 @@ jobs:
       - run:
           name: Running Tests
           command: |
+            echo $PWD
             virtualenv venv
             . venv/bin/activate
             pip install --upgrade pip
@@ -33,6 +34,7 @@ jobs:
       - run:
           name: Setup env
           command: |
+            echo $PWD
             virtualenv venv
             . venv/bin/activate
             pip install --upgrade pip
@@ -40,6 +42,7 @@ jobs:
       - run:
           name: Publish model
           command: |
+            echo $PWD
             . venv/bin/activate
             export PROJECTSPATH=$CCI_PROJECTSPATH
             export IN_PRODUCTION=false
