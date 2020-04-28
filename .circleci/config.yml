@@ -7,7 +7,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys:
+          key:
             - py-deps-{{ checksum “packages/football_trading/requirements.txt” }}
       - run:
           name: Running Tests
@@ -30,7 +30,7 @@ jobs:
             # Should we download any data here?
             py.test -vv packages/football_trading/tests
       - save_cache:
-          keys:
+          key:
             - py-deps-{{ checksum “packages/football_trading/requirements.txt” }}
           paths:
             - "/venv"
@@ -41,7 +41,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys:
+          key:
             - py-deps-{{ checksum “packages/football_trading/requirements.txt” }}
       - run:
           name: Setup Environment
@@ -73,7 +73,7 @@ jobs:
             chmod +x ./scripts/publish_model.sh
             ./scripts/publish_model.sh ./packages/football_trading/
       - save_cache:
-          keys:
+          key:
             - py-deps-{{ checksum “packages/football_trading/requirements.txt” }}
           paths:
             - "/venv"
