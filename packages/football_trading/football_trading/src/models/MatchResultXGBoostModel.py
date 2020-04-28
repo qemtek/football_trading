@@ -19,7 +19,8 @@ class MatchResultXGBoost(XGBoostModel):
 
     def __init__(self, test_mode=False, load_trained_model=False, load_model_date=None,
                  save_trained_model=True, upload_historic_predictions=None, apply_sample_weight=False,
-                 compare_models=False, problem_name='match_predict', production_model=True, create_plots=True):
+                 compare_models=False, problem_name='match_predict', production_model=True, create_plots=True,
+                 optimise_hyperparams=False):
         super().__init__(test_mode=test_mode, save_trained_model=save_trained_model,
                          load_trained_model=load_trained_model, load_model_date=load_model_date,
                          compare_models=compare_models,  problem_name=problem_name)
@@ -28,7 +29,7 @@ class MatchResultXGBoost(XGBoostModel):
         self.apply_sample_weight = apply_sample_weight
         self.upload_historic_predictions = upload_historic_predictions
         # Initial model parameters (without tuning)
-        self.params = {'n_estimators': 100}
+        self.params = {'n_estimators': 100, 'max_depth': 2, 'learning_rate': 0.01}
         # Define a grid for hyper-parameter tuning
         self.param_grid = {'max_depth': [2, 5, 10, 15], 'n_estimators': [100, 500, 1000],
                            'learning_rate': [0.01, 0.1, 0.2]}
@@ -44,7 +45,6 @@ class MatchResultXGBoost(XGBoostModel):
         self.model_predictions = None
         # A list of features used in the model
         self.model_features = [
-            # ToDo: Add home 1/0 to l1>5
             # ToDo: Add yellows/reds to l1>5
             'avg_goals_for_home', 'avg_goals_against_home', 'avg_goals_for_ha_home', 'avg_goals_against_ha_home',
             'sd_goals_for_home', 'sd_goals_against_home', 'avg_shots_for_home', 'avg_shots_against_home',
@@ -59,19 +59,19 @@ class MatchResultXGBoost(XGBoostModel):
 
             'goals_for_l1_home', 'goals_for_l2_home','goals_for_l3_home','goals_for_l4_home','goals_for_l5_home',
             'goals_against_l1_home', 'goals_against_l2_home','goals_against_l3_home','goals_against_l4_home',
-            'goals_against_l5_home', 'goal_difference_l1_home', 'goal_difference_l2_home',
-            'goal_difference_l3_home', 'goal_difference_l4_home', 'goal_difference_l5_home',
-            'shots_for_l1_home', 'shots_for_l2_home', 'shots_for_l3_home', 'shots_for_l4_home', 'shots_for_l5_home',
-            'shots_against_l1_home', 'shots_against_l2_home', 'shots_against_l3_home', 'shots_against_l4_home',
-            'shots_against_l5_home', 'shot_difference_l1_home', 'shot_difference_l2_home',
-            'shot_difference_l3_home', 'shot_difference_l4_home', 'shot_difference_l5_home',
+            'goals_against_l5_home', 'goal_difference_l1_home', 'goal_difference_l2_home', 'goal_difference_l3_home',
+            'goal_difference_l4_home', 'goal_difference_l5_home', 'shots_for_l1_home', 'shots_for_l2_home',
+            'shots_for_l3_home', 'shots_for_l4_home', 'shots_for_l5_home', 'shots_against_l1_home',
+            'shots_against_l2_home', 'shots_against_l3_home', 'shots_against_l4_home', 'shots_against_l5_home',
+            'shot_difference_l1_home', 'shot_difference_l2_home', 'shot_difference_l3_home', 'shot_difference_l4_home',
+            'shot_difference_l5_home',
 
             'goals_for_l1_away', 'goals_for_l2_away', 'goals_for_l3_away', 'goals_for_l4_away', 'goals_for_l5_away',
             'goals_against_l1_away', 'goals_against_l2_away', 'goals_against_l3_away', 'goals_against_l4_away',
-            'goals_against_l5_away', 'goal_difference_l1_away', 'goal_difference_l2_away',
-            'goal_difference_l3_away', 'goal_difference_l4_away', 'goal_difference_l5_away',
-            'shots_for_l1_away', 'shots_for_l2_away', 'shots_for_l3_away', 'shots_for_l4_away', 'shots_for_l5_away',
-            'shots_against_l1_away', 'shots_against_l2_away', 'shots_against_l3_away', 'shots_against_l4_away', 'shots_against_l5_away',
+            'goals_against_l5_away', 'goal_difference_l1_away', 'goal_difference_l2_away', 'goal_difference_l3_away',
+            'goal_difference_l4_away', 'goal_difference_l5_away', 'shots_for_l1_away', 'shots_for_l2_away',
+            'shots_for_l3_away', 'shots_for_l4_away', 'shots_for_l5_away', 'shots_against_l1_away',
+            'shots_against_l2_away', 'shots_against_l3_away', 'shots_against_l4_away', 'shots_against_l5_away',
             'shot_difference_l1_away', 'shot_difference_l2_away', 'shot_difference_l3_away', 'shot_difference_l4_away',
             'shot_difference_l5_away',
 
@@ -94,7 +94,8 @@ class MatchResultXGBoost(XGBoostModel):
             else:
                 sample_weight = np.ones(len(X))
             # Optimise hyper-parameters using a grid search
-            self.optimise_hyperparams(X=X, y=y, param_grid=self.param_grid)
+            if optimise_hyperparams:
+                self.optimise_hyperparams(X=X, y=y, param_grid=self.param_grid)
             # Train the model
             self.train_model(X=X, y=y, sample_weight=sample_weight)
             # Compare model performance vs the latest model, save model data
