@@ -1,3 +1,10 @@
+# Set up environment
+virtualenv venv
+. venv/bin/activate
+pip install --upgrade pip
+cd packages/football_trading
+pip install -r requirements.txt
+# Create environment variables
 export IN_PRODUCTION=false
 export PROJECTSPATH=/home/circleci/project/packages/football_trading
 export DB_DIR=/home/circleci/project/db.sqlite
@@ -7,12 +14,6 @@ export BFEX_APP_KEY=$CCI_BFEX_APP_KEY
 export BFEX_CERTS_PATH=$CCI_BFEX_CERTS_PATH
 export PRODUCTION_MODEL_NAME=match-predict-base
 export RECREATE_DB=false
-export IN_PRODUCTION=false
 export LOCAL=true
-
-virtualenv venv
-. venv/bin/activate
-pip install --upgrade pip
-cd packages/football_trading
-pip install -r requirements.txt
+# Run tox to build the package
 tox
