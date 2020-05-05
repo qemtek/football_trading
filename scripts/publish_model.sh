@@ -1,10 +1,10 @@
 #!/bin/bash
 
-cd ..
-virtualenv venv
-. venv/bin/activate
-pip install --upgrade pip
-pip install -r packages/football_trading/requirements.txt
+#cd ..
+#virtualenv venv
+#. venv/bin/activate
+#pip install --upgrade pip
+#pip install -r packages/football_trading/requirements.txt
 export IN_PRODUCTION=false
 export PROJECTSPATH=/home/circleci/project/packages/football_trading
 export DB_DIR=/home/circleci/project/db.sqlite
@@ -15,7 +15,7 @@ export BFEX_CERTS_PATH=$CCI_BFEX_CERTS_PATH
 export PRODUCTION_MODEL_NAME=match-predict-base
 export RECREATE_DB=false
 export LOCAL=true
-cd scripts
+#cd scripts
 
 # Building packages and uploading them to a Gemfury repository
 GEMFURY_URL=$PIP_EXTRA_INDEX_URL
