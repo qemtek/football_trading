@@ -10,6 +10,7 @@ export BFEX_CERTS_PATH=$CCI_BFEX_CERTS_PATH
 export PRODUCTION_MODEL_NAME=match-predict-base
 export RECREATE_DB=false
 export LOCAL=false
+export S3_BUCKET_NAME=$S3_BUCKET_NAME
 export PYTHONPATH=./packages/football_trading
 export SERVER_ADDRESS=0.0.0.0
 export SERVER_PORT=5000

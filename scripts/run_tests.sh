@@ -11,6 +11,7 @@ export BFEX_PASSWORD=$CCI_BFEX_PASS
 export BFEX_APP_KEY=$CCI_BFEX_APP_KEY
 export BFEX_CERTS_PATH=$CCI_BFEX_CERTS_PATH
 export PRODUCTION_MODEL_NAME=match-predict-base
+export S3_BUCKET_NAME=$S3_BUCKET_NAME
 export RECREATE_DB=false
 export LOCAL=true
 # Should we download any data here?

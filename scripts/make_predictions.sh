@@ -11,6 +11,7 @@ export PRODUCTION_MODEL_NAME=match-predict-base
 export RECREATE_DB=false
 export LOCAL=false
 export PYTHONPATH=./packages/football_trading
+export S3_BUCKET_NAME=$S3_BUCKET_NAME
 export SERVER_ADDRESS=0.0.0.0
 export SERVER_PORT=5000
 
