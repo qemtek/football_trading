@@ -78,7 +78,7 @@ workflows:
       - train_and_upload_model
     triggers:
       - schedule:
-          cron: "0 0 * * WED"  # Run every wednesday at midnight
+          cron: "0 0 * * 3"  # Run every wednesday at midnight
           filters:
             branches:
               only:
