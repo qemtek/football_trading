@@ -9,10 +9,14 @@ export PRODUCTION_MODEL_NAME=match-predict-base
 export RECREATE_DB=false
 export LOCAL=true
 
+echo "Running ls"
+ls
 cd ..
+echo "Running ls"
+ls
 virtualenv venv
 . venv/bin/activate
 pip install --upgrade pip
-pip install -r ./packages/football_trading/requirements.txt
-cd ./packages/football_trading
+cd packages/football_trading
+pip install -r requirements.txt
 tox
