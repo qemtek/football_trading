@@ -43,8 +43,8 @@ class SKLearnModel(BaseModel):
         logger.info('Best hyper-parameters: {}'.format(self.params))
         # Save hyper-params
         save_dir = f"{PROJECTSPATH}/data/hyperparams/{self.problem_name}.joblib"
-        with safe_open(save_dir, 'wb'):
-            joblib.dump(clf.best_params_)
+        with safe_open(save_dir, 'wb') as f_out:
+            joblib.dump(clf.best_params_, f_out)
             logger.info(f'Hyper-params saved to {save_dir}')
 
     @time_function(logger=logger)
