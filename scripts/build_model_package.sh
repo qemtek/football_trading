@@ -7,6 +7,7 @@ export BFEX_APP_KEY=$CCI_BFEX_APP_KEY
 export BFEX_CERTS_PATH=$CCI_BFEX_CERTS_PATH
 export PRODUCTION_MODEL_NAME=match-predict-base
 export RECREATE_DB=false
+export IN_PRODUCTION=false
 export LOCAL=true
 
 virtualenv venv
