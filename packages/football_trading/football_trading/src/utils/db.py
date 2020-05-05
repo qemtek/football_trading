@@ -2,24 +2,26 @@ import sqlite3
 import pandas as pd
 import os
 
-from football_trading.settings import db_dir
+from football_trading.settings import DB_DIR
 
 
 def connect_to_db(path_to_db=None):
-    """Connect to local sqlite3 database"""
-
+    """Connect to local sqlite3 database
+    """
     # If no name is supplied, use the default name
-    sqlite_file = db_dir if path_to_db is None else path_to_db
+    sqlite_file = DB_DIR if path_to_db is None else path_to_db
     # Establish a connection to the database
-    conn = sqlite3.connect(sqlite_file)
+    if os.path.exists(sqlite_file):
+        conn = sqlite3.connect(sqlite_file)
+    else:
+        raise Exception(f"DB does not exist at {sqlite_file}")
     # Return the connection object
     return conn
 
 
 def run_query(*, query, params=None, return_data=True, path_to_db=None) -> pd.DataFrame:
-    """Function to run a query on the DB while still keeping the
-    column names. Returns a DataFrame"""
-
+    """Function to run a query on the DB while still keeping the column names. Returns a DataFrame
+    """
     if os.path.exists(query):
         with open(query, 'r') as f_in:
             query = ''

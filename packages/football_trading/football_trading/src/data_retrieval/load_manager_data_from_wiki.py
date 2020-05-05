@@ -7,9 +7,6 @@ import datetime as dt
 from football_trading.src.utils.db import run_query, connect_to_db
 from football_trading.src.utils.team_id_functions import fetch_id, fetch_name
 
-# Connect to database
-conn = connect_to_db()
-
 
 def hasNumbers(inputString):
     """Test whether the string contains numbers"""
@@ -26,7 +23,10 @@ def fix_team_name(name):
 
 
 def get_manager_data():
-    """Download html content from wikipedia, break down with BeautifulSoup"""
+    """Download html content from wikipedia, break down with BeautifulSoup
+    """
+    # Connect to database
+    conn = connect_to_db()
     url = "https://en.wikipedia.org/wiki/List_of_Premier_League_managers"
     website_url = requests.get(url).text
     soup = BeautifulSoup(website_url, features="html.parser")

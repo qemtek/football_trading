@@ -3,11 +3,10 @@ import datetime as dt
 
 from football_trading.src.models.MatchResultXGBoostModel import MatchResultXGBoost
 from football_trading.src.utils.api import get_upcoming_games
-from football_trading.src.update_tables import update_tables
+from football_trading.update_tables import update_tables
 from football_trading.src.utils.db import run_query, connect_to_db
 from football_trading.src.utils.logging import get_logger
 from football_trading import __version__
-from football_trading.settings import PROJECTSPATH
 
 logger = get_logger()
 

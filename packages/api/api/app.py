@@ -23,27 +23,33 @@ def get_api(input_config=None):
             _logger.info('Health status: OK')
             return 'ok'
 
-    @prediction_app.route('/v1/predict', methods=['GET'])
+    @prediction_app.route('/predict', methods=['GET'])
     def predict():
         if request.method == 'GET':
             _logger.info(f'Making new predictions')
-            make_predictions()
-            return 'successful'
+            try:
+                make_predictions()
+                return 200
+            except:
+                return 500
 
-    @prediction_app.route('/v1/train', methods=['GET'])
+    @prediction_app.route('/train', methods=['GET'])
     def train():
         if request.method == 'GET':
             _logger.info(f'Training new model')
-            train_new_model()
-            return 'successful'
+            try:
+                train_new_model()
+                return 200
+            except:
+                return 500
 
-    @prediction_app.route('/v1/update_dashboard', methods=['GET'])
-    def update_dashboard():
-        if request.method == 'GET':
-            _logger.info(f'Starting/refreshing model performance dashboard')
-            # Run the dash dashboard and add it to the flask app
-            get_dashboard_app(server=prediction_app)
-            return 'successful'
+    # @prediction_app.route('/update_dashboard', methods=['GET'])
+    # def update_dashboard():
+    #     if request.method == 'GET':
+    #         _logger.info(f'Starting/refreshing model performance dashboard')
+    #         # Run the dash dashboard and add it to the flask app
+    #         get_dashboard_app(server=prediction_app)
+    #         return 'successful'
 
     @prediction_app.route('/version', methods=['GET'])
     def get_version():

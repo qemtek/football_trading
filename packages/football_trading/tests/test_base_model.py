@@ -1,4 +1,3 @@
-import datetime as dt
 import os
 import joblib
 import pytest
@@ -44,12 +43,3 @@ def test_load_model():
     # Clean up file
     os.remove(save_dir)
     assert model.model_id == model2.model_id, 'Load model has not worked correctly'
-
-
-def test_get_logger():
-    # Test that the logger object is returned
-    # Test that the logger creates the appropriate files
-    # Test that the logger prints INFO and ERROR messages to the correct log files
-    pass
-
-

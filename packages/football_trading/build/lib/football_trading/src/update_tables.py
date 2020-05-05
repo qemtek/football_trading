@@ -11,7 +11,7 @@ from football_trading.src.data_retrieval.load_player_data_from_FPL import get_pl
 from football_trading.src.data_retrieval.load_PL_teams_from_wiki import get_teams_from_wiki
 from football_trading.src.data_retrieval.get_latest_fixtures_from_bfex import get_latest_fixtures
 from football_trading.src.utils.logging import get_logger
-from football_trading.settings import db_dir, RECREATE_DB
+from football_trading.settings import DB_DIR, RECREATE_DB
 
 logger = get_logger()
 
@@ -20,8 +20,8 @@ def update_tables(*, recreate_table=RECREATE_DB) -> None:
     """Update all tables in the src/data_retrieval folder"""
     # If we are recreating the DB, delete any existing db
     if recreate_table:
-        if os.path.exists(db_dir):
-            os.rmdir(db_dir)
+        if os.path.exists(DB_DIR):
+            os.rmdir(DB_DIR)
         unrecorded_games = [1]
     else:
         try:
@@ -33,7 +33,7 @@ def update_tables(*, recreate_table=RECREATE_DB) -> None:
             unrecorded_games = run_query(query=f"select * from fpl_fixtures where date(kickoff_time) "
                                                f"between '{last_game}' and '{today}'")
         except Exception as e:
-            raise Exception(f'It is likely that the db at {db_dir} could not be found. Original error: {e}')
+            raise Exception(f'It is likely that the db at {DB_DIR} could not be found. Original error: {e}')
     # Update tables if there are games we have not logged in the DB
     if len(unrecorded_games) > 0:
         # Download latest fixture data from football-data.co.uk

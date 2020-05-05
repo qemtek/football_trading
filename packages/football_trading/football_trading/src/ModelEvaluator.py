@@ -1,24 +1,28 @@
-from yellowbrick.classifier import ClassificationReport, DiscriminationThreshold, \
-    ClassPredictionError, ConfusionMatrix, ROCAUC
-from yellowbrick.regressor import ResidualsPlot, PredictionError
 import shap
 import matplotlib.pyplot as plt
 import joblib
 import pandas as pd
+
+from yellowbrick.classifier import ClassificationReport, DiscriminationThreshold, \
+    ClassPredictionError, ConfusionMatrix, ROCAUC
+from yellowbrick.regressor import ResidualsPlot, PredictionError
+
 from football_trading.src.utils.base_model import time_function
 from football_trading.src.utils.logging import get_logger
-from football_trading.settings import plots_dir, data_dir
+from football_trading.settings import plots_dir, data_dir, S3_BUCKET_NAME
+from football_trading.src.utils.s3_tools import upload_to_s3
 
 logger = get_logger()
 
 
 class ModelEvaluator:
-    """A class that stores functionality for evaluating model performance"""
-
+    """A class that stores functionality for evaluating model performance
+    """
     def __init__(self, *, trained_model, model_id, training_data,
-                 plots_dir, data_dir, is_classifier=True) -> None:
+                 plots_dir, data_dir, is_classifier=True, local=True) -> None:
         self.trained_model = trained_model
         self.model_id = model_id
+        self.local = local
         self.X_train = training_data.get('X_train')
         self.y_train = training_data.get('y_train')
         self.X_test = training_data.get('X_test')
@@ -46,14 +50,20 @@ class ModelEvaluator:
         visualizer = ClassificationReport(self.trained_model, cmap="YlGn", size=(600, 360))
         visualizer.fit(self.X_train, self.y_train)
         visualizer.score(self.X_test, self.y_test)
-        visualizer.show(outpath=f"{self.plots_dir}/classification_report_{self.model_id}.png")
+        save_dir = f"{self.plots_dir}/classification_report_{self.model_id}.png"
+        visualizer.show(outpath=save_dir)
+        if not self.local:
+            upload_to_s3(save_dir, f'plots/classification_report_{self.model_id}.png', bucket=S3_BUCKET_NAME)
         plt.clf()
 
     @time_function(logger=logger)
     def discrimination_threshold(self) -> None:
         visualizer = DiscriminationThreshold(self.trained_model)
         visualizer.fit(self.X_test, self.y_test)  # Fit the data to the visualizer
-        visualizer.show(outpath=f"{self.plots_dir}/discrimination_plot_{self.model_id}.png")
+        save_dir = f"{self.plots_dir}/discrimination_plot_{self.model_id}.png"
+        visualizer.show(outpath=save_dir)
+        if not self.local:
+            upload_to_s3(save_dir, f'plots/discrimination_plot_{self.model_id}.png', bucket=S3_BUCKET_NAME)
         plt.clf()
 
     @time_function(logger=logger)
@@ -61,7 +71,10 @@ class ModelEvaluator:
         visualizer = ROCAUC(self.trained_model, classes=classes)
         visualizer.fit(self.X_train, self.y_train)  # Fit the training data to the visualizer
         visualizer.score(self.X_test, self.y_test)  # Evaluate the model on the test data
-        visualizer.show(outpath=f"{self.plots_dir}/roc_curve_{self.model_id}.png")
+        save_dir = f"{self.plots_dir}/roc_curve_{self.model_id}.png"
+        visualizer.show(outpath=save_dir)
+        if not self.local:
+            upload_to_s3(save_dir, f'plots/roc_curve_{self.model_id}.png', bucket=S3_BUCKET_NAME)
         plt.clf()
 
     @time_function(logger=logger)
@@ -71,25 +84,31 @@ class ModelEvaluator:
          (including false negatives and false positives, like a Confusion Matrix) for each class.
          You can use a ClassPredictionError to visualize which classes your classifier is having
          a particularly difficult time with, and more importantly, what incorrect answers it is
-         giving on a per-class basis."""
-
+         giving on a per-class basis.
+         """
         visualizer = ClassPredictionError(self.trained_model)
         visualizer.fit(self.X_train, self.y_train)
         visualizer.score(self.X_test, self.y_test)
-        visualizer.show(outpath=f"{self.plots_dir}/class_prediction_error_{self.model_id}.png")
+        save_dir = f"{self.plots_dir}/class_prediction_error_{self.model_id}.png"
+        visualizer.show(outpath=save_dir)
+        if not self.local:
+            upload_to_s3(save_dir, f'plots/class_prediction_error_{self.model_id}.png', bucket=S3_BUCKET_NAME)
         plt.clf()
 
     @time_function(logger=logger)
     def confusion_matrix(self, class_name_dict=None) -> None:
-        """Plot a confusion matrix"""
-
+        """Plot a confusion matrix
+        """
         cm = ConfusionMatrix(
             self.trained_model,
             classes=list(class_name_dict.keys()),
             label_encoder=class_name_dict)
         cm.fit(self.X_train, self.y_train)
         cm.score(self.X_test, self.y_test)
-        cm.show(outpath=f"{self.plots_dir}/confusion_matrix_{self.model_id}.png")
+        save_dir = f"{self.plots_dir}/confusion_matrix_{self.model_id}.png"
+        cm.show(outpath=save_dir)
+        if not self.local:
+            upload_to_s3(save_dir, f'plots/confusion_matrix_{self.model_id}.png', bucket=S3_BUCKET_NAME)
         plt.clf()
 
     @time_function(logger=logger)
@@ -100,24 +119,30 @@ class ModelEvaluator:
         visualizer = ResidualsPlot(self.trained_model)
         visualizer.fit(self.X_train, self.y_train)  # Fit the training data to the visualizer
         visualizer.score(self.X_test, self.y_test)  # Evaluate the model on the test data
-        visualizer.show(outpath=f"{self.plots_dir}/residuals_plot_{self.model_id}.png")
+        save_dir = f"{self.plots_dir}/residuals_plot_{self.model_id}.png"
+        visualizer.show(outpath=save_dir)
+        if not self.local:
+            upload_to_s3(save_dir, f'plots/residuals_plot_{self.model_id}.png', bucket=S3_BUCKET_NAME)
         plt.clf()
 
     @time_function(logger=logger)
     def prediction_error_plot(self) -> None:
         """Plot the actual targets from the dataset against the predicted values
-        generated by our model. This allows us to see how much variance is in the model."""
-
+        generated by our model. This allows us to see how much variance is in the model.
+        """
         visualizer = PredictionError(self.trained_model)
         visualizer.fit(self.X_train, self.y_train)  # Fit the training data to the visualizer
         visualizer.score(self.X_test, self.y_test)  # Evaluate the model on the test data
-        visualizer.show(outpath=f"{self.plots_dir}/prediction_error_plot_{self.model_id}.png")
+        save_dir = f"{self.plots_dir}/prediction_error_plot_{self.model_id}.png"
+        visualizer.show(outpath=save_dir)
+        if not self.local:
+            upload_to_s3(save_dir, f'plots/prediction_error_plot_{self.model_id}.png', bucket=S3_BUCKET_NAME)
         plt.clf()
 
     @time_function(logger=logger)
     def shap_summary(self, save_explainer=True):
-        """Explain model predictions using SHAP"""
-
+        """Explain model predictions using SHAP
+        """
         explainer = shap.TreeExplainer(self.trained_model)
         #X_sample = self.X_test.copy().sample(20000) if len(self.X_test) > 20000 else self.X_test
         X_sample = pd.concat([self.X_train, self.X_test], axis=0)
@@ -126,8 +151,11 @@ class ModelEvaluator:
         plt.savefig(f'{self.plots_dir}/summary_plot_{self.model_id}.png')
         plt.clf()
         if save_explainer:
-            with open(f'{self.data_dir}/SHAP_explainer_{self.model_id}', 'wb') as f_out:
+            save_dir = f'{self.data_dir}/SHAP_explainer_{self.model_id}.joblib'
+            with open(save_dir, 'wb') as f_out:
                 joblib.dump(explainer, f_out)
+            if not self.local:
+                upload_to_s3(save_dir, f'plots/SHAP_explainer_{self.model_id}.jopblib', bucket=S3_BUCKET_NAME)
         return explainer, shap_values
 
 

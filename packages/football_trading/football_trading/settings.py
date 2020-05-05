@@ -3,6 +3,7 @@ import logging
 
 from football_trading.src.utils.config import get_attribute
 
+# Project specific credentials
 PROJECTSPATH = get_attribute('PROJECTSPATH')
 IN_PRODUCTION = get_attribute('IN_PRODUCTION')
 data_dir = os.path.join(PROJECTSPATH, 'football_trading', 'data')
@@ -11,9 +12,16 @@ model_dir = os.path.join(PROJECTSPATH, 'football_trading', 'models')
 training_data_dir = os.path.join(PROJECTSPATH, 'football_trading', 'data', 'training_data')
 sql_dir = os.path.join(PROJECTSPATH, 'football_trading', 'sql')
 tmp_dir = os.path.join(PROJECTSPATH, 'football_trading', 'tmp')
-db_dir = get_attribute('DB_DIR')
+DB_DIR = get_attribute('DB_DIR')
 RECREATE_DB = get_attribute('RECREATE_DB')
+LOCAL=get_attribute('LOCAL')
 
+# S3 credentials
+S3_BUCKET_NAME = get_attribute('S3_BUCKET_NAME')
+AWS_ACCESS_KEY_ID = get_attribute('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = get_attribute('AWS_SECRET_ACCESS_KEY')
+
+# Betfair Exchange API credentials
 BFEX_USER = get_attribute('BFEX_USER')
 BFEX_PASSWORD = get_attribute('BFEX_PASSWORD')
 BFEX_APP_KEY = get_attribute('BFEX_APP_KEY')
@@ -28,5 +36,3 @@ FORMATTER = logging.Formatter(
     "%(asctime)s - %(name)s - %(levelname)s - "
     "%(funcName)s:%(lineno)d - %(message)s")
 LOG_FILE = f"{PROJECTSPATH}/football_trading/logs/model.log"
-
-

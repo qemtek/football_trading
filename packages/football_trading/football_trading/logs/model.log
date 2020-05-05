@@ -1,16 +1,88 @@
-2020-04-28 00:09:31,059 - football_trading.src.utils.logging - INFO - optimise_hyperparams:39 - Best hyper-parameters: {'learning_rate': 0.01, 'max_depth': 2, 'n_estimators': 100}
-2020-04-28 00:09:31,062 - football_trading.src.utils.logging - INFO - train_model:46 - Training model.
-2020-04-28 00:09:32,467 - football_trading.src.utils.logging - INFO - train_model:88 - Training finished. accuracy_score: 0.5783132530120482
-2020-04-28 00:09:33,865 - football_trading.src.utils.logging - INFO - train_model:88 - Training finished. accuracy_score: 0.6024096385542169
-2020-04-28 00:09:35,274 - football_trading.src.utils.logging - INFO - train_model:88 - Training finished. accuracy_score: 0.5421686746987951
-2020-04-28 00:09:36,719 - football_trading.src.utils.logging - INFO - train_model:88 - Training finished. accuracy_score: 0.5575757575757576
-2020-04-28 00:09:38,118 - football_trading.src.utils.logging - INFO - train_model:88 - Training finished. accuracy_score: 0.6424242424242425
-2020-04-28 00:09:39,521 - football_trading.src.utils.logging - INFO - train_model:88 - Training finished. accuracy_score: 0.6060606060606061
-2020-04-28 00:09:40,926 - football_trading.src.utils.logging - INFO - train_model:88 - Training finished. accuracy_score: 0.5151515151515151
-2020-04-28 00:09:42,364 - football_trading.src.utils.logging - INFO - train_model:88 - Training finished. accuracy_score: 0.5818181818181818
-2020-04-28 00:09:43,781 - football_trading.src.utils.logging - INFO - train_model:88 - Training finished. accuracy_score: 0.6
-2020-04-28 00:09:45,252 - football_trading.src.utils.logging - INFO - train_model:88 - Training finished. accuracy_score: 0.5333333333333333
-2020-04-28 00:09:45,266 - football_trading.src.utils.logging - INFO - save_model:125 - Saving model to /Users/chriscollins/Documents/GitHub/football_trading/packages/football_trading/football_trading/models/match-predict-new-features_XGBClassifier_2020-04-27_1994276482785066659.joblib with joblib.
-2020-04-28 00:09:45,662 - football_trading.src.utils.logging - INFO - __init__:120 - Generating plots
-2020-04-28 00:12:36,315 - dashboard - WARNING - get_dashboard_app:51 - There are two models in the in_production folder.. Picking the first one.
-2020-04-28 00:12:36,315 - dashboard - INFO - get_dashboard_app:53 - Loading production model from /Users/chriscollins/Documents/GitHub/football_trading/packages/football_trading/football_trading/models/in_production/match-predict-new-features_XGBClassifier_2020-04-27_1994276482785066659.joblib
+2020-05-05 10:17:41,386 - football_trading.src.utils.logging - INFO - __init__:88 - Training a new model.
+2020-05-05 10:17:41,447 - football_trading.src.utils.logging - INFO - get_data:153 - Pre-processing data and generating features.
+2020-05-05 10:54:26,568 - football_trading.src.utils.logging - INFO - load_model:224 - Attempting to load XGBClassifier model for date: latest
+2020-05-05 10:54:26,568 - football_trading.src.utils.logging - WARNING - load_model:250 - No available models of type XGBClassifier.
+2020-05-05 10:54:26,568 - football_trading.src.utils.logging - INFO - __init__:90 - Training a new model.
+2020-05-05 10:54:26,629 - football_trading.src.utils.logging - INFO - get_data:155 - Pre-processing data and generating features.
+2020-05-05 10:57:07,440 - football_trading.src.utils.logging - INFO - train_model:55 - Training model.
+2020-05-05 10:57:08,733 - football_trading.src.utils.logging - INFO - train_model:95 - Training finished. accuracy_score: 0.5783132530120482
+2020-05-05 10:57:10,041 - football_trading.src.utils.logging - INFO - train_model:95 - Training finished. accuracy_score: 0.6024096385542169
+2020-05-05 10:57:11,352 - football_trading.src.utils.logging - INFO - train_model:95 - Training finished. accuracy_score: 0.5421686746987951
+2020-05-05 10:57:12,658 - football_trading.src.utils.logging - INFO - train_model:95 - Training finished. accuracy_score: 0.5575757575757576
+2020-05-05 10:57:13,978 - football_trading.src.utils.logging - INFO - train_model:95 - Training finished. accuracy_score: 0.6424242424242425
+2020-05-05 10:57:15,307 - football_trading.src.utils.logging - INFO - train_model:95 - Training finished. accuracy_score: 0.6060606060606061
+2020-05-05 10:57:16,648 - football_trading.src.utils.logging - INFO - train_model:95 - Training finished. accuracy_score: 0.5151515151515151
+2020-05-05 10:57:17,994 - football_trading.src.utils.logging - INFO - train_model:95 - Training finished. accuracy_score: 0.5818181818181818
+2020-05-05 10:57:19,334 - football_trading.src.utils.logging - INFO - train_model:95 - Training finished. accuracy_score: 0.6
+2020-05-05 10:57:20,688 - football_trading.src.utils.logging - INFO - train_model:95 - Training finished. accuracy_score: 0.5333333333333333
+2020-05-05 10:57:20,697 - football_trading.src.utils.logging - INFO - save_model:195 - Saving model to /Users/chriscollins/Documents/GitHub/football_trading/packages/football_trading/football_trading/models/match-predict-base_XGBClassifier_2020-05-05_5078922263172011826.joblib with joblib.
+2020-05-05 11:07:15,303 - football_trading.src.utils.logging - INFO - load_model:224 - Attempting to load XGBClassifier model for date: latest
+2020-05-05 11:07:15,303 - football_trading.src.utils.logging - INFO - load_model:243 - load_model: Loading model with filename: match-predict-base_XGBClassifier_2020-05-05_5078922263172011826.joblib
+2020-05-05 11:07:15,305 - football_trading.src.utils.logging - INFO - __init__:90 - Training a new model.
+2020-05-05 11:07:15,367 - football_trading.src.utils.logging - INFO - get_data:155 - Pre-processing data and generating features.
+2020-05-05 11:10:03,278 - football_trading.src.utils.logging - INFO - train_model:55 - Training model.
+2020-05-05 11:10:04,584 - football_trading.src.utils.logging - INFO - train_model:95 - Training finished. accuracy_score: 0.5783132530120482
+2020-05-05 11:10:05,882 - football_trading.src.utils.logging - INFO - train_model:95 - Training finished. accuracy_score: 0.6024096385542169
+2020-05-05 11:10:07,192 - football_trading.src.utils.logging - INFO - train_model:95 - Training finished. accuracy_score: 0.5421686746987951
+2020-05-05 11:10:08,501 - football_trading.src.utils.logging - INFO - train_model:95 - Training finished. accuracy_score: 0.5575757575757576
+2020-05-05 11:10:09,835 - football_trading.src.utils.logging - INFO - train_model:95 - Training finished. accuracy_score: 0.6424242424242425
+2020-05-05 11:10:11,181 - football_trading.src.utils.logging - INFO - train_model:95 - Training finished. accuracy_score: 0.6060606060606061
+2020-05-05 11:10:12,651 - football_trading.src.utils.logging - INFO - train_model:95 - Training finished. accuracy_score: 0.5151515151515151
+2020-05-05 11:10:14,287 - football_trading.src.utils.logging - INFO - train_model:95 - Training finished. accuracy_score: 0.5818181818181818
+2020-05-05 11:10:15,710 - football_trading.src.utils.logging - INFO - train_model:95 - Training finished. accuracy_score: 0.6
+2020-05-05 11:10:17,107 - football_trading.src.utils.logging - INFO - train_model:95 - Training finished. accuracy_score: 0.5333333333333333
+2020-05-05 11:10:17,115 - football_trading.src.utils.logging - INFO - save_model:195 - Saving model to /Users/chriscollins/Documents/GitHub/football_trading/packages/football_trading/football_trading/models/match-predict-base_XGBClassifier_2020-05-05_6287312257399256663.joblib with joblib.
+2020-05-05 11:10:18,093 - football_trading.src.utils.logging - INFO - save_model:205 - Model saved to S3 (football-trading/models/match-predict-base_XGBClassifier_2020-05-05_6287312257399256663.joblib
+2020-05-05 11:11:21,594 - football_trading.src.utils.logging - INFO - load_model:224 - Attempting to load XGBClassifier model for date: latest
+2020-05-05 11:11:21,595 - football_trading.src.utils.logging - INFO - load_model:243 - load_model: Loading model with filename: match-predict-base_XGBClassifier_2020-05-05_6287312257399256663.joblib
+2020-05-05 11:11:21,600 - football_trading.src.utils.logging - INFO - __init__:90 - Training a new model.
+2020-05-05 11:11:21,670 - football_trading.src.utils.logging - INFO - get_data:155 - Pre-processing data and generating features.
+2020-05-05 11:18:29,422 - football_trading.src.utils.logging - INFO - train_model:55 - Training model.
+2020-05-05 11:18:30,847 - football_trading.src.utils.logging - INFO - train_model:95 - Training finished. accuracy_score: 0.5783132530120482
+2020-05-05 11:18:32,303 - football_trading.src.utils.logging - INFO - train_model:95 - Training finished. accuracy_score: 0.6024096385542169
+2020-05-05 11:18:33,687 - football_trading.src.utils.logging - INFO - train_model:95 - Training finished. accuracy_score: 0.5421686746987951
+2020-05-05 11:18:35,075 - football_trading.src.utils.logging - INFO - train_model:95 - Training finished. accuracy_score: 0.5575757575757576
+2020-05-05 11:18:36,523 - football_trading.src.utils.logging - INFO - train_model:95 - Training finished. accuracy_score: 0.6424242424242425
+2020-05-05 11:18:38,037 - football_trading.src.utils.logging - INFO - train_model:95 - Training finished. accuracy_score: 0.6060606060606061
+2020-05-05 11:18:39,486 - football_trading.src.utils.logging - INFO - train_model:95 - Training finished. accuracy_score: 0.5151515151515151
+2020-05-05 11:18:40,987 - football_trading.src.utils.logging - INFO - train_model:95 - Training finished. accuracy_score: 0.5818181818181818
+2020-05-05 11:18:42,471 - football_trading.src.utils.logging - INFO - train_model:95 - Training finished. accuracy_score: 0.6
+2020-05-05 11:18:44,023 - football_trading.src.utils.logging - INFO - train_model:95 - Training finished. accuracy_score: 0.5333333333333333
+2020-05-05 11:18:44,039 - football_trading.src.utils.logging - INFO - save_model:195 - Saving model to /Users/chriscollins/Documents/GitHub/football_trading/packages/football_trading/football_trading/models/match-predict-base_XGBClassifier_2020-05-05_2052829838770236559.joblib with joblib.
+2020-05-05 11:18:44,471 - football_trading.src.utils.logging - INFO - save_model:205 - Model saved to S3 (football-trading/models/match-predict-base_XGBClassifier_2020-05-05_2052829838770236559.joblib
+2020-05-05 11:24:08,012 - football_trading.src.utils.logging - INFO - load_model:223 - Attempting to load XGBClassifier model for date: latest
+2020-05-05 11:24:08,012 - football_trading.src.utils.logging - INFO - load_model:242 - load_model: Loading model with filename: match-predict-base_XGBClassifier_2020-05-05_6287312257399256663.joblib
+2020-05-05 11:24:08,017 - football_trading.src.utils.logging - INFO - __init__:89 - Training a new model.
+2020-05-05 11:24:08,080 - football_trading.src.utils.logging - INFO - get_data:154 - Pre-processing data and generating features.
+2020-05-05 11:30:23,042 - football_trading.src.utils.logging - INFO - train_model:54 - Training model.
+2020-05-05 11:30:24,488 - football_trading.src.utils.logging - INFO - train_model:94 - Training finished. accuracy_score: 0.5783132530120482
+2020-05-05 11:30:25,957 - football_trading.src.utils.logging - INFO - train_model:94 - Training finished. accuracy_score: 0.6024096385542169
+2020-05-05 11:30:27,349 - football_trading.src.utils.logging - INFO - train_model:94 - Training finished. accuracy_score: 0.5421686746987951
+2020-05-05 11:30:28,829 - football_trading.src.utils.logging - INFO - train_model:94 - Training finished. accuracy_score: 0.5575757575757576
+2020-05-05 11:30:30,305 - football_trading.src.utils.logging - INFO - train_model:94 - Training finished. accuracy_score: 0.6424242424242425
+2020-05-05 11:30:31,830 - football_trading.src.utils.logging - INFO - train_model:94 - Training finished. accuracy_score: 0.6060606060606061
+2020-05-05 11:30:33,330 - football_trading.src.utils.logging - INFO - train_model:94 - Training finished. accuracy_score: 0.5151515151515151
+2020-05-05 11:30:34,851 - football_trading.src.utils.logging - INFO - train_model:94 - Training finished. accuracy_score: 0.5818181818181818
+2020-05-05 11:30:36,412 - football_trading.src.utils.logging - INFO - train_model:94 - Training finished. accuracy_score: 0.6
+2020-05-05 11:30:37,997 - football_trading.src.utils.logging - INFO - train_model:94 - Training finished. accuracy_score: 0.5333333333333333
+2020-05-05 11:30:38,013 - football_trading.src.utils.logging - INFO - save_model:194 - Saving model to /Users/chriscollins/Documents/GitHub/football_trading/packages/football_trading/football_trading/models/match-predict-base_XGBClassifier_2020-05-05_7505737655425818058.joblib with joblib.
+2020-05-05 11:30:38,428 - football_trading.src.utils.logging - INFO - save_model:204 - Model saved to S3 (football-trading/models/match-predict-base_XGBClassifier_2020-05-05_7505737655425818058.joblib
+2020-05-05 11:33:51,734 - football_trading.src.utils.logging - INFO - load_model:223 - Attempting to load XGBClassifier model for date: latest
+2020-05-05 11:33:51,734 - football_trading.src.utils.logging - INFO - load_model:242 - load_model: Loading model with filename: match-predict-base_XGBClassifier_2020-05-05_7505737655425818058.joblib
+2020-05-05 11:33:51,739 - football_trading.src.utils.logging - INFO - __init__:89 - Training a new model.
+2020-05-05 11:33:51,803 - football_trading.src.utils.logging - INFO - get_data:154 - Pre-processing data and generating features.
+2020-05-05 11:40:09,593 - football_trading.src.utils.logging - INFO - train_model:54 - Training model.
+2020-05-05 11:40:10,984 - football_trading.src.utils.logging - INFO - train_model:94 - Training finished. accuracy_score: 0.5783132530120482
+2020-05-05 11:40:12,400 - football_trading.src.utils.logging - INFO - train_model:94 - Training finished. accuracy_score: 0.6024096385542169
+2020-05-05 11:40:14,026 - football_trading.src.utils.logging - INFO - train_model:94 - Training finished. accuracy_score: 0.5421686746987951
+2020-05-05 11:40:15,504 - football_trading.src.utils.logging - INFO - train_model:94 - Training finished. accuracy_score: 0.5575757575757576
+2020-05-05 11:40:16,959 - football_trading.src.utils.logging - INFO - train_model:94 - Training finished. accuracy_score: 0.6424242424242425
+2020-05-05 11:40:18,481 - football_trading.src.utils.logging - INFO - train_model:94 - Training finished. accuracy_score: 0.6060606060606061
+2020-05-05 11:40:19,965 - football_trading.src.utils.logging - INFO - train_model:94 - Training finished. accuracy_score: 0.5151515151515151
+2020-05-05 11:40:21,505 - football_trading.src.utils.logging - INFO - train_model:94 - Training finished. accuracy_score: 0.5818181818181818
+2020-05-05 11:40:23,025 - football_trading.src.utils.logging - INFO - train_model:94 - Training finished. accuracy_score: 0.6
+2020-05-05 11:40:24,564 - football_trading.src.utils.logging - INFO - train_model:94 - Training finished. accuracy_score: 0.5333333333333333
+2020-05-05 11:40:24,579 - football_trading.src.utils.logging - INFO - save_model:194 - Saving model to /Users/chriscollins/Documents/GitHub/football_trading/packages/football_trading/football_trading/models/match-predict-base_XGBClassifier_2020-05-05_9221559846026571969.joblib with joblib.
+2020-05-05 11:40:24,976 - football_trading.src.utils.logging - INFO - save_model:204 - Model saved to S3 (football-trading/models/match-predict-base_XGBClassifier_2020-05-05_9221559846026571969.joblib
+2020-05-05 11:49:23,771 - football_trading.src.utils.logging - INFO - update_tables:29 - Attempting to download DB from S3..
+2020-05-05 11:50:12,228 - football_trading.src.utils.logging - INFO - update_tables:29 - Attempting to download DB from S3..
