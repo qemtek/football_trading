@@ -11,6 +11,8 @@ jobs:
       - run:
           name: Publish Model
           command: |
+            chmod +x ./scripts/build_model_package.sh
+            ./scripts/build_model_package.sh
             chmod +x ./scripts/publish_model.sh
             ./scripts/publish_model.sh ./packages/football_trading/
       - save_cache:
