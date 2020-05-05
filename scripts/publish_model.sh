@@ -15,6 +15,7 @@ export BFEX_CERTS_PATH=$CCI_BFEX_CERTS_PATH
 export PRODUCTION_MODEL_NAME=match-predict-base
 export RECREATE_DB=false
 export LOCAL=true
+cd ./scripts
 
 # Building packages and uploading them to a Gemfury repository
 GEMFURY_URL=$PIP_EXTRA_INDEX_URL
