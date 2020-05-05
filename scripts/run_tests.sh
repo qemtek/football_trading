@@ -12,6 +12,8 @@ export BFEX_APP_KEY=$CCI_BFEX_APP_KEY
 export BFEX_CERTS_PATH=$CCI_BFEX_CERTS_PATH
 export PRODUCTION_MODEL_NAME=match-predict-base
 export S3_BUCKET_NAME=$S3_BUCKET_NAME
+export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
 export RECREATE_DB=false
 export LOCAL=true
 # Should we download any data here?

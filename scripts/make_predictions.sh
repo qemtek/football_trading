@@ -12,6 +12,8 @@ export RECREATE_DB=false
 export LOCAL=false
 export PYTHONPATH=./packages/football_trading
 export S3_BUCKET_NAME=$S3_BUCKET_NAME
+export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
 export SERVER_ADDRESS=0.0.0.0
 export SERVER_PORT=5000
 
