@@ -9,11 +9,6 @@ export PRODUCTION_MODEL_NAME=match-predict-base
 export RECREATE_DB=false
 export LOCAL=true
 
-echo "Running ls"
-ls
-cd ..
-echo "Running ls"
-ls
 virtualenv venv
 . venv/bin/activate
 pip install --upgrade pip
