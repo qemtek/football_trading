@@ -17,6 +17,8 @@ jobs:
           key: py-deps-{{ checksum "packages/football_trading/requirements.txt" }}
           paths:
             - "/venv"
+      - store_test_results:
+          path: test-results
   train_and_upload_model:
     working_directory: ~/project
     docker:
