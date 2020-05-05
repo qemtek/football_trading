@@ -75,13 +75,13 @@ workflows:
     # Run unit tests and train the model on the latest data (but dont upload anything)
     jobs:
       - test_and_publish
-          context: aws
+        context: aws
   weekly-train:
     # Train the model using the latest version of the code via the API,
     # upload new model if it performs better than the old one
     jobs:
       - train_and_upload_model
-          context: aws
+        context: aws
     triggers:
       - schedule:
           cron: "0 0 * * 3"  # Run every wednesday at midnight
@@ -93,7 +93,7 @@ workflows:
     # Check and make predictions for any new fixtures that haven't been predicted for
     jobs:
       - daily_predict
-          context: aws
+        context: aws
     triggers:
       - schedule:
           cron: "0 2 * * *"  # Run every day at 2am
