@@ -8,11 +8,6 @@ jobs:
       - checkout
       - restore_cache:
           key: py-deps-{{ checksum "packages/football_trading/requirements.txt" }}
-#      - run:
-#          name: Running Tests
-#          command: |
-#            chmod u+x ./scripts/run_tests.sh
-#            ./scripts/run_tests.sh
       - run:
           name: Publish Model
           command: |
@@ -48,28 +43,28 @@ jobs:
             - "/venv"
   daily_predictions:
     working_directory: ~/project
-      docker:
-          - image: circleci/python:3.7.2
-      steps:
-        - checkout
-        - restore_cache:
-            key: py-deps-{{ checksum "packages/api/requirements.txt" }}
-        - run:
-            name: Setup Environment
-            command: |
-              virtualenv venv
-              . venv/bin/activate
-              pip install --upgrade pip
-              pip install -r packages/api/requirements.txt
-        - run:
-            name: Train Model
-            command: |
-              chmod u+x ./scripts/train_model.sh
-              ./scripts/make_predictions.sh
-        - save_cache:
-            key: py-deps-{{ checksum "packages/api/requirements.txt" }}
-            paths:
-              - "/venv"
+    docker:
+        - image: circleci/python:3.7.2
+    steps:
+      - checkout
+      - restore_cache:
+          key: py-deps-{{ checksum "packages/api/requirements.txt" }}
+      - run:
+          name: Setup Environment
+          command: |
+            virtualenv venv
+            . venv/bin/activate
+            pip install --upgrade pip
+            pip install -r packages/api/requirements.txt
+      - run:
+          name: Train Model
+          command: |
+            chmod u+x ./scripts/train_model.sh
+            ./scripts/make_predictions.sh
+      - save_cache:
+          key: py-deps-{{ checksum "packages/api/requirements.txt" }}
+          paths:
+            - "/venv"
 workflows:
   version: 2
   run-model-tests:
