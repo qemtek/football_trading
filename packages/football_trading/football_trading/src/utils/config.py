@@ -5,10 +5,11 @@ try:
 except ImportError:
     configuration = {}
 
+
 def get_attribute(attribute_name, fail_if_not_found=True, accepts=None):
     """Get credentials attribute required in the project. First
-    check the environment variables, then the configuration file"""
-
+    check the environment variables, then the configuration file
+    """
     if os.environ.get(attribute_name) is None:
         print(f'{attribute_name} is not specified as an environment variable')
         if hasattr(configuration, attribute_name):
