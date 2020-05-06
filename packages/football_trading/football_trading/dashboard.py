@@ -20,12 +20,14 @@ import joblib
 
 from dash.dependencies import Input, Output
 
-from football_trading.settings import model_dir, tmp_dir
+from football_trading.settings import model_dir, tmp_dir, LOCAL, DB_DIR, S3_BUCKET_NAME
 from football_trading.src.utils.logging import get_logger
 from football_trading.src.utils.dashboard import (
     get_form_dif_view, get_team_home_away_performance, get_performance_by_season,
-    get_cumulative_profit_view, get_cumulative_profit_from_bof, get_historic_features)
+    get_cumulative_profit_view, get_cumulative_profit_from_bof, get_historic_features,
+    load_production_model)
 from football_trading.src.utils.db import run_query
+from football_trading.src.utils.s3_tools import download_from_s3
 
 
 active_graphs = ['profit-by-date', 'accuracy_home_away', 'accuracy_over_time', 'form_diff_acc']
@@ -33,6 +35,14 @@ active_graphs = ['profit-by-date', 'accuracy_home_away', 'accuracy_over_time', '
 logger = get_logger(logger_name='dashboard')
 
 # ToDo: If we're in production, just look at the in-production model compared with betting on the favourite.
+
+if not LOCAL:
+    logger.info('Attempting to download DB from S3..')
+    try:
+        if not os.path.exists(f"{DB_DIR}"):
+            download_from_s3(local_path=f"{DB_DIR}", s3_path='db.sqlite', bucket=S3_BUCKET_NAME)
+    except Exception as e:
+        raise Exception(f'DB cannot be found in S3, or the access credentials are incorrect. Error: {e}')
 
 
 def get_dashboard_app(server=None):
@@ -44,17 +54,7 @@ def get_dashboard_app(server=None):
     # Get historic features
     historic_df_all, all_model_ids = get_historic_features(predictions, model_names)
     # Load the in-production model
-    production_model_dir = os.path.join(model_dir, 'in_production')
-    production_model = os.listdir(production_model_dir)
-    production_model = [m for m in production_model if '.DS' not in m]
-    if len(production_model) > 0:
-        logger.warning('There are two models in the in_production folder.. Picking the first one.')
-    production_model_dir = os.path.join(production_model_dir, production_model[0])
-    logger.info(f'Loading production model from {production_model_dir}')
-    with open(production_model_dir, 'rb') as f_in:
-        production_model = joblib.load(f_in)
-    # Get the ID of the production model
-    production_model_id = production_model.model_id
+    production_model, production_model_id, production_model_dir = load_production_model()
     # Get the current season
     current_season = run_query(query='select max(season) from main_fixtures').iloc[0, 0]
     # Get the historic predictions for the production model

@@ -7,12 +7,30 @@ import os
 from sklearn.cluster import DBSCAN
 from sklearn.preprocessing import StandardScaler
 
-from football_trading.settings import training_data_dir, IN_PRODUCTION
+from football_trading.src.utils.logging import get_logger
+from football_trading.settings import training_data_dir, IN_PRODUCTION, model_dir
+
+logger = get_logger(logger_name='dashboard')
+
+
+def load_production_model():
+    production_model_dir = os.path.join(model_dir, 'in_production')
+    production_model = os.listdir(production_model_dir)
+    production_model = [m for m in production_model if '.DS' not in m]
+    if len(production_model) > 0:
+        logger.warning('There are two models in the in_production folder.. Picking the first one.')
+    production_model_dir = os.path.join(production_model_dir, production_model[0])
+    logger.info(f'Loading production model from {production_model_dir}')
+    with open(production_model_dir, 'rb') as f_in:
+        production_model = joblib.load(f_in)
+    # Get the ID of the production model
+    production_model_id = production_model.model_id
+    return production_model, production_model_id, production_model_dir
 
 
 def get_team_home_away_performance(historic_df, current_season):
-    """Get the performance of the model for each team, at home and away"""
-
+    """Get the performance of the model for each team, at home and away
+    """
     team_df = historic_df[historic_df['season'] == current_season]
     home_team_perf = team_df.groupby('home_team')['correct'].mean().round(2)
     away_team_perf = team_df.groupby('away_team')['correct'].mean().round(2)
@@ -22,8 +40,8 @@ def get_team_home_away_performance(historic_df, current_season):
 
 
 def get_performance_by_season(historic_df_all, production_model_id):
-    """Get the performance of all models, grouped by season"""
-
+    """Get the performance of all models, grouped by season
+    """
     # If we're in production, just look at the production model
     if IN_PRODUCTION:
         historic_df_all = historic_df_all[historic_df_all['model_id'] == production_model_id]

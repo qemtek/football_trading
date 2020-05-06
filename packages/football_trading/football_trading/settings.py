@@ -6,7 +6,7 @@ from football_trading.src.utils.config import get_attribute
 PROJECTSPATH = get_attribute('PROJECTSPATH')
 IN_PRODUCTION = get_attribute('IN_PRODUCTION')
 data_dir = f"{PROJECTSPATH}/football_trading/data"
-plots_dir = f"({PROJECTSPATH}/football_trading/plots"
+plots_dir = f"{PROJECTSPATH}/football_trading/plots"
 model_dir = f"{PROJECTSPATH}/football_trading/models"
 training_data_dir = f"{PROJECTSPATH}/football_trading/data/training_data"
 sql_dir = f"{PROJECTSPATH}/football_trading/sql"

@@ -6,7 +6,8 @@ import sqlite3
 
 from sklearn.metrics import balanced_accuracy_score, accuracy_score, r2_score, mean_absolute_error
 
-from football_trading.settings import model_dir, PROJECTSPATH, available_models, S3_BUCKET_NAME
+from football_trading.settings import model_dir, PROJECTSPATH, available_models, S3_BUCKET_NAME, \
+    LOCAL, training_data_dir
 from football_trading.src.utils.logging import get_logger
 from football_trading.src.utils.general import safe_open, time_function
 from football_trading.src.utils.s3_tools import upload_to_s3, list_files, download_from_s3
@@ -206,6 +207,18 @@ class BaseModel:
                     if not local:
                         upload_to_s3(save_dir, f'models/in_production/{self.model_id}.joblib',
                                      bucket=S3_BUCKET_NAME)
+            # Save the training data, and any rows that were removed from training
+            data_save_dir = f"{training_data_dir}/{self.model_id}.joblib'"
+            with safe_open(data_save_dir, 'wb') as f_out:
+                joblib.dump({"train_test_data": self.training_data,
+                             "removed_data_without_features": self.df_removed,
+                             "removed_data_with_features": self.df_removed2,
+                             "features": self.model_features},
+                            f_out)
+                if not LOCAL:
+                    upload_to_s3(data_save_dir, f'training_data/{self.model_id}.joblib', bucket=S3_BUCKET_NAME)
+                    logger.info(
+                        f'Training data saved to S3 ({S3_BUCKET_NAME}/training_data/{self.model_id}.joblib')
 
     @time_function(logger=logger)
     def load_model(self, date=None, load_model_attributes=True, local=True) -> None:

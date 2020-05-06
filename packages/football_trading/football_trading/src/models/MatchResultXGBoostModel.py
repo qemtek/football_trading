@@ -1,5 +1,7 @@
 import pandas as pd
 import numpy as np
+import datetime as dt
+import sqlite3
 
 from football_trading.src.models.templates.XGBoostModel import XGBoostModel
 from football_trading.src.utils.general import suspend_logging, time_function
@@ -141,6 +143,15 @@ class MatchResultXGBoost(XGBoostModel):
     def upload_to_table(self, df, table_name, model_id=None):
         # Upload the predictions to the model_predictions table
         conn = connect_to_db()
+        if 'creation_time' not in df.columns:
+            df['creation_time'] = dt.datetime.now()
+        try:
+            model_ids = run_query(query=f'select distinct model_id from {table_name}')
+            model_ids = list(model_ids['model_id'].unique())
+        except sqlite3.OperationalError  as e:
+            model_ids = []
+        if model_id in model_ids:
+            logger.warning(f'Model id: {model_id} already exists in the table {table_name}!')
         # Add model ID so we can compare model performances
         if model_id is not None:
             df['model_id'] = model_id

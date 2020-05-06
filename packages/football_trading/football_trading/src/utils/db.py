@@ -2,7 +2,11 @@ import sqlite3
 import pandas as pd
 import os
 
-from football_trading.settings import DB_DIR
+from football_trading.src.utils.logging import get_logger
+from football_trading.settings import DB_DIR, S3_BUCKET_NAME
+from football_trading.src.utils.s3_tools import download_from_s3, list_files
+
+logger = get_logger()
 
 
 def connect_to_db(path_to_db=None):
@@ -47,3 +51,33 @@ def run_query(*, query, params=None, return_data=True, path_to_db=None) -> pd.Da
                 # Convert the result into a DataFrame and add column names
                 df = pd.DataFrame(cursor.fetchall(), columns=name_list)
                 return df
+
+
+def get_db(local):
+    if local:
+        if not os.path.exists(f"{DB_DIR}"):
+            raise Exception('LOCAL is True and the DB does not exist locally')
+    else:
+        local_exists = os.path.exists(f"{DB_DIR}")
+        file_data = list_files(prefix='', bucket='football-trading')
+        files = [f for f in file_data if f.get('Key') == 'db.sqlite']
+        assert len(files) <= 1, 'More than 1 file named db.sqlite in S3'
+        remote_exists = len(files) > 0
+        if local_exists and not remote_exists:
+            latest = 'local'
+            pass
+        if remote_exists and not local_exists:
+            latest = 'remote'
+        if not local_exists and not remote_exists:
+            raise Exception('Cant find the DB in the local or remote locations')
+        if local_exists and remote_exists:
+            last_modified_remote = files[0].get('LastModified')
+            last_modified_local = os.path.getmtime(f"{DB_DIR}")
+            if last_modified_remote > last_modified_local:
+                latest = 'remote'
+            elif last_modified_local > last_modified_remote:
+                latest = 'local'
+            elif last_modified_local == last_modified_remote:
+                latest = 'both'
+        if latest == 'remote':
+            download_from_s3(local_path=f"{DB_DIR}", s3_path='db.sqlite', bucket=S3_BUCKET_NAME)

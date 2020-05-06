@@ -7,9 +7,9 @@ from yellowbrick.classifier import ClassificationReport, DiscriminationThreshold
     ClassPredictionError, ConfusionMatrix, ROCAUC
 from yellowbrick.regressor import ResidualsPlot, PredictionError
 
-from football_trading.src.utils.base_model import time_function
+from football_trading.src.utils.general import time_function
 from football_trading.src.utils.logging import get_logger
-from football_trading.settings import plots_dir, data_dir, S3_BUCKET_NAME
+from football_trading.settings import plots_dir, data_dir, S3_BUCKET_NAME, LOCAL
 from football_trading.src.utils.s3_tools import upload_to_s3
 
 logger = get_logger()
@@ -22,7 +22,7 @@ class ModelEvaluator:
                  plots_dir, data_dir, is_classifier=True, local=True) -> None:
         self.trained_model = trained_model
         self.model_id = model_id
-        self.local = local
+        LOCAL = local
         self.X_train = training_data.get('X_train')
         self.y_train = training_data.get('y_train')
         self.X_test = training_data.get('X_test')
@@ -45,14 +45,14 @@ class ModelEvaluator:
 
     @time_function(logger=logger)
     def classification_report(self) -> None:
-        """Show precision, recall and F1 score by class"""
-
+        """Show precision, recall and F1 score by class
+        """
         visualizer = ClassificationReport(self.trained_model, cmap="YlGn", size=(600, 360))
         visualizer.fit(self.X_train, self.y_train)
         visualizer.score(self.X_test, self.y_test)
         save_dir = f"{self.plots_dir}/classification_report_{self.model_id}.png"
         visualizer.show(outpath=save_dir)
-        if not self.local:
+        if not LOCAL:
             upload_to_s3(save_dir, f'plots/classification_report_{self.model_id}.png', bucket=S3_BUCKET_NAME)
         plt.clf()
 
@@ -62,7 +62,7 @@ class ModelEvaluator:
         visualizer.fit(self.X_test, self.y_test)  # Fit the data to the visualizer
         save_dir = f"{self.plots_dir}/discrimination_plot_{self.model_id}.png"
         visualizer.show(outpath=save_dir)
-        if not self.local:
+        if not LOCAL:
             upload_to_s3(save_dir, f'plots/discrimination_plot_{self.model_id}.png', bucket=S3_BUCKET_NAME)
         plt.clf()
 
@@ -73,7 +73,7 @@ class ModelEvaluator:
         visualizer.score(self.X_test, self.y_test)  # Evaluate the model on the test data
         save_dir = f"{self.plots_dir}/roc_curve_{self.model_id}.png"
         visualizer.show(outpath=save_dir)
-        if not self.local:
+        if not LOCAL:
             upload_to_s3(save_dir, f'plots/roc_curve_{self.model_id}.png', bucket=S3_BUCKET_NAME)
         plt.clf()
 
@@ -91,7 +91,7 @@ class ModelEvaluator:
         visualizer.score(self.X_test, self.y_test)
         save_dir = f"{self.plots_dir}/class_prediction_error_{self.model_id}.png"
         visualizer.show(outpath=save_dir)
-        if not self.local:
+        if not LOCAL:
             upload_to_s3(save_dir, f'plots/class_prediction_error_{self.model_id}.png', bucket=S3_BUCKET_NAME)
         plt.clf()
 
@@ -107,7 +107,7 @@ class ModelEvaluator:
         cm.score(self.X_test, self.y_test)
         save_dir = f"{self.plots_dir}/confusion_matrix_{self.model_id}.png"
         cm.show(outpath=save_dir)
-        if not self.local:
+        if not LOCAL:
             upload_to_s3(save_dir, f'plots/confusion_matrix_{self.model_id}.png', bucket=S3_BUCKET_NAME)
         plt.clf()
 
@@ -121,7 +121,7 @@ class ModelEvaluator:
         visualizer.score(self.X_test, self.y_test)  # Evaluate the model on the test data
         save_dir = f"{self.plots_dir}/residuals_plot_{self.model_id}.png"
         visualizer.show(outpath=save_dir)
-        if not self.local:
+        if not LOCAL:
             upload_to_s3(save_dir, f'plots/residuals_plot_{self.model_id}.png', bucket=S3_BUCKET_NAME)
         plt.clf()
 
@@ -135,7 +135,7 @@ class ModelEvaluator:
         visualizer.score(self.X_test, self.y_test)  # Evaluate the model on the test data
         save_dir = f"{self.plots_dir}/prediction_error_plot_{self.model_id}.png"
         visualizer.show(outpath=save_dir)
-        if not self.local:
+        if not LOCAL:
             upload_to_s3(save_dir, f'plots/prediction_error_plot_{self.model_id}.png', bucket=S3_BUCKET_NAME)
         plt.clf()
 
@@ -154,7 +154,7 @@ class ModelEvaluator:
             save_dir = f'{self.data_dir}/SHAP_explainer_{self.model_id}.joblib'
             with open(save_dir, 'wb') as f_out:
                 joblib.dump(explainer, f_out)
-            if not self.local:
+            if not LOCAL:
                 upload_to_s3(save_dir, f'plots/SHAP_explainer_{self.model_id}.jopblib', bucket=S3_BUCKET_NAME)
         return explainer, shap_values
 

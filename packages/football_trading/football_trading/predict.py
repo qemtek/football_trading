@@ -14,7 +14,7 @@ logger = get_logger()
 
 def make_predictions():
     # Update tables
-    update_tables(local=LOCAL)
+    update_tables()
     # Get the current season
     current_season = run_query(query='select max(season) from main_fixtures').iloc[0, 0]
     # Load the in-production model
