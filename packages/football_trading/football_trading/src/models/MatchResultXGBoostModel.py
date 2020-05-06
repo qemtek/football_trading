@@ -3,13 +3,15 @@ import numpy as np
 import datetime as dt
 import sqlite3
 
+from sklearn.utils.class_weight import compute_class_weight
+
 from football_trading.src.models.templates.XGBoostModel import XGBoostModel
 from football_trading.src.utils.general import suspend_logging, time_function
 from football_trading.src.utils.db import run_query, connect_to_db
 from football_trading.src.utils.xgboost import get_features, get_manager_features, \
     get_feature_data, get_manager, get_profit, get_profit_betting_on_fav, apply_profit_weight
 from football_trading.src.utils.team_id_functions import fetch_name
-from football_trading.settings import sql_dir, data_dir, plots_dir
+from football_trading.settings import sql_dir, data_dir, plots_dir, LOCAL
 from football_trading.src.utils.logging import get_logger
 
 logger = get_logger()
@@ -21,10 +23,10 @@ class MatchResultXGBoost(XGBoostModel):
     def __init__(self, test_mode=False, load_trained_model=False, load_model_date=None,
                  save_trained_model=True, upload_historic_predictions=None, apply_sample_weight=False,
                  compare_models=False, problem_name='match_predict', production_model=True, create_plots=True,
-                 optimise_hyperparams=False, local=True):
+                 optimise_hyperparams=False):
         super().__init__(test_mode=test_mode, save_trained_model=save_trained_model,
                          load_trained_model=load_trained_model, load_model_date=load_model_date,
-                         compare_models=compare_models,  problem_name=problem_name, local=local)
+                         compare_models=compare_models,  problem_name=problem_name, local=LOCAL)
         # Random seed for reproducibility
         self.random_seed = 42
         self.apply_sample_weight = apply_sample_weight
@@ -94,9 +96,12 @@ class MatchResultXGBoost(XGBoostModel):
             # Apply sample weights (if requsted)
             if self.apply_sample_weight:
                 #sample_weight = np.array(1/abs(X['avg_goals_for_home'] - X['avg_goals_for_away']))
-                td = X
-                td['target'] = y
-                sample_weight = np.array(td.apply(lambda x: apply_profit_weight(x), axis=1))
+                # td = X
+                # td['target'] = y
+                # sample_weight = np.array(td.apply(lambda x: apply_profit_weight(x), axis=1))
+                weights = compute_class_weight('balanced', np.unique(y), y['full_time_result'])
+                class_weights = {'A': weights[0], 'D': weights[1], 'H': weights[2]}
+                sample_weight = y['full_time_result'].apply(lambda x: class_weights.get(x))
             else:
                 sample_weight = np.ones(len(X))
             # Optimise hyper-parameters using a grid search
@@ -110,7 +115,7 @@ class MatchResultXGBoost(XGBoostModel):
             if use_model:
                 # Save the trained model, if requested
                 if self.save_trained_model and not test_mode:
-                    self.save_model(local=self.local)
+                    self.save_model(local=LOCAL)
                 # Add profit made if we bet on the game
                 self.model_predictions['profit'] = self.model_predictions.apply(
                     lambda x: get_profit(x), axis=1)
@@ -277,5 +282,6 @@ if __name__ == '__main__':
     model = MatchResultXGBoost(
         save_trained_model=True,
         upload_historic_predictions=True,
-        problem_name='match-predict-base',
+        problem_name='match-predict-base-balance-classes',
+        apply_sample_weight=False,
         local=False)

@@ -82,8 +82,7 @@ def get_dashboard_app(server=None):
     app = dash.Dash(__name__,
                     # Use the server if its a Flask object, else create our own
                     server=server if isinstance(server, Flask) else True,
-                    external_stylesheets=[dbc.themes.BOOTSTRAP],
-                    url_base_pathname='/dashboard/')
+                    external_stylesheets=[dbc.themes.BOOTSTRAP],)
     app.config.suppress_callback_exceptions = True
 
     # Show the latest predictions (if any exist)
@@ -426,7 +425,7 @@ def get_dashboard_app(server=None):
                         )
                 }
 
-    # Return the api
+    # Return the app
     return app
 
 

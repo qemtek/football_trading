@@ -14,7 +14,6 @@ def train_new_model(problem_name='match_predict_base', test_mode=False):
         upload_historic_predictions=True,
         problem_name=problem_name,
         production_model=True,
-        local=False,
         compare_models=True,
         test_mode=test_mode)
 

@@ -3,7 +3,7 @@ import pandas as pd
 import os
 import joblib
 
-from sklearn.model_selection import GridSearchCV, KFold
+from sklearn.model_selection import GridSearchCV, StratifiedKFold
 
 from football_trading.settings import PROJECTSPATH, S3_BUCKET_NAME
 from football_trading.src.utils.logging import get_logger
@@ -52,12 +52,12 @@ class SKLearnModel(BaseModel):
         """Train a model using KFold validation, such that a prediction is made for all data
         """
         logger.info("Training model.")
-        kf = KFold(n_splits=n_splits)
+        kf = StratifiedKFold(n_splits=n_splits)
         y = np.ravel(np.array(y))
         labels = list(np.sort(np.unique(y)))
         model_predictions = pd.DataFrame()
         sample_weight = np.ones(len(X)) if sample_weight is None else sample_weight
-        for train_index, test_index in kf.split(X):
+        for train_index, test_index in kf.split(X, y):
             model = self.model_object(**self.params, n_jobs=3).fit(
                 X=X.iloc[train_index, :][self.model_features],
                 y=y[train_index],

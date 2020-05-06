@@ -1,6 +1,7 @@
 import sqlite3
 import pandas as pd
 import os
+import time
 
 from football_trading.src.utils.logging import get_logger
 from football_trading.settings import DB_DIR, S3_BUCKET_NAME
@@ -71,8 +72,9 @@ def get_db(local):
         if not local_exists and not remote_exists:
             raise Exception('Cant find the DB in the local or remote locations')
         if local_exists and remote_exists:
-            last_modified_remote = files[0].get('LastModified')
+            last_modified_remote = pd.to_datetime(files[0].get('LastModified'), utc=True)
             last_modified_local = os.path.getmtime(f"{DB_DIR}")
+            last_modified_local = pd.to_datetime(time.ctime(last_modified_local), utc=True)
             if last_modified_remote > last_modified_local:
                 latest = 'remote'
             elif last_modified_local > last_modified_remote:
