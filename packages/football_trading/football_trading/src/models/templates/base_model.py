@@ -300,7 +300,10 @@ class BaseModel:
 
         main_performance_metric = self.performance_metrics[0].__name__
         new_performance = self.performance.get(main_performance_metric)
-        old_performance = self.previous_model.performance.get(main_performance_metric)
+        if self.previous_model is not None:
+            old_performance = self.previous_model.performance.get(main_performance_metric)
+        else:
+            old_performance = -100000
         if new_performance > old_performance:
             logger.info('New model beats previous model. Replacing this model')
             logger.info('{}: Previous Model: {}, New Model: {}'.format(
