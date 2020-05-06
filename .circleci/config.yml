@@ -64,7 +64,7 @@ jobs:
             pip install --upgrade pip
             pip install -r packages/api/requirements.txt
       - run:
-          name: Train Model
+          name: Make Predictions
           command: |
             chmod u+x ./scripts/make_predictions.sh
             ./scripts/make_predictions.sh

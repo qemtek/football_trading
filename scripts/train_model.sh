@@ -1,5 +1,3 @@
-cd ..
-. venv/bin/activate
 export IN_PRODUCTION=false
 export PROJECTSPATH=/home/circleci/project/packages/football_trading
 export DB_DIR=/home/circleci/project/db.sqlite
