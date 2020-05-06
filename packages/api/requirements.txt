@@ -2,5 +2,5 @@
 
 flask-apscheduler==1.11.0
 flask==1.1.1
-marshmellow==2.17.1
-football_trading==0.0.6
+marshmallow==3.5.2
+football_trading

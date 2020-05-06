@@ -9,10 +9,13 @@ jobs:
       - restore_cache:
           key: py-deps-{{ checksum "packages/football_trading/requirements.txt" }}
       - run:
-          name: Publish Model
+          name: Build Package & Test
           command: |
             chmod +x ./scripts/build_model_package.sh
             ./scripts/build_model_package.sh
+      - run:
+          name: Publish Model
+          command: |
             chmod +x ./scripts/publish_model.sh
             ./scripts/publish_model.sh ./packages/football_trading/
       - save_cache:
@@ -92,7 +95,7 @@ workflows:
   daily-predict:
     # Check and make predictions for any new fixtures that haven't been predicted for
     jobs:
-      - daily_predict:
+      - daily_predictions:
           context: aws
     triggers:
       - schedule:
