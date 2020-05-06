@@ -210,15 +210,18 @@ class BaseModel:
             # Save the training data, and any rows that were removed from training
             data_save_dir = f"{training_data_dir}/{self.model_id}.joblib"
             with safe_open(data_save_dir, 'wb') as f_out:
-                joblib.dump({"train_test_data": self.training_data,
-                             "removed_data_without_features": self.df_removed,
-                             "removed_data_with_features": self.df_removed2,
-                             "features": self.model_features},
-                            f_out)
+                outfile = dict()
+                outfile['train_test_data'] = self.training_data \
+                    if hasattr(self, 'training_data') else None
+                outfile['removed_data_without_features'] = self.df_removed \
+                    if hasattr(self, 'removed_data_without_features') else None
+                outfile['removed_data_with_features'] = self.df_removed \
+                    if hasattr(self, 'removed_data_with_features') else None
+                outfile['features'] = self.df_removed if hasattr(self, 'features') else None
+                joblib.dump(outfile, outfile)
                 if not LOCAL:
                     upload_to_s3(data_save_dir, f'training_data/{self.model_id}.joblib', bucket=S3_BUCKET_NAME)
-                    logger.info(
-                        f'Training data saved to S3 ({S3_BUCKET_NAME}/training_data/{self.model_id}.joblib')
+                    logger.info(f'Training data saved to S3 ({S3_BUCKET_NAME}/training_data/{self.model_id}.joblib')
 
     @time_function(logger=logger)
     def load_model(self, date=None, load_model_attributes=True, local=True) -> None:
