@@ -97,10 +97,10 @@ workflows:
     jobs:
       - daily_predictions:
           context: aws
-    triggers:
-      - schedule:
-          cron: "0 2 * * *"  # Run every day at 2am
-          filters:
-            branches:
-              only:
-                - master
+#    triggers:
+#      - schedule:
+#          cron: "0 2 * * *"  # Run every day at 2am
+#          filters:
+#            branches:
+#              only:
+#                - master

@@ -3,4 +3,5 @@
 flask-apscheduler==1.11.0
 flask==1.1.1
 marshmallow==3.5.2
+# Always get the latest version of football_trading
 football_trading
