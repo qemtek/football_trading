@@ -6,7 +6,7 @@ from football_trading.settings import LOCAL
 logger = get_logger()
 
 
-def train_new_model(problem_name='match_predict_base', test_mode=False):
+def train_new_model(problem_name='match-predict-base', test_mode=False):
     # Update tables
     update_tables()
     # Train new model

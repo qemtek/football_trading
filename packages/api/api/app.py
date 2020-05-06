@@ -16,7 +16,9 @@ def get_api(input_config=None):
     prediction_app = Flask(__name__)
     # Import config
     prediction_app.config.from_object(input_config if input_config is not None else config)
-
+    # Create dashboard
+    get_dashboard_app(server=prediction_app)
+    
     @prediction_app.route('/health', methods=['GET'])
     def health():
         if request.method == 'GET':

@@ -208,7 +208,7 @@ class BaseModel:
                         upload_to_s3(save_dir, f'models/in_production/{self.model_id}.joblib',
                                      bucket=S3_BUCKET_NAME)
             # Save the training data, and any rows that were removed from training
-            data_save_dir = f"{training_data_dir}/{self.model_id}.joblib'"
+            data_save_dir = f"{training_data_dir}/{self.model_id}.joblib"
             with safe_open(data_save_dir, 'wb') as f_out:
                 joblib.dump({"train_test_data": self.training_data,
                              "removed_data_without_features": self.df_removed,

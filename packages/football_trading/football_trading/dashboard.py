@@ -53,6 +53,8 @@ def get_dashboard_app(server=None):
     predictions = run_query(query='select * from historic_predictions')
     # Get historic features
     historic_df_all, all_model_ids = get_historic_features(predictions, model_names)
+    # Drop Duplicates
+    historic_df_all = historic_df_all.drop_duplicates()
     # Load the in-production model
     production_model, production_model_id, production_model_dir = load_production_model()
     # Get the current season
@@ -82,7 +84,8 @@ def get_dashboard_app(server=None):
     app = dash.Dash(__name__,
                     # Use the server if its a Flask object, else create our own
                     server=server if isinstance(server, Flask) else True,
-                    external_stylesheets=[dbc.themes.BOOTSTRAP],)
+                    external_stylesheets=[dbc.themes.BOOTSTRAP],
+                    url_base_pathname='/dashboard/')
     app.config.suppress_callback_exceptions = True
 
     # Show the latest predictions (if any exist)
@@ -425,7 +428,7 @@ def get_dashboard_app(server=None):
                         )
                 }
 
-    # Return the app
+    # Return the api
     return app
 
 

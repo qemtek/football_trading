@@ -11,8 +11,9 @@ from football_trading.src.utils.db import run_query, connect_to_db
 from football_trading.src.utils.xgboost import get_features, get_manager_features, \
     get_feature_data, get_manager, get_profit, get_profit_betting_on_fav, apply_profit_weight
 from football_trading.src.utils.team_id_functions import fetch_name
-from football_trading.settings import sql_dir, data_dir, plots_dir, LOCAL
+from football_trading.settings import sql_dir, data_dir, plots_dir, LOCAL, DB_DIR, S3_BUCKET_NAME
 from football_trading.src.utils.logging import get_logger
+from football_trading.src.utils.s3_tools import upload_to_s3
 
 logger = get_logger()
 
@@ -127,6 +128,9 @@ class MatchResultXGBoost(XGBoostModel):
                     upload_cols = ['fixture_id', 'home_team', 'away_team', 'season',
                                    'date', 'pred', 'actual', 'profit', 'profit_bof']
                     self.save_prediction_data(cols_to_save=upload_cols)
+                # Upload the new DB to S3 if LOCAL is False
+                if not LOCAL:
+                    upload_to_s3(local_path=f"{DB_DIR}", s3_path='db.sqlite', bucket=S3_BUCKET_NAME)
                 # Create plots if requested
                 if create_plots:
                     logger.info('Generating plots')
@@ -282,6 +286,5 @@ if __name__ == '__main__':
     model = MatchResultXGBoost(
         save_trained_model=True,
         upload_historic_predictions=True,
-        problem_name='match-predict-base-balance-classes',
-        apply_sample_weight=False,
-        local=False)
+        problem_name='match-predict-base-remove-odds',
+        apply_sample_weight=False,)

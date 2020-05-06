@@ -69,8 +69,8 @@ def get_cumulative_profit_view(historic_df_all, all_model_ids, production_model_
 
 
 def get_cumulative_profit_from_bof(historic_df):
-    """Get the cumulative profit from betting on the favourite"""
-
+    """Get the cumulative profit from betting on the favourite
+    """
     profit_perf_bof = pd.DataFrame(historic_df.sort_values('date').groupby(
         ['date'])['profit_bof'].sum().cumsum()).reset_index()
     profit_perf_bof.columns = ['Date', 'Profit']
@@ -78,8 +78,8 @@ def get_cumulative_profit_from_bof(historic_df):
 
 
 def get_form_dif_view(historic_df_all, production_model_id):
-    """Get the performance of each model, grouped by the difference in form between teams"""
-
+    """Get the performance of each model, grouped by the difference in form between teams
+    """
     # If we're in production, just look at the production model
     if IN_PRODUCTION:
         historic_df_all = historic_df_all[historic_df_all['model_id'] == production_model_id]
@@ -131,7 +131,12 @@ def get_historic_features(predictions, model_names):
     # Get the training data corresponding to all models
     historic_training_data = pd.DataFrame()
     for id in all_model_ids:
-        df = joblib.load(os.path.join(training_data_dir, id + '.joblib'))
+        td = joblib.load(f"{training_data_dir}/{id}.joblib").get('train_test_data')
+        df = pd.concat([td.get('X_train'), td.get('X_test')], axis=0).reset_index(drop=True)
+        targets = pd.DataFrame(pd.concat(
+            [pd.Series(td.get('y_train')), pd.Series(td.get('y_test'))],
+            axis=0).reset_index(drop=True), columns=['full_time_result'])
+        df = pd.concat([df, targets], axis=1)
         try:
             historic_training_data = historic_training_data.append(df)
         except TypeError:
