@@ -1,5 +1,5 @@
 import os
-from settings import PROJECTSPATH
+from football_trading.settings import PROJECTSPATH
 
 from football_trading.train import train_new_model
 
