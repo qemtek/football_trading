@@ -1,7 +1,7 @@
 import os
-from football_trading.settings import PROJECTSPATH
+from settings import PROJECTSPATH
 
-from football_trading.train import train_new_model
+from train import train_new_model
 
 
 def smoke_test_train_model():

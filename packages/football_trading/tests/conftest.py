@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from football_trading.settings import PROJECTSPATH
+from settings import PROJECTSPATH
 
 
 @pytest.fixture

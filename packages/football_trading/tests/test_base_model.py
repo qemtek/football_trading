@@ -4,9 +4,7 @@ import pytest
 
 from sklearn.linear_model import LogisticRegression
 
-from football_trading.src.models.templates.base_model import BaseModel
-from football_trading.settings import model_dir
-
+from src.models.templates.base_model import BaseModel
 
 @pytest.mark.basemodel
 @pytest.mark.timeout(20)
