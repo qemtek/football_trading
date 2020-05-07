@@ -1,0 +1,10 @@
+--extra-index-url ${PIP_EXTRA_INDEX_URL}
+
+# Api
+flask==1.1.1
+# Schema validation
+marshmallow==3.5.2
+# Always get the latest version of football_trading
+football_trading
+# Deployment
+gunicorn==19.9.0

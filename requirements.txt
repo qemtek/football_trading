@@ -1,2 +1,2 @@
--r packages/api/requirements.txt
+-r packages/ft_api/requirements.txt
 -r packages/football_trading/requirements.txt

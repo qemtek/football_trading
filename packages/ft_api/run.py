@@ -1,5 +1,5 @@
-from api.app import get_api
-from api.settings import SERVER_ADDRESS, SERVER_PORT
+from ft_api.app import get_api
+from ft_api.settings import SERVER_ADDRESS, SERVER_PORT
 
 application = get_api()
 

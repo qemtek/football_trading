@@ -245,7 +245,7 @@ def get_dashboard_app(server=None):
             )
         ]
     )
-    # Return the api
+    # Return the ft_api
     return app
 
 

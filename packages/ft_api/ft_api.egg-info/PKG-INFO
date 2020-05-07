@@ -1,12 +1,12 @@
 Metadata-Version: 1.2
-Name: football-trading
-Version: 0.0.8
-Summary: Football prediction model for football markets.
+Name: ft-api
+Version: 0.0.1
+Summary: API for the football prediction model.
 Home-page: https://github.com/qemtek/football_trading
 Author: Christopher Collins
 Author-email: qemtek@gmail.com
 License: MIT
-Description: Football prediction model for football markets.
+Description: API for the football prediction model.
 Platform: UNKNOWN
 Classifier: License :: OSI Approved :: MIT License
 Classifier: Programming Language :: Python

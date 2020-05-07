@@ -1,12 +1,12 @@
 from flask import Flask, request, jsonify
 
 from football_trading import __version__ as _version
-from api import __version__ as api_version
+from ft_api import __version__ as api_version
 from football_trading.predict import make_predictions
 from football_trading.train import train_new_model
 from football_trading.dashboard import get_dashboard_app
-from api.settings import config
-from api.utils.logging import get_logger
+from ft_api.settings import config
+from ft_api.utils.logging import get_logger
 
 _logger = get_logger(logger_name=__name__)
 

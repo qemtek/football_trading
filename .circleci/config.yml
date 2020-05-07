@@ -31,7 +31,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: py-deps-{{ checksum "packages/api/requirements.txt" }}
+          key: py-deps-{{ checksum "packages/ft_api/requirements.txt" }}
       - run:
           name: Setup Environment
           command: |
@@ -45,7 +45,7 @@ jobs:
             chmod u+x ./scripts/train_model.sh
             ./scripts/train_model.sh
       - save_cache:
-          key: py-deps-{{ checksum "packages/api/requirements.txt" }}
+          key: py-deps-{{ checksum "packages/ft_api/requirements.txt" }}
           paths:
             - "/venv"
   daily_predictions:
@@ -55,7 +55,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: py-deps-{{ checksum "packages/api/requirements.txt" }}
+          key: py-deps-{{ checksum "packages/ft_api/requirements.txt" }}
       - run:
           name: Setup Environment
           command: |
@@ -69,7 +69,7 @@ jobs:
             chmod u+x ./scripts/make_predictions.sh
             ./scripts/make_predictions.sh
       - save_cache:
-          key: py-deps-{{ checksum "packages/api/requirements.txt" }}
+          key: py-deps-{{ checksum "packages/ft_api/requirements.txt" }}
           paths:
             - "/venv"
 workflows:
@@ -97,10 +97,10 @@ workflows:
     jobs:
       - daily_predictions:
           context: aws
-#    triggers:
-#      - schedule:
-#          cron: "0 2 * * *"  # Run every day at 2am
-#          filters:
-#            branches:
-#              only:
-#                - master
+    triggers:
+      - schedule:
+          cron: "0 2 * * *"  # Run every day at 2am
+          filters:
+            branches:
+              only:
+                - master

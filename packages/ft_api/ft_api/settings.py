@@ -1,7 +1,7 @@
 import logging
 
-from api.utils.configuration import get_attribute
-from api.configuration import ProductionConfig, DevelopmentConfig, TestingConfig
+from ft_api.utils.configuration import get_attribute
+from ft_api.configuration import ProductionConfig, DevelopmentConfig, TestingConfig
 
 SERVER_ADDRESS = get_attribute('SERVER_ADDRESS')
 SERVER_PORT = get_attribute('SERVER_PORT')

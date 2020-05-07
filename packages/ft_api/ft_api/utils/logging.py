@@ -2,7 +2,7 @@ import sys
 import logging
 from logging.handlers import TimedRotatingFileHandler
 
-from api import configuration
+from ft_api import configuration
 
 
 def get_console_handler():

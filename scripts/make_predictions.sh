@@ -15,6 +15,6 @@ export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
 export SERVER_ADDRESS=0.0.0.0
 export SERVER_PORT=5000
 
-python packages/api/run.py
+python packages/ft_api/run.py
 status=$(curl -v http://${SERVER_ADDRESS}:${SERVER_PORT}/predict)
 # python ./packages/football_trading/football_trading/predict.py

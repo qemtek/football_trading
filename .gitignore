@@ -13,3 +13,4 @@ packages/football_trading/.tox/*
 packages/football_trading/football_trading/data/training_data/*
 packages/football_trading/football_trading/plots/*
 packages/football_trading/football_trading/tmp/*
+Packages/ft_api/.tox/*
