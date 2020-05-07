@@ -1,5 +1,5 @@
-from src.utils.logging import get_logger
-from src.models.templates.sklearn_model import SKLearnModel
+from football_trading.src.utils.logging import get_logger
+from football_trading.src.models.templates.sklearn_model import SKLearnModel
 from sklearn.linear_model import LogisticRegression
 
 
