@@ -20,14 +20,14 @@ import joblib
 
 from dash.dependencies import Input, Output
 
-from settings import model_dir, tmp_dir, LOCAL, DB_DIR, S3_BUCKET_NAME
-from src.utils.logging import get_logger
-from src.utils.dashboard import (
+from football_trading.settings import model_dir, tmp_dir, LOCAL, DB_DIR, S3_BUCKET_NAME
+from football_trading.src.utils.logging import get_logger
+from football_trading.src.utils.dashboard import (
     get_form_dif_view, get_team_home_away_performance, get_performance_by_season,
     get_cumulative_profit_view, get_cumulative_profit_from_bof, get_historic_features,
     load_production_model)
-from src.utils.db import run_query
-from src.utils.s3_tools import download_from_s3
+from football_trading.src.utils.db import run_query
+from football_trading.src.utils.s3_tools import download_from_s3
 
 
 active_graphs = ['profit-by-date', 'accuracy_home_away', 'accuracy_over_time', 'form_diff_acc']

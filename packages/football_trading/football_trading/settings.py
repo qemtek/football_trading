@@ -1,6 +1,6 @@
 import logging
 
-from src.utils.config import get_attribute
+from football_trading.src.utils.config import get_attribute
 
 # Project specific credentials
 PROJECTSPATH = get_attribute('PROJECTSPATH')

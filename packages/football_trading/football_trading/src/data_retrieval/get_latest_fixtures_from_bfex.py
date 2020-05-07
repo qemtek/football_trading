@@ -1,8 +1,8 @@
 import betfairlightweight
 import pandas as pd
 
-from src.utils.betfair_tools import connect_to_betfair
-from src.utils.db import connect_to_db
+from football_trading.src.utils.betfair_tools import connect_to_betfair
+from football_trading.src.utils.db import connect_to_db
 
 
 def get_latest_fixtures():

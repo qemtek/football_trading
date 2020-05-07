@@ -7,10 +7,10 @@ from yellowbrick.classifier import ClassificationReport, DiscriminationThreshold
     ClassPredictionError, ConfusionMatrix, ROCAUC
 from yellowbrick.regressor import ResidualsPlot, PredictionError
 
-from src.utils.general import time_function
-from src.utils.logging import get_logger
-from settings import plots_dir, data_dir, S3_BUCKET_NAME, LOCAL
-from src.utils.s3_tools import upload_to_s3
+from football_trading.src.utils.general import time_function
+from football_trading.src.utils.logging import get_logger
+from football_trading.settings import plots_dir, data_dir, S3_BUCKET_NAME, LOCAL
+from football_trading.src.utils.s3_tools import upload_to_s3
 
 logger = get_logger()
 

@@ -3,8 +3,8 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import numpy as np
 
-from src.utils.db import run_query, connect_to_db
-from src.utils.team_id_functions import fetch_alternative_name, fetch_alternative_name2
+from football_trading.src.utils.db import run_query, connect_to_db
+from football_trading.src.utils.team_id_functions import fetch_alternative_name, fetch_alternative_name2
 
 
 def get_teams_from_wiki():

@@ -1,7 +1,7 @@
 import os
 
 try:
-    import configuration
+    from football_trading import configuration
 except ImportError:
     configuration = {}
 

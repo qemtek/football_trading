@@ -1,12 +1,12 @@
 import pandas as pd
 import datetime as dt
 
-from settings import LOCAL
-from src.models.MatchResultXGBoostModel import MatchResultXGBoost
-from src.utils.api import get_upcoming_games
-from update_tables import update_tables
-from src.utils.db import run_query, connect_to_db
-from src.utils.logging import get_logger
+from football_trading.settings import LOCAL
+from football_trading.src.models.MatchResultXGBoostModel import MatchResultXGBoost
+from football_trading.src.utils.api import get_upcoming_games
+from football_trading.update_tables import update_tables
+from football_trading.src.utils.db import run_query, connect_to_db
+from football_trading.src.utils.logging import get_logger
 from football_trading import __version__
 
 logger = get_logger()

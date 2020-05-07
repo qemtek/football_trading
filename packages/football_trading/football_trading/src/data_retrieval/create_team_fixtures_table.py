@@ -1,4 +1,4 @@
-from src.utils.db import connect_to_db
+from football_trading.src.utils.db import connect_to_db
 
 
 def create_team_fixtures():

@@ -1,6 +1,6 @@
 import betfairlightweight
 
-from settings import BFEX_USER, BFEX_PASSWORD, BFEX_APP_KEY, BFEX_CERTS_PATH
+from football_trading.settings import BFEX_USER, BFEX_PASSWORD, BFEX_APP_KEY, BFEX_CERTS_PATH
 
 
 def connect_to_betfair():

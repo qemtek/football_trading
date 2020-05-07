@@ -1,8 +1,8 @@
 import pandas as pd
 from datetime import datetime
 
-from src.utils.db import connect_to_db
-from src.utils.team_id_functions import fetch_id
+from football_trading.src.utils.db import connect_to_db
+from football_trading.src.utils.team_id_functions import fetch_id
 
 
 # Extract data from .csv files hosted at football-data.co.uk
