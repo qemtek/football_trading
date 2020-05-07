@@ -71,3 +71,6 @@
 2020-05-07 11:10:27,971 - football_trading.src.utils.logging - INFO - optimise_hyperparams:37 - Optimising hyper-parameters. Param grid: {'penalty': ['l2', 'none'], 'solver': ['newton-cg', 'lbfgs', 'sag', 'saga']}
 2020-05-07 11:10:29,821 - football_trading.src.utils.logging - INFO - optimise_hyperparams:43 - Best hyper-parameters: {'penalty': 'l2', 'solver': 'newton-cg'}
 2020-05-07 11:10:29,821 - football_trading.src.utils.logging - INFO - optimise_hyperparams:48 - Hyper-params saved to /Users/chriscollins/Documents/GitHub/football_trading/packages/football_trading/football_trading/data/hyperparams/test.joblib
+2020-05-07 11:15:01,632 - dashboard - WARNING - load_production_model:21 - There are two models in the in_production folder.. Picking the first one.
+2020-05-07 11:15:01,632 - dashboard - INFO - load_production_model:23 - Loading production model from /Users/chriscollins/Documents/GitHub/football_trading/packages/football_trading/football_trading/models/in_production/match-predict-base_XGBClassifier_2020-05-06_6447858502481674227.joblib
+2020-05-07 11:15:01,691 - dashboard - INFO - get_dashboard_app:82 - Server passed of type <class 'flask.app.Flask'>. It will only be used if its of type Flask.
