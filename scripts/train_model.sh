@@ -1,5 +1,5 @@
 export IN_PRODUCTION=false
-export PROJECTSPATH=/home/circleci/project/packages/football_trading
+export PROJECTSPATH=/home/circleci/project/packages/football_trading/football_trading
 export DB_DIR=/home/circleci/project/db.sqlite
 export BFEX_USER=$CCI_BFEX_USER
 export BFEX_PASSWORD=$CCI_BFEX_PASS

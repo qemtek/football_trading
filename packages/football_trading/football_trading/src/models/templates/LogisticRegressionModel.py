@@ -3,8 +3,8 @@ import datetime as dt
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
 
-from football_trading.src.models.templates.sklearn_model import SKLearnModel
-from football_trading.src.utils.logging import get_logger
+from src.models.templates.sklearn_model import SKLearnModel
+from src.utils.logging import get_logger
 
 logger = get_logger()
 

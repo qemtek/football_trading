@@ -1,8 +1,8 @@
 import xgboost as xgb
 import shap
 
-from football_trading.src.models.templates.sklearn_model import SKLearnModel
-from football_trading.src.utils.logging import get_logger
+from src.models.templates.sklearn_model import SKLearnModel
+from src.utils.logging import get_logger
 
 logger = get_logger()
 

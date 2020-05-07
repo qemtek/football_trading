@@ -2,17 +2,17 @@ import asyncio
 import datetime as dt
 import os
 
-from football_trading.settings import DB_DIR, RECREATE_DB, S3_BUCKET_NAME, LOCAL
-from football_trading.src.data_retrieval.load_fixture_list_from_FPL import get_fpl_fixtures
-from football_trading.src.data_retrieval.load_fixures_from_fbd import update_fixtures_from_fbd
-from football_trading.src.data_retrieval.create_team_fixtures_table import create_team_fixtures
-from football_trading.src.data_retrieval.load_manager_data_from_wiki import get_manager_data
-from football_trading.src.data_retrieval.load_player_data_from_FPL import get_player_data
-from football_trading.src.data_retrieval.load_PL_teams_from_wiki import get_teams_from_wiki
-from football_trading.src.data_retrieval.get_latest_fixtures_from_bfex import get_latest_fixtures
-from football_trading.src.utils.logging import get_logger
-from football_trading.src.utils.db import get_db
-from football_trading.src.utils.s3_tools import upload_to_s3
+from settings import DB_DIR, RECREATE_DB, S3_BUCKET_NAME, LOCAL
+from src.data_retrieval.load_fixture_list_from_FPL import get_fpl_fixtures
+from src.data_retrieval.load_fixures_from_fbd import update_fixtures_from_fbd
+from src.data_retrieval.create_team_fixtures_table import create_team_fixtures
+from src.data_retrieval.load_manager_data_from_wiki import get_manager_data
+from src.data_retrieval.load_player_data_from_FPL import get_player_data
+from src.data_retrieval.load_PL_teams_from_wiki import get_teams_from_wiki
+from src.data_retrieval.get_latest_fixtures_from_bfex import get_latest_fixtures
+from src.utils.logging import get_logger
+from src.utils.db import get_db
+from src.utils.s3_tools import upload_to_s3
 
 
 logger = get_logger()
@@ -29,7 +29,7 @@ def update_tables(*, recreate_table=RECREATE_DB) -> None:
         # Make sure the latest version of the DB is in the local directory
         get_db(local=LOCAL)
         try:
-            from football_trading.src.utils.db import run_query
+            from src.utils.db import run_query
             # Get the last fixture in the main_fixtures table
             last_game = run_query(query='select max(date) from main_fixtures').iloc[0, 0]
             # Get the current date

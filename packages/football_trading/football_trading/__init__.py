@@ -1,7 +1,7 @@
 import logging
 
-from football_trading.settings import PROJECTSPATH
-from football_trading.src.utils.logging import get_console_handler
+from settings import PROJECTSPATH
+from src.utils.logging import get_console_handler
 
 # Configure logger for use in package
 logger = logging.getLogger(__name__)

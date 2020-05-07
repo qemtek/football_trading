@@ -5,15 +5,15 @@ import sqlite3
 
 from sklearn.utils.class_weight import compute_class_weight
 
-from football_trading.src.models.templates.XGBoostModel import XGBoostModel
-from football_trading.src.utils.general import suspend_logging, time_function
-from football_trading.src.utils.db import run_query, connect_to_db
-from football_trading.src.utils.xgboost import get_features, get_manager_features, \
+from src.models.templates.XGBoostModel import XGBoostModel
+from src.utils.general import suspend_logging, time_function
+from src.utils.db import run_query, connect_to_db
+from src.utils.xgboost import get_features, get_manager_features, \
     get_feature_data, get_manager, get_profit, get_profit_betting_on_fav, apply_profit_weight
-from football_trading.src.utils.team_id_functions import fetch_name
-from football_trading.settings import sql_dir, data_dir, plots_dir, LOCAL, DB_DIR, S3_BUCKET_NAME
-from football_trading.src.utils.logging import get_logger
-from football_trading.src.utils.s3_tools import upload_to_s3
+from src.utils.team_id_functions import fetch_name
+from settings import sql_dir, data_dir, plots_dir, LOCAL, DB_DIR, S3_BUCKET_NAME
+from src.utils.logging import get_logger
+from src.utils.s3_tools import upload_to_s3
 
 logger = get_logger()
 
@@ -134,7 +134,7 @@ class MatchResultXGBoost(XGBoostModel):
                 # Create plots if requested
                 if create_plots:
                     logger.info('Generating plots')
-                    from football_trading.src.ModelEvaluator import ModelEvaluator
+                    from src.ModelEvaluator import ModelEvaluator
                     training_data = self.training_data
                     training_data['X_train'] = training_data['X_train'][self.model_features]
                     training_data['X_test'] = training_data['X_test'][self.model_features]

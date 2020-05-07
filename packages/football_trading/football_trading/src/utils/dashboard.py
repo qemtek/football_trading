@@ -7,8 +7,8 @@ import os
 from sklearn.cluster import DBSCAN
 from sklearn.preprocessing import StandardScaler
 
-from football_trading.src.utils.logging import get_logger
-from football_trading.settings import training_data_dir, IN_PRODUCTION, model_dir
+from src.utils.logging import get_logger
+from settings import training_data_dir, IN_PRODUCTION, model_dir
 
 logger = get_logger(logger_name='dashboard')
 

@@ -2,7 +2,7 @@ import logging
 import boto3
 from botocore.exceptions import ClientError
 
-from football_trading.settings import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
+from settings import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
 
 # Create boto3 client to interact with S3
 s3_client = boto3.client(

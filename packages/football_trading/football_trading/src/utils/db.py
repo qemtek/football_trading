@@ -3,9 +3,9 @@ import pandas as pd
 import os
 import time
 
-from football_trading.src.utils.logging import get_logger
-from football_trading.settings import DB_DIR, S3_BUCKET_NAME
-from football_trading.src.utils.s3_tools import download_from_s3, list_files
+from src.utils.logging import get_logger
+from settings import DB_DIR, S3_BUCKET_NAME
+from src.utils.s3_tools import download_from_s3, list_files
 
 logger = get_logger()
 

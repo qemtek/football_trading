@@ -5,11 +5,11 @@ import joblib
 
 from sklearn.model_selection import GridSearchCV, StratifiedKFold
 
-from football_trading.settings import PROJECTSPATH, S3_BUCKET_NAME
-from football_trading.src.utils.logging import get_logger
-from football_trading.src.utils.general import safe_open, time_function
-from football_trading.src.models.templates.base_model import BaseModel
-from football_trading.src.utils.s3_tools import upload_to_s3
+from settings import PROJECTSPATH, S3_BUCKET_NAME
+from src.utils.logging import get_logger
+from src.utils.general import safe_open, time_function
+from src.models.templates.base_model import BaseModel
+from src.utils.s3_tools import upload_to_s3
 
 logger = get_logger()
 

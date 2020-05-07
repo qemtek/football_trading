@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import logging
 
-from football_trading.src.utils.db import run_query
+from src.utils.db import run_query
 
 logger = logging.getLogger()
 

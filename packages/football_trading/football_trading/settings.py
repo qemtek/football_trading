@@ -1,16 +1,16 @@
 import logging
 
-from football_trading.src.utils.config import get_attribute
+from src.utils.config import get_attribute
 
 # Project specific credentials
 PROJECTSPATH = get_attribute('PROJECTSPATH')
 IN_PRODUCTION = get_attribute('IN_PRODUCTION')
-data_dir = f"{PROJECTSPATH}/football_trading/data"
-plots_dir = f"{PROJECTSPATH}/football_trading/plots"
-model_dir = f"{PROJECTSPATH}/football_trading/models"
-training_data_dir = f"{PROJECTSPATH}/football_trading/data/training_data"
-sql_dir = f"{PROJECTSPATH}/football_trading/sql"
-tmp_dir = f"{PROJECTSPATH}/football_trading/tmp"
+data_dir = f"{PROJECTSPATH}/data"
+plots_dir = f"{PROJECTSPATH}/plots"
+model_dir = f"{PROJECTSPATH}/models"
+training_data_dir = f"{PROJECTSPATH}/data/training_data"
+sql_dir = f"{PROJECTSPATH}/sql"
+tmp_dir = f"{PROJECTSPATH}/tmp"
 DB_DIR = get_attribute('DB_DIR')
 RECREATE_DB = get_attribute('RECREATE_DB')
 LOCAL=get_attribute('LOCAL')
@@ -34,4 +34,4 @@ PRODUCTION_MODEL_NAME = get_attribute('PRODUCTION_MODEL_NAME')
 FORMATTER = logging.Formatter(
     "%(asctime)s - %(name)s - %(levelname)s - "
     "%(funcName)s:%(lineno)d - %(message)s")
-LOG_FILE = f"{PROJECTSPATH}/football_trading/logs/model.log"
+LOG_FILE = f"{PROJECTSPATH}/logs/model.log"

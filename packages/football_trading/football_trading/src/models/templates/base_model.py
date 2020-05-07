@@ -6,11 +6,11 @@ import sqlite3
 
 from sklearn.metrics import balanced_accuracy_score, accuracy_score, r2_score, mean_absolute_error
 
-from football_trading.settings import model_dir, PROJECTSPATH, available_models, S3_BUCKET_NAME, \
+from settings import model_dir, PROJECTSPATH, available_models, S3_BUCKET_NAME, \
     LOCAL, training_data_dir
-from football_trading.src.utils.logging import get_logger
-from football_trading.src.utils.general import safe_open, time_function
-from football_trading.src.utils.s3_tools import upload_to_s3, list_files, download_from_s3
+from src.utils.logging import get_logger
+from src.utils.general import safe_open, time_function
+from src.utils.s3_tools import upload_to_s3, list_files, download_from_s3
 
 logger = get_logger()
 

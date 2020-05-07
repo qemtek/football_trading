@@ -4,3 +4,23 @@
 2020-05-07 09:28:47,149 - dashboard - WARNING - load_production_model:21 - There are two models in the in_production folder.. Picking the first one.
 2020-05-07 09:28:47,150 - dashboard - INFO - load_production_model:23 - Loading production model from /Users/chriscollins/Documents/GitHub/football_trading/packages/football_trading/football_trading/models/in_production/match-predict-base_XGBClassifier_2020-05-06_6447858502481674227.joblib
 2020-05-07 09:28:47,210 - dashboard - INFO - get_dashboard_app:82 - Server passed of type <class 'flask.app.Flask'>. It will only be used if its of type Flask.
+2020-05-07 10:33:35,567 - dashboard - WARNING - load_production_model:21 - There are two models in the in_production folder.. Picking the first one.
+2020-05-07 10:33:35,568 - dashboard - INFO - load_production_model:23 - Loading production model from /Users/chriscollins/Documents/GitHub/football_trading/packages/football_trading/football_trading/models/in_production/match-predict-base_XGBClassifier_2020-05-06_6447858502481674227.joblib
+2020-05-07 10:36:12,297 - src.utils.logging - INFO - update_tables:69 - Tables are up to date, skipping update.
+2020-05-07 10:36:12,298 - src.utils.logging - INFO - load_model:239 - Attempting to load XGBClassifier model for date: latest
+2020-05-07 10:36:12,298 - src.utils.logging - INFO - load_model:258 - load_model: Loading model with filename: match-predict-base_XGBClassifier_2020-05-06_6447858502481674227.joblib
+2020-05-07 10:36:12,301 - src.utils.logging - INFO - __init__:94 - Training a new model.
+2020-05-07 10:36:12,363 - src.utils.logging - INFO - get_data:184 - Pre-processing data and generating features.
+2020-05-07 10:39:00,328 - src.utils.logging - INFO - train_model:54 - Training model.
+2020-05-07 10:39:01,660 - src.utils.logging - INFO - train_model:94 - Training finished. accuracy_score: 0.5963855421686747
+2020-05-07 10:39:02,995 - src.utils.logging - INFO - train_model:94 - Training finished. accuracy_score: 0.572289156626506
+2020-05-07 10:39:04,382 - src.utils.logging - INFO - train_model:94 - Training finished. accuracy_score: 0.5662650602409639
+2020-05-07 10:39:05,735 - src.utils.logging - INFO - train_model:94 - Training finished. accuracy_score: 0.5393939393939394
+2020-05-07 10:39:07,085 - src.utils.logging - INFO - train_model:94 - Training finished. accuracy_score: 0.6181818181818182
+2020-05-07 10:39:08,437 - src.utils.logging - INFO - train_model:94 - Training finished. accuracy_score: 0.6424242424242425
+2020-05-07 10:39:09,832 - src.utils.logging - INFO - train_model:94 - Training finished. accuracy_score: 0.5696969696969697
+2020-05-07 10:39:11,191 - src.utils.logging - INFO - train_model:94 - Training finished. accuracy_score: 0.5454545454545454
+2020-05-07 10:39:12,546 - src.utils.logging - INFO - train_model:94 - Training finished. accuracy_score: 0.5636363636363636
+2020-05-07 10:39:13,914 - src.utils.logging - INFO - train_model:94 - Training finished. accuracy_score: 0.5454545454545454
+2020-05-07 10:39:13,915 - src.utils.logging - INFO - compare_latest_model:317 - New model does not beat previous model.
+2020-05-07 10:39:13,915 - src.utils.logging - INFO - compare_latest_model:319 - accuracy_score: Previous Model: 0.6424242424242425, New Model: 0.6424242424242425

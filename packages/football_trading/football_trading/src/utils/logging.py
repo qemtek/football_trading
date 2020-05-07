@@ -3,7 +3,7 @@ import sys
 
 from logging.handlers import TimedRotatingFileHandler
 
-from football_trading.settings import FORMATTER, LOG_FILE
+from settings import FORMATTER, LOG_FILE
 
 
 def get_console_handler():
