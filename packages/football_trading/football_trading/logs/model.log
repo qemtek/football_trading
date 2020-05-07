@@ -24,3 +24,50 @@
 2020-05-07 10:39:13,914 - src.utils.logging - INFO - train_model:94 - Training finished. accuracy_score: 0.5454545454545454
 2020-05-07 10:39:13,915 - src.utils.logging - INFO - compare_latest_model:317 - New model does not beat previous model.
 2020-05-07 10:39:13,915 - src.utils.logging - INFO - compare_latest_model:319 - accuracy_score: Previous Model: 0.6424242424242425, New Model: 0.6424242424242425
+2020-05-07 11:08:16,237 - football_trading.src.utils.logging - INFO - load_model:239 - Attempting to load LogisticRegression model for date: latest
+2020-05-07 11:08:16,237 - football_trading.src.utils.logging - WARNING - load_model:265 - No available models of type LogisticRegression.
+2020-05-07 11:08:16,237 - football_trading.src.utils.logging - INFO - save_model:195 - Saving model to /Users/chriscollins/Documents/GitHub/football_trading/packages/football_trading/football_trading/models/test_LogisticRegression_2020-05-07_7381161548241570248.joblib with joblib.
+2020-05-07 11:08:16,519 - football_trading.src.utils.logging - INFO - load_model:239 - Attempting to load LogisticRegression model for date: latest
+2020-05-07 11:08:16,520 - football_trading.src.utils.logging - INFO - load_model:258 - load_model: Loading model with filename: test_LogisticRegression_2020-05-07_7381161548241570248.joblib
+2020-05-07 11:08:16,520 - football_trading.src.utils.logging - INFO - save_model:191 - Added additional parameter model_id with value test_LogisticRegression_2020-05-07_3499053178045732707 to trained model object (stored in model.additional_attrs)
+2020-05-07 11:08:16,520 - football_trading.src.utils.logging - INFO - save_model:195 - Saving model to /Users/chriscollins/Documents/GitHub/football_trading/packages/football_trading/football_trading/models/test_LogisticRegression_2020-05-07_3499053178045732707.joblib with joblib.
+2020-05-07 11:08:16,521 - football_trading.src.utils.logging - INFO - load_model:239 - Attempting to load LogisticRegression model for date: latest
+2020-05-07 11:08:16,521 - football_trading.src.utils.logging - INFO - load_model:258 - load_model: Loading model with filename: test_LogisticRegression_2020-05-07_7381161548241570248.joblib
+2020-05-07 11:08:16,522 - football_trading.src.utils.logging - INFO - load_model:239 - Attempting to load LogisticRegression model for date: latest
+2020-05-07 11:08:16,522 - football_trading.src.utils.logging - INFO - load_model:258 - load_model: Loading model with filename: test_LogisticRegression_2020-05-07_7381161548241570248.joblib
+2020-05-07 11:08:16,522 - football_trading.src.utils.logging - INFO - load_model:274 - Loaded model test_LogisticRegression_2020-05-07_7381161548241570248
+2020-05-07 11:08:16,522 - football_trading.src.utils.logging - INFO - load_model:278 - Loading training data
+2020-05-07 11:08:16,522 - football_trading.src.utils.logging - INFO - load_model:281 - Loading model training data
+2020-05-07 11:09:30,296 - football_trading.src.utils.logging - INFO - load_model:239 - Attempting to load LogisticRegression model for date: latest
+2020-05-07 11:09:30,296 - football_trading.src.utils.logging - INFO - load_model:258 - load_model: Loading model with filename: test_LogisticRegression_2020-05-07_7381161548241570248.joblib
+2020-05-07 11:09:30,296 - football_trading.src.utils.logging - INFO - save_model:195 - Saving model to /Users/chriscollins/Documents/GitHub/football_trading/packages/football_trading/football_trading/models/test_LogisticRegression_2020-05-07_7310016602477908258.joblib with joblib.
+2020-05-07 11:09:30,299 - football_trading.src.utils.logging - INFO - load_model:239 - Attempting to load LogisticRegression model for date: latest
+2020-05-07 11:09:30,300 - football_trading.src.utils.logging - INFO - load_model:258 - load_model: Loading model with filename: test_LogisticRegression_2020-05-07_7381161548241570248.joblib
+2020-05-07 11:09:30,300 - football_trading.src.utils.logging - INFO - save_model:191 - Added additional parameter model_id with value test_LogisticRegression_2020-05-07_5405184422184642600 to trained model object (stored in model.additional_attrs)
+2020-05-07 11:09:30,300 - football_trading.src.utils.logging - INFO - save_model:195 - Saving model to /Users/chriscollins/Documents/GitHub/football_trading/packages/football_trading/football_trading/models/test_LogisticRegression_2020-05-07_5405184422184642600.joblib with joblib.
+2020-05-07 11:09:30,302 - football_trading.src.utils.logging - INFO - load_model:239 - Attempting to load LogisticRegression model for date: latest
+2020-05-07 11:09:30,302 - football_trading.src.utils.logging - INFO - load_model:258 - load_model: Loading model with filename: test_LogisticRegression_2020-05-07_7381161548241570248.joblib
+2020-05-07 11:09:30,302 - football_trading.src.utils.logging - INFO - load_model:239 - Attempting to load LogisticRegression model for date: latest
+2020-05-07 11:09:30,302 - football_trading.src.utils.logging - INFO - load_model:258 - load_model: Loading model with filename: test_LogisticRegression_2020-05-07_7381161548241570248.joblib
+2020-05-07 11:09:30,302 - football_trading.src.utils.logging - INFO - load_model:274 - Loaded model test_LogisticRegression_2020-05-07_7381161548241570248
+2020-05-07 11:09:30,302 - football_trading.src.utils.logging - INFO - load_model:278 - Loading training data
+2020-05-07 11:09:30,303 - football_trading.src.utils.logging - INFO - load_model:281 - Loading model training data
+2020-05-07 11:10:27,956 - football_trading.src.utils.logging - INFO - load_model:239 - Attempting to load LogisticRegression model for date: latest
+2020-05-07 11:10:27,956 - football_trading.src.utils.logging - INFO - load_model:258 - load_model: Loading model with filename: test_LogisticRegression_2020-05-07_7381161548241570248.joblib
+2020-05-07 11:10:27,957 - football_trading.src.utils.logging - INFO - save_model:195 - Saving model to /Users/chriscollins/Documents/GitHub/football_trading/packages/football_trading/football_trading/models/test_LogisticRegression_2020-05-07_2502531359112522121.joblib with joblib.
+2020-05-07 11:10:27,960 - football_trading.src.utils.logging - INFO - load_model:239 - Attempting to load LogisticRegression model for date: latest
+2020-05-07 11:10:27,960 - football_trading.src.utils.logging - INFO - load_model:258 - load_model: Loading model with filename: test_LogisticRegression_2020-05-07_7381161548241570248.joblib
+2020-05-07 11:10:27,961 - football_trading.src.utils.logging - INFO - save_model:191 - Added additional parameter model_id with value test_LogisticRegression_2020-05-07_8692309462451702477 to trained model object (stored in model.additional_attrs)
+2020-05-07 11:10:27,961 - football_trading.src.utils.logging - INFO - save_model:195 - Saving model to /Users/chriscollins/Documents/GitHub/football_trading/packages/football_trading/football_trading/models/test_LogisticRegression_2020-05-07_8692309462451702477.joblib with joblib.
+2020-05-07 11:10:27,963 - football_trading.src.utils.logging - INFO - load_model:239 - Attempting to load LogisticRegression model for date: latest
+2020-05-07 11:10:27,963 - football_trading.src.utils.logging - INFO - load_model:258 - load_model: Loading model with filename: test_LogisticRegression_2020-05-07_8692309462451702477.joblib
+2020-05-07 11:10:27,964 - football_trading.src.utils.logging - INFO - load_model:239 - Attempting to load LogisticRegression model for date: latest
+2020-05-07 11:10:27,964 - football_trading.src.utils.logging - INFO - load_model:258 - load_model: Loading model with filename: test_LogisticRegression_2020-05-07_8692309462451702477.joblib
+2020-05-07 11:10:27,964 - football_trading.src.utils.logging - INFO - load_model:274 - Loaded model test_LogisticRegression_2020-05-07_8692309462451702477
+2020-05-07 11:10:27,964 - football_trading.src.utils.logging - INFO - load_model:278 - Loading training data
+2020-05-07 11:10:27,964 - football_trading.src.utils.logging - INFO - load_model:281 - Loading model training data
+2020-05-07 11:10:27,970 - football_trading.src.utils.logging - INFO - load_model:239 - Attempting to load LogisticRegression model for date: latest
+2020-05-07 11:10:27,970 - football_trading.src.utils.logging - INFO - load_model:258 - load_model: Loading model with filename: test_LogisticRegression_2020-05-07_7381161548241570248.joblib
+2020-05-07 11:10:27,971 - football_trading.src.utils.logging - INFO - optimise_hyperparams:37 - Optimising hyper-parameters. Param grid: {'penalty': ['l2', 'none'], 'solver': ['newton-cg', 'lbfgs', 'sag', 'saga']}
+2020-05-07 11:10:29,821 - football_trading.src.utils.logging - INFO - optimise_hyperparams:43 - Best hyper-parameters: {'penalty': 'l2', 'solver': 'newton-cg'}
+2020-05-07 11:10:29,821 - football_trading.src.utils.logging - INFO - optimise_hyperparams:48 - Hyper-params saved to /Users/chriscollins/Documents/GitHub/football_trading/packages/football_trading/football_trading/data/hyperparams/test.joblib

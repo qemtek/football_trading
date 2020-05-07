@@ -9,7 +9,7 @@ logger.setLevel(logging.DEBUG)
 logger.addHandler(get_console_handler())
 logger.propagate = False
 
-version_dir = f"{PROJECTSPATH}/football_trading/VERSION"
+version_dir = f"{PROJECTSPATH}/VERSION"
 logger.info(f"Getting version from {version_dir}")
 with open(version_dir, 'r') as version_file:
     __version__ = version_file.read().strip()
