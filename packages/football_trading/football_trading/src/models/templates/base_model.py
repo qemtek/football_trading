@@ -218,7 +218,7 @@ class BaseModel:
                 outfile['removed_data_with_features'] = self.df_removed \
                     if hasattr(self, 'removed_data_with_features') else None
                 outfile['features'] = self.df_removed if hasattr(self, 'features') else None
-                joblib.dump(outfile, outfile)
+                joblib.dump(outfile, data_save_dir)
                 if not LOCAL:
                     upload_to_s3(data_save_dir, f'training_data/{self.model_id}.joblib', bucket=S3_BUCKET_NAME)
                     logger.info(f'Training data saved to S3 ({S3_BUCKET_NAME}/training_data/{self.model_id}.joblib')
