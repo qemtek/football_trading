@@ -4,6 +4,13 @@ from football_trading.src.utils.config import get_attribute
 
 # Project specific credentials
 PROJECTSPATH = get_attribute('PROJECTSPATH')
+
+# Logging configuration
+FORMATTER = logging.Formatter(
+    "%(asctime)s - %(name)s - %(levelname)s - "
+    "%(funcName)s:%(lineno)d - %(message)s")
+LOG_FILE = f"{PROJECTSPATH}/logs/model.log"
+
 IN_PRODUCTION = get_attribute('IN_PRODUCTION')
 data_dir = f"{PROJECTSPATH}/data"
 plots_dir = f"{PROJECTSPATH}/plots"
@@ -29,9 +36,3 @@ BFEX_CERTS_PATH = get_attribute('BFEX_CERTS_PATH')
 # Models covered in the project so far
 available_models = ['XGBClassifier', 'XGBRegressor', 'LogisticRegression']
 PRODUCTION_MODEL_NAME = get_attribute('PRODUCTION_MODEL_NAME')
-
-# Logging configuration
-FORMATTER = logging.Formatter(
-    "%(asctime)s - %(name)s - %(levelname)s - "
-    "%(funcName)s:%(lineno)d - %(message)s")
-LOG_FILE = f"{PROJECTSPATH}/logs/model.log"

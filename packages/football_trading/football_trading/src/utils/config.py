@@ -17,7 +17,7 @@ def get_attribute(attribute_name, fail_if_not_found=True, accepts=None):
             return getattr(configuration, attribute_name)
         else:
             if fail_if_not_found:
-                raise AttributeError(f'Cannot get {attribute_name} from environment or logging.py file')
+                raise AttributeError(f'Cannot get {attribute_name} from environment or configuration file')
             else:
                 print(f'Cannot get {attribute_name} from the environment or '
                       f'configuration file, returning None')

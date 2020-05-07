@@ -1,2 +1,2 @@
--r packages/ft_api/requirements.txt
---extra-index-url $PIP_EXTRA_INDEX_URL -r packages/football_trading/requirements.txt
+--extra-index-url ${PIP_EXTRA_INDEX_URL} -r packages/ft_api/requirements.txt
+-r packages/football_trading/requirements.txt
