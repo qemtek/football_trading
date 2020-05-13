@@ -18,7 +18,7 @@ def make_predictions():
     # Get the current season
     current_season = run_query(query='select max(season) from main_fixtures').iloc[0, 0]
     # Load the in-production model
-    model = MatchResultXGBoost(load_trained_model=True, problem_name='match-predict-base', local=LOCAL)
+    model = MatchResultXGBoost(load_trained_model=True, problem_name='match-predict-base')
     # Get upcoming games (that we haven't predicted)
     df = get_upcoming_games()
     logger.info(f'Making predictions for upcoming games: {df}')

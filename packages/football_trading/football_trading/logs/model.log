@@ -19,3 +19,15 @@
 2020-05-13 18:39:58,944 - football_trading.src.utils.logging - INFO - compare_latest_model:311 - New model beats previous model. Replacing this model
 2020-05-13 18:39:58,944 - football_trading.src.utils.logging - INFO - compare_latest_model:313 - accuracy_score: Previous Model: 0.6424242424242425, New Model: 0.7
 2020-05-13 18:39:59,195 - football_trading.src.utils.logging - INFO - __init__:136 - Generating plots
+2020-05-13 19:25:56,390 - football_trading.src.utils.logging - INFO - update_tables:69 - Tables are up to date, skipping update.
+2020-05-13 19:26:19,174 - football_trading.src.utils.logging - INFO - update_tables:69 - Tables are up to date, skipping update.
+2020-05-13 19:26:19,179 - football_trading.src.utils.logging - INFO - load_model:239 - Attempting to load XGBClassifier model for date: latest
+2020-05-13 19:26:19,179 - football_trading.src.utils.logging - INFO - load_model:258 - load_model: Loading model with filename: match-predict-base_XGBClassifier_2020-05-06_6447858502481674227.joblib
+2020-05-13 19:26:19,183 - football_trading.src.utils.logging - INFO - load_model:239 - Attempting to load XGBClassifier model for date: latest
+2020-05-13 19:26:19,183 - football_trading.src.utils.logging - INFO - load_model:258 - load_model: Loading model with filename: match-predict-base_XGBClassifier_2020-05-06_6447858502481674227.joblib
+2020-05-13 19:26:19,185 - football_trading.src.utils.logging - INFO - load_model:274 - Loaded model match-predict-base_XGBClassifier_2020-05-06_6447858502481674227
+2020-05-13 19:26:19,185 - football_trading.src.utils.logging - INFO - load_model:278 - Loading training data
+2020-05-13 19:26:19,185 - football_trading.src.utils.logging - INFO - load_model:281 - Loading model training data
+2020-05-13 19:26:19,206 - football_trading.src.utils.logging - INFO - make_predictions:24 - Making predictions for upcoming games: Empty DataFrame
+Columns: [kickoff_time, home_id, home_name, away_id, away_name, home_odds, draw_odds, away_odds]
+Index: []

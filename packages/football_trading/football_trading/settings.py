@@ -1,9 +1,13 @@
 import logging
+import pathlib
 
+import football_trading
 from football_trading.src.utils.config import get_attribute
 
 # Project specific credentials
-PROJECTSPATH = get_attribute('PROJECTSPATH')
+#PROJECTSPATH = get_attribute('PROJECTSPATH')
+PROJECTSPATH = pathlib.Path(football_trading.__file__).resolve().parent
+
 
 # Logging configuration
 FORMATTER = logging.Formatter(
