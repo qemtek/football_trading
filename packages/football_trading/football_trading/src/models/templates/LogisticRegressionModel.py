@@ -10,8 +10,8 @@ logger = get_logger()
 
 
 class LogisticRegressionModel(SKLearnModel):
-    """Everything specific to LogisticRegression models goes in this class"""
-
+    """Everything specific to LogisticRegression models goes in this class
+    """
     def __init__(
         self,
         test_mode=False,
