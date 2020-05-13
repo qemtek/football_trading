@@ -1,12 +1,16 @@
 Metadata-Version: 1.2
 Name: football-trading
-Version: 0.0.8
+Version: 0.0.13
 Summary: Football prediction model for football markets.
 Home-page: https://github.com/qemtek/football_trading
 Author: Christopher Collins
 Author-email: qemtek@gmail.com
 License: MIT
-Description: Football prediction model for football markets.
+Description: 
+        This folder contains all files related to the model itself.
+        
+        Some useful directories:
+        + football_trading/src/models - Here you will find the code for the model itself, along with the begginings of my ML platform in the /templates folder
 Platform: UNKNOWN
 Classifier: License :: OSI Approved :: MIT License
 Classifier: Programming Language :: Python

@@ -1,9 +1,9 @@
+boto3==1.13.2
 beautifulsoup4==4.8.1
 decorator==4.4.1
 Flask==1.1.1
 joblib==0.14.1
 numpy==1.17.4
-boto3==1.13.2
 pandas==0.25.3
 PyYAML==5.2
 requests==2.22.0

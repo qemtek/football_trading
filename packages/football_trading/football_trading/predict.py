@@ -18,7 +18,7 @@ def make_predictions():
     # Get the current season
     current_season = run_query(query='select max(season) from main_fixtures').iloc[0, 0]
     # Load the in-production model
-    model = MatchResultXGBoost(load_trained_model=True, problem_name='match-predict-base', local=False)
+    model = MatchResultXGBoost(load_trained_model=True, problem_name='match-predict-base', local=LOCAL)
     # Get upcoming games (that we haven't predicted)
     df = get_upcoming_games()
     logger.info(f'Making predictions for upcoming games: {df}')
@@ -48,6 +48,7 @@ def make_predictions():
         predictions_df["version"] = __version__,
         predictions_df["creation_time"] = str(dt.datetime.today())
     with connect_to_db() as conn:
+        # TODO: Upload to S3 if LOCAL is False
         # Upload output DataFrame to DB
         predictions_df.to_sql('latest_predictions', conn, if_exists='replace')
 

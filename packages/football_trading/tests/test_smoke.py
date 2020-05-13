@@ -4,7 +4,7 @@ from football_trading.settings import PROJECTSPATH
 from football_trading.train import train_new_model
 
 
-def smoke_test_train_model():
+def test_train_model():
     try:
         os.environ['DB_DIR'] = f"{os.path.dirname(PROJECTSPATH)}/tests/'test_db.sqlite"
         train_new_model(test_mode=True)

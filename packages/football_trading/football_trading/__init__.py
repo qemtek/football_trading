@@ -1,4 +1,5 @@
 import logging
+import sys
 
 from football_trading.settings import PROJECTSPATH
 from football_trading.src.utils.logging import get_console_handler
@@ -9,7 +10,7 @@ logger.setLevel(logging.DEBUG)
 logger.addHandler(get_console_handler())
 logger.propagate = False
 
-version_dir = f"{PROJECTSPATH}/VERSION"
+version_dir = f"{sys.path[0]}/football_trading/VERSION"
 logger.info(f"Getting version from {version_dir}")
 with open(version_dir, 'r') as version_file:
     __version__ = version_file.read().strip()

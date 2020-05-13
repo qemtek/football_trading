@@ -10,6 +10,7 @@ PROJECTSPATH = get_attribute('PROJECTSPATH')
 FORMATTER = logging.Formatter(
     "%(asctime)s — %(name)s — %(levelname)s —"
     "%(funcName)s:%(lineno)d — %(message)s")
+
 # Create log directory
 LOG_DIR = f"{PROJECTSPATH}/ft_api/logs"
 if not os.path.exists(LOG_DIR):
@@ -54,8 +55,3 @@ elif MODE == 'dev':
 elif MODE == 'test':
     config = TestingConfig
 
-# Logging configuration
-FORMATTER = logging.Formatter(
-    "%(asctime)s - %(name)s - %(levelname)s - "
-    "%(funcName)s:%(lineno)d - %(message)s")
-LOG_FILE = f"{PROJECTSPATH}/logs/model.log"
