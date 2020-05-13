@@ -15,6 +15,8 @@ export PYTHONPATH=./packages/football_trading
 export SERVER_ADDRESS=0.0.0.0
 export SERVER_PORT=5000
 
-python packages/ft_api/run.py
+cd packages/ft_api
+chmod u+x run.sh
+./run.sh
 status=$(curl -v http://${SERVER_ADDRESS}:${SERVER_PORT}/train)
 # python ./packages/football_trading/football_trading/train.py
