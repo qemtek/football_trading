@@ -8,6 +8,11 @@ The project utilizes publicly available data from various sources to produce odd
 
 An XGBoost model is used, built inside a modular, re-usable project architecture that I have designed and use in my own projects. Feel free to copy what you find useful, and if you ahve any questions please dont hesitate to contact me at qemtek@gmail.com
 
+The main features of the project are as follows:
++ Automated CI/CD workflow - Built with CircleCI. Every time an update is published to the master branch, tests are automatically ran and the new package version is built/uploaded to Gemfury. Each day the model is scheduled to make predictions and each week the model retrains, saving the best performing model.
++ API to serve predictions - The API loads the model package (not the source code) to serve predictions. This isolates the behaviour of the model from the behaviour of the API, ensuring we do not make any predictions with development code.
++ Model monitoring dashboard - Built with Dash. This dashboard shows the cumulative profit, versus betting on the favourite, accuracy grouped by different teams/scenarios and more. This dashboard is hosted on a Heroku server (link coming soon).
+
 Thanks for visiting!
 
 Environment variables required for the project to run:
