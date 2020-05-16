@@ -9,8 +9,9 @@ include football_trading/models/*
 include football_trading/sql/*
 include football_trading/src/*
 include football_trading/logs/*
-include football_trading/data_retrieval/*
-include football_trading/utils/*
+include football_trading/src/data_retrieval/*
+include football_trading/src/models/*
+include football_trading/src/utils/*
 include football_trading/tmp/*
 include football_trading/plots/*
 
