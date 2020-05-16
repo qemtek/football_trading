@@ -9,12 +9,12 @@ jobs:
       - restore_cache:
           key: py-deps-{{ checksum "packages/football_trading/requirements.txt" }}
       - run:
-          name: Build Package & Test
+          name: Build Model Package & Test
           command: |
             chmod +x ./scripts/build_model_package.sh
             ./scripts/build_model_package.sh
       - run:
-          name: Publish Model
+          name: Publish Model Package
           command: |
             chmod +x scripts/publish_model.sh
             ./scripts/publish_model.sh ./packages/football_trading/

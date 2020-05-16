@@ -1,4 +1,0 @@
-flask==1.1.1
-marshmallow==3.5.2
-football_trading
-gunicorn==19.9.0

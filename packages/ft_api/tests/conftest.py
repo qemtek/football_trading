@@ -1,12 +1,12 @@
 import pytest
 
 from ft_api.app import get_api
-from ft_api.configuration import TestingConfig
+from ft_api.settings import TestingConfig
 
 
 @pytest.fixture
 def app():
-    app = get_api(config_object=TestingConfig)
+    app = get_api(input_config=TestingConfig)
     with app.app_context():
         yield app
 

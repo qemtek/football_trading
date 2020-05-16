@@ -12,13 +12,13 @@ FORMATTER = logging.Formatter(
     "%(funcName)s:%(lineno)d — %(message)s")
 
 # Create log directory
-LOG_DIR = f"{PROJECTSPATH}/ft_api/logs"
+LOG_DIR = f"{PROJECTSPATH}/logs"
 if not os.path.exists(LOG_DIR):
     os.mkdir(LOG_DIR)
 LOG_FILE = f"{LOG_DIR}/ft_api.log"
 
 # Create upload folder
-UPLOAD_FOLDER = f"{PROJECTSPATH}/ft_api/uploads"
+UPLOAD_FOLDER = f"{PROJECTSPATH}/uploads"
 if not os.path.exists(UPLOAD_FOLDER):
     os.mkdir(UPLOAD_FOLDER)
 

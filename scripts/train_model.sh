@@ -1,5 +1,5 @@
 export IN_PRODUCTION=false
-export PROJECTSPATH=/home/circleci/project/packages/football_trading/football_trading
+#export PROJECTSPATH=/home/circleci/project/packages/ft_api/ft_api
 export DB_DIR=/home/circleci/project/db.sqlite
 export BFEX_USER=$CCI_BFEX_USER
 export BFEX_PASSWORD=$CCI_BFEX_PASS
@@ -11,7 +11,7 @@ export LOCAL=false
 export S3_BUCKET_NAME=$S3_BUCKET_NAME
 export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
 export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-export PYTHONPATH=./packages/football_trading
+export PYTHONPATH=./packages/ft_api
 export SERVER_ADDRESS=0.0.0.0
 export SERVER_PORT=5000
 
