@@ -4,8 +4,8 @@ from ft_api import configuration
 
 def get_attribute(attribute_name, fail_if_not_found=True, accepts=None):
     """Get credentials attribute required in the project. First
-    check the environment variables, then the logging.py file"""
-
+    check the environment variables, then the logging.py file
+    """
     if os.environ.get(attribute_name) is None:
         print(f'{attribute_name} is not specified as an environment variable')
         if hasattr(configuration, attribute_name):

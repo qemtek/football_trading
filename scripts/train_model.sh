@@ -11,11 +11,11 @@ export LOCAL=false
 export S3_BUCKET_NAME=$S3_BUCKET_NAME
 export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
 export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-export PYTHONPATH=./packages/ft_api
 export SERVER_ADDRESS=0.0.0.0
 export SERVER_PORT=5000
 
 cd packages/ft_api
+export PYTHONPATH=.
 chmod u+x run.sh
 ./run.sh
 status=$(curl -v http://${SERVER_ADDRESS}:${SERVER_PORT}/train)
