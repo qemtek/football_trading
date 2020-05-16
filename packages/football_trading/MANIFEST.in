@@ -14,6 +14,8 @@ include football_trading/src/models/*
 include football_trading/src/utils/*
 include football_trading/tmp/*
 include football_trading/plots/*
+include football_trading/data/training_data/*
+include football_trading/data/hyperparams/*
 
 include football_trading/VERSION
 

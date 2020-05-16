@@ -2,18 +2,18 @@ import sys
 import logging
 from logging.handlers import TimedRotatingFileHandler
 
-from ft_api import configuration
+from ft_api.settings import FORMATTER, LOG_FILE
 
 
 def get_console_handler():
     console_handler = logging.StreamHandler(sys.stdout)
-    console_handler.setFormatter(configuration.FORMATTER)
+    console_handler.setFormatter(FORMATTER)
     return console_handler
 
 
 def get_file_handler():
-    file_handler = TimedRotatingFileHandler(configuration.LOG_FILE, when='midnight')
-    file_handler.setFormatter(configuration.FORMATTER)
+    file_handler = TimedRotatingFileHandler(LOG_FILE, when='midnight')
+    file_handler.setFormatter(FORMATTER)
     file_handler.setLevel(logging.INFO)
     return file_handler
 
