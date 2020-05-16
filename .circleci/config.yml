@@ -42,6 +42,7 @@ jobs:
       - run:
           name: Train Model
           command: |
+            . venv/bin/activate
             chmod u+x scripts/train_model.sh
             ./scripts/train_model.sh
       - save_cache:
@@ -66,6 +67,7 @@ jobs:
       - run:
           name: Make Predictions
           command: |
+            . venv/bin/activate
             chmod u+x scripts/make_predictions.sh
             ./scripts/make_predictions.sh
       - save_cache:
