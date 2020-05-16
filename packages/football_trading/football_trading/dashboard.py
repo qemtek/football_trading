@@ -42,8 +42,6 @@ active_graphs = ['profit-by-date', 'accuracy_home_away', 'accuracy_over_time', '
 
 logger = get_logger(logger_name='dashboard')
 
-# ToDo: If we're in production, just look at the in-production model compared with betting on the favourite.
-
 if not LOCAL:
     logger.info('Attempting to download DB from S3..')
     try:
@@ -64,7 +62,7 @@ if not LOCAL:
     files = [f for f in files if 'in_production' not in f]
     for file in files:
         filename = file.split(f's3://{S3_BUCKET_NAME}/models/')[1]
-        download_from_s3(local_path=f'{training_data_dir}/{filename}',
+        download_from_s3(local_path=f'{model_dir}/{filename}',
                          s3_path=f'models/{filename}', bucket=S3_BUCKET_NAME)
 
 
@@ -73,6 +71,9 @@ def get_dashboard_app(server=None):
     latest_preds = run_query(query='select * from latest_predictions')
     # Get the names of models saved in the models directory
     model_names = os.listdir(model_dir)
+    model_names = [m for m in model_names if '.joblib' in m]
+    if len(model_names) < 1:
+        raise Exception('No models could be found to add to the dashboard')
     predictions = run_query(query='select * from historic_predictions')
     # Get historic features
     historic_df_all, all_model_ids = get_historic_features(predictions, model_names)
@@ -268,6 +269,7 @@ def get_dashboard_app(server=None):
         # ToDo: Why isnt this updating properly
         # Get the names of models saved in the models directory
         model_names = os.listdir(model_dir)
+        model_names = [m for m in model_names if '.joblib' in m]
         latest_preds = run_query(query='select * from latest_predictions')
         model_names_local = joblib.load(f"{tmp_dir}/model_names.joblib")
         latest_preds_local = joblib.load(f"{tmp_dir}/latest_preds.joblib")

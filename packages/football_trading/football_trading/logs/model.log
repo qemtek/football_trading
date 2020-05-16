@@ -35,3 +35,23 @@
 2020-05-16 15:55:28,873 - football_trading.src.utils.logging - INFO - save_model:205 - Model saved to S3 (football-trading/models/match-predict-base-remove-odds_XGBClassifier_2020-05-16_460600487123511623.joblib
 2020-05-16 15:55:32,129 - football_trading.src.utils.logging - INFO - save_model:224 - Training data saved to S3 (football-trading/training_data/match-predict-base-remove-odds_XGBClassifier_2020-05-16_460600487123511623.joblib
 2020-05-16 15:55:47,651 - football_trading.src.utils.logging - INFO - __init__:135 - Generating plots
+2020-05-16 16:39:32,031 - dashboard - INFO - <module>:48 - Attempting to download DB from S3..
+2020-05-16 16:39:32,032 - dashboard - INFO - <module>:55 - Downloading training data from S3
+2020-05-16 16:39:35,711 - dashboard - INFO - <module>:62 - Downloading models from S3
+2020-05-16 16:41:09,361 - dashboard - INFO - <module>:46 - Attempting to download DB from S3..
+2020-05-16 16:41:09,362 - dashboard - INFO - <module>:53 - Downloading training data from S3
+2020-05-16 16:41:11,098 - dashboard - INFO - <module>:60 - Downloading models from S3
+2020-05-16 16:43:18,057 - dashboard - INFO - <module>:46 - Attempting to download DB from S3..
+2020-05-16 16:43:18,057 - dashboard - INFO - <module>:53 - Downloading training data from S3
+2020-05-16 16:43:19,823 - dashboard - INFO - <module>:60 - Downloading models from S3
+2020-05-16 16:43:58,971 - dashboard - INFO - <module>:46 - Attempting to download DB from S3..
+2020-05-16 16:43:58,971 - dashboard - INFO - <module>:53 - Downloading training data from S3
+2020-05-16 16:44:01,166 - dashboard - INFO - <module>:60 - Downloading models from S3
+2020-05-16 16:45:11,189 - dashboard - INFO - <module>:46 - Attempting to download DB from S3..
+2020-05-16 16:45:11,190 - dashboard - INFO - <module>:53 - Downloading training data from S3
+2020-05-16 16:45:13,771 - dashboard - INFO - <module>:60 - Downloading models from S3
+2020-05-16 16:46:19,438 - dashboard - INFO - <module>:46 - Attempting to download DB from S3..
+2020-05-16 16:46:19,439 - dashboard - INFO - <module>:53 - Downloading training data from S3
+2020-05-16 16:46:21,244 - dashboard - INFO - <module>:60 - Downloading models from S3
+2020-05-16 16:46:21,967 - dashboard - WARNING - load_production_model:21 - There are two models in the in_production folder.. Picking the first one.
+2020-05-16 16:46:21,967 - dashboard - INFO - load_production_model:23 - Loading production model from /Users/chriscollins/Documents/GitHub/football_trading/packages/football_trading/football_trading/models/in_production/match-predict-base_XGBClassifier_2020-05-06_6447858502481674227.joblib
