@@ -124,12 +124,12 @@ class MatchResultXGBoost(XGBoostModel):
                 self.model_predictions['profit_bof'] = self.model_predictions.apply(
                     lambda x: get_profit_betting_on_fav(x), axis=1)
                 # Upload predictions to the local db
-                if upload_historic_predictions:
+                if upload_historic_predictions and not test_mode:
                     upload_cols = ['fixture_id', 'home_team', 'away_team', 'season',
                                    'date', 'pred', 'actual', 'profit', 'profit_bof']
                     self.save_prediction_data(cols_to_save=upload_cols)
                 # Upload the new DB to S3 if LOCAL is False
-                if not LOCAL:
+                if not LOCAL and not test_mode:
                     upload_to_s3(local_path=f"{DB_DIR}", s3_path='db.sqlite', bucket=S3_BUCKET_NAME)
                 # Create plots if requested
                 if create_plots:
