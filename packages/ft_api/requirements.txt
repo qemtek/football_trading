@@ -3,6 +3,6 @@ flask==1.1.1
 # Schema validation
 marshmallow==3.5.2
 # Always get the latest version of football_trading
-football_trading==0.0.21
+football_trading==0.0.22
 # Deployment
 gunicorn==19.9.0

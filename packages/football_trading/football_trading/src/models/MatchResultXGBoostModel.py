@@ -112,35 +112,34 @@ class MatchResultXGBoost(XGBoostModel):
             self.train_model(X=X, y=y, sample_weight=sample_weight)
             # Compare model performance vs the latest model, save model data
             # if the new model has a better performance
-            use_model = True if not self.compare_models else self.compare_latest_model()
-            if use_model:
-                # Save the trained model, if requested
-                if self.save_trained_model and not test_mode:
-                    self.save_model(local=LOCAL)
-                # Add profit made if we bet on the game
-                self.model_predictions['profit'] = self.model_predictions.apply(
-                    lambda x: get_profit(x), axis=1)
-                # Add profit made betting on the favourite
-                self.model_predictions['profit_bof'] = self.model_predictions.apply(
-                    lambda x: get_profit_betting_on_fav(x), axis=1)
-                # Upload predictions to the local db
-                if upload_historic_predictions and not test_mode:
-                    upload_cols = ['fixture_id', 'home_team', 'away_team', 'season',
-                                   'date', 'pred', 'actual', 'profit', 'profit_bof']
-                    self.save_prediction_data(cols_to_save=upload_cols)
-                # Upload the new DB to S3 if LOCAL is False
-                if not LOCAL and not test_mode:
-                    upload_to_s3(local_path=f"{DB_DIR}", s3_path='db.sqlite', bucket=S3_BUCKET_NAME)
-                # Create plots if requested
-                if create_plots:
-                    logger.info('Generating plots')
-                    from football_trading.src.ModelEvaluator import ModelEvaluator
-                    training_data = self.training_data
-                    training_data['X_train'] = training_data['X_train'][self.model_features]
-                    training_data['X_test'] = training_data['X_test'][self.model_features]
-                    ModelEvaluator(training_data=training_data, trained_model=self.trained_model,
-                                   model_id=self.model_id, is_classifier=True, plots_dir=plots_dir,
-                                   data_dir=f"{data_dir}")
+            model_improves = True if not self.compare_models else self.compare_latest_model()
+            # Save the trained model, if requested
+            if self.save_trained_model and not test_mode:
+                self.save_model(local=LOCAL, save_to_production=model_improves)
+            # Add profit made if we bet on the game
+            self.model_predictions['profit'] = self.model_predictions.apply(
+                lambda x: get_profit(x), axis=1)
+            # Add profit made betting on the favourite
+            self.model_predictions['profit_bof'] = self.model_predictions.apply(
+                lambda x: get_profit_betting_on_fav(x), axis=1)
+            # Upload predictions to the local db
+            if upload_historic_predictions and not test_mode:
+                upload_cols = ['fixture_id', 'home_team', 'away_team', 'season',
+                               'date', 'pred', 'actual', 'profit', 'profit_bof']
+                self.save_prediction_data(cols_to_save=upload_cols)
+            # Upload the new DB to S3 if LOCAL is False
+            if not LOCAL and not test_mode:
+                upload_to_s3(local_path=f"{DB_DIR}", s3_path='db.sqlite', bucket=S3_BUCKET_NAME)
+            # Create plots if requested
+            if create_plots:
+                logger.info('Generating plots')
+                from football_trading.src.ModelEvaluator import ModelEvaluator
+                training_data = self.training_data
+                training_data['X_train'] = training_data['X_train'][self.model_features]
+                training_data['X_test'] = training_data['X_test'][self.model_features]
+                ModelEvaluator(training_data=training_data, trained_model=self.trained_model,
+                               model_id=self.model_id, is_classifier=True, plots_dir=plots_dir,
+                               data_dir=f"{data_dir}")
 
     def save_prediction_data(self, *, cols_to_save):
         self.upload_to_table(
@@ -286,5 +285,5 @@ if __name__ == '__main__':
     model = MatchResultXGBoost(
         save_trained_model=True,
         upload_historic_predictions=True,
-        problem_name='match-predict-base-remove-odds',
+        problem_name='match-predict-base',
         apply_sample_weight=False,)

@@ -61,6 +61,7 @@ if not LOCAL:
     # Download models from S3
     logger.info('Downloading models from S3')
     files = wr.s3.list_objects(f's3://{S3_BUCKET_NAME}/models/', boto3_session=session)
+    files = [f for f in files if 'in_production' not in f]
     for file in files:
         filename = file.split(f's3://{S3_BUCKET_NAME}/models/')[1]
         download_from_s3(local_path=f'{training_data_dir}/{filename}',
