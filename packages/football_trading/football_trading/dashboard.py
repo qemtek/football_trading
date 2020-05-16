@@ -17,10 +17,13 @@ import dash_table
 import plotly.graph_objects as go
 import os
 import joblib
+import awswrangler as wr
+import boto3
 
 from dash.dependencies import Input, Output
 
-from football_trading.settings import model_dir, tmp_dir, LOCAL, DB_DIR, S3_BUCKET_NAME
+from football_trading.settings import model_dir, tmp_dir, LOCAL, DB_DIR, S3_BUCKET_NAME, \
+    AWS_SECRET_ACCESS_KEY, AWS_ACCESS_KEY_ID, training_data_dir
 from football_trading.src.utils.logging import get_logger
 from football_trading.src.utils.dashboard import (
     get_form_dif_view, get_team_home_away_performance, get_performance_by_season,
@@ -29,6 +32,11 @@ from football_trading.src.utils.dashboard import (
 from football_trading.src.utils.db import run_query
 from football_trading.src.utils.s3_tools import download_from_s3
 
+
+session = boto3.session.Session(
+    aws_access_key_id=AWS_ACCESS_KEY_ID,
+    aws_secret_access_key=AWS_SECRET_ACCESS_KEY
+)
 
 active_graphs = ['profit-by-date', 'accuracy_home_away', 'accuracy_over_time', 'form_diff_acc']
 
@@ -43,6 +51,20 @@ if not LOCAL:
             download_from_s3(local_path=f"{DB_DIR}", s3_path='db.sqlite', bucket=S3_BUCKET_NAME)
     except Exception as e:
         raise Exception(f'DB cannot be found in S3, or the access credentials are incorrect. Error: {e}')
+    # Download training data from S3
+    logger.info('Downloading training data from S3')
+    files = wr.s3.list_objects(f's3://{S3_BUCKET_NAME}/training_data/', boto3_session=session)
+    for file in files:
+        filename = file.split(f's3://{S3_BUCKET_NAME}/training_data/')[1]
+        download_from_s3(local_path=f'{training_data_dir}/{filename}',
+                         s3_path=f'training_data/{filename}', bucket=S3_BUCKET_NAME)
+    # Download models from S3
+    logger.info('Downloading models from S3')
+    files = wr.s3.list_objects(f's3://{S3_BUCKET_NAME}/models/', boto3_session=session)
+    for file in files:
+        filename = file.split(f's3://{S3_BUCKET_NAME}/models/')[1]
+        download_from_s3(local_path=f'{training_data_dir}/{filename}',
+                         s3_path=f'models/{filename}', bucket=S3_BUCKET_NAME)
 
 
 def get_dashboard_app(server=None):
