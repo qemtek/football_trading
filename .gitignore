@@ -7,7 +7,7 @@ configuration.py
 .idea/*
 .DS_STORE
 packages/football_trading/football_trading/data/*
-packages/football_trading/football_trading/logs/*
+#packages/football_trading/football_trading/logs/*
 packages/ft_api/ft_api/logs/*
 *.pyc
 packages/football_trading/.tox/*

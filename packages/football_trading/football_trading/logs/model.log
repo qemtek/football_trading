@@ -1,11 +1,4 @@
-2020-05-13 19:53:03,188 - football_trading.src.utils.logging - INFO - update_tables:69 - Tables are up to date, skipping update.
-2020-05-13 19:53:03,191 - football_trading.src.utils.logging - INFO - load_model:239 - Attempting to load XGBClassifier model for date: latest
-2020-05-13 19:53:03,191 - football_trading.src.utils.logging - INFO - load_model:258 - load_model: Loading model with filename: match-predict-base_XGBClassifier_2020-05-06_6447858502481674227.joblib
-2020-05-13 19:53:03,195 - football_trading.src.utils.logging - INFO - load_model:239 - Attempting to load XGBClassifier model for date: latest
-2020-05-13 19:53:03,195 - football_trading.src.utils.logging - INFO - load_model:258 - load_model: Loading model with filename: match-predict-base_XGBClassifier_2020-05-06_6447858502481674227.joblib
-2020-05-13 19:53:03,197 - football_trading.src.utils.logging - INFO - load_model:274 - Loaded model match-predict-base_XGBClassifier_2020-05-06_6447858502481674227
-2020-05-13 19:53:03,197 - football_trading.src.utils.logging - INFO - load_model:278 - Loading training data
-2020-05-13 19:53:03,197 - football_trading.src.utils.logging - INFO - load_model:281 - Loading model training data
-2020-05-13 19:53:03,216 - football_trading.src.utils.logging - INFO - make_predictions:24 - Making predictions for upcoming games: Empty DataFrame
-Columns: [kickoff_time, home_id, home_name, away_id, away_name, home_odds, draw_odds, away_odds]
-Index: []
+2020-05-15 13:43:00,020 - dashboard - WARNING - load_production_model:21 - There are two models in the in_production folder.. Picking the first one.
+2020-05-15 13:43:00,021 - dashboard - INFO - load_production_model:23 - Loading production model from /Users/chriscollins/Documents/GitHub/football_trading/packages/football_trading/football_trading/models/in_production/match-predict-base_XGBClassifier_2020-05-06_6447858502481674227.joblib
+2020-05-15 15:20:30,228 - dashboard - WARNING - load_production_model:21 - There are two models in the in_production folder.. Picking the first one.
+2020-05-15 15:20:30,228 - dashboard - INFO - load_production_model:23 - Loading production model from /Users/chriscollins/Documents/GitHub/football_trading/packages/football_trading/football_trading/models/in_production/match-predict-base_XGBClassifier_2020-05-06_6447858502481674227.joblib

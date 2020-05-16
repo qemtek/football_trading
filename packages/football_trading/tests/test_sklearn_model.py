@@ -22,8 +22,3 @@ def test_optimise_hyperparameters(test_dataset):
     model.optimise_hyperparams(X=X, y=y)
     # ToDo: Pick a dataset where optimization improves the model,
     #  then ensure it does this in the test
-
-
-def test_train_model():
-    # ToDo: Complete
-    pass

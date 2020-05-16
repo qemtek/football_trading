@@ -8,7 +8,6 @@ from football_trading.src.utils.config import get_attribute
 #PROJECTSPATH = get_attribute('PROJECTSPATH')
 PROJECTSPATH = pathlib.Path(football_trading.__file__).resolve().parent
 
-
 # Logging configuration
 FORMATTER = logging.Formatter(
     "%(asctime)s - %(name)s - %(levelname)s - "

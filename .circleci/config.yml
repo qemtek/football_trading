@@ -16,7 +16,7 @@ jobs:
       - run:
           name: Publish Model
           command: |
-            chmod +x ./scripts/publish_model.sh
+            chmod +x scripts/publish_model.sh
             ./scripts/publish_model.sh ./packages/football_trading/
       - save_cache:
           key: py-deps-{{ checksum "packages/football_trading/requirements.txt" }}
@@ -42,7 +42,7 @@ jobs:
       - run:
           name: Train Model
           command: |
-            chmod u+x ./scripts/train_model.sh
+            chmod u+x scripts/train_model.sh
             ./scripts/train_model.sh
       - save_cache:
           key: py-deps-{{ checksum "packages/ft_api/requirements.txt" }}
@@ -62,11 +62,11 @@ jobs:
             virtualenv venv
             . venv/bin/activate
             pip install --upgrade pip
-            pip install -r requirements.txt
+            pip install --extra-index-url ${PIP_EXTRA_INDEX_URL} -r packages/ft_api/requirements.txt
       - run:
           name: Make Predictions
           command: |
-            chmod u+x ./scripts/make_predictions.sh
+            chmod u+x scripts/make_predictions.sh
             ./scripts/make_predictions.sh
       - save_cache:
           key: py-deps-{{ checksum "packages/ft_api/requirements.txt" }}
