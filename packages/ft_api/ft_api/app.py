@@ -1,7 +1,6 @@
 from flask import Flask, request, jsonify
 
 from football_trading import __version__ as _version
-from ft_api import __version__ as api_version
 from football_trading.predict import make_predictions
 from football_trading.train import train_new_model
 from football_trading.dashboard import get_dashboard_app
@@ -55,7 +54,6 @@ def get_api(input_config=None):
 
     @prediction_app.route('/version', methods=['GET'])
     def get_version():
-        return jsonify({"API version": api_version,
-                        "Model version": _version})
+        return jsonify({"Model version": _version})
 
     return prediction_app
