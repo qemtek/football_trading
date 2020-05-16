@@ -8,6 +8,11 @@ include football_trading/data/*
 include football_trading/models/*
 include football_trading/sql/*
 include football_trading/src/*
+include football_trading/logs/*
+include football_trading/data_retrieval/*
+include football_trading/utils/*
+include football_trading/tmp/*
+include football_trading/plots/*
 
 include football_trading/VERSION
 
