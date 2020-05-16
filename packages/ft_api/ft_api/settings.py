@@ -1,7 +1,7 @@
 import logging
 import os
 
-from ft_api.utils.configuration import get_attribute
+from ft_api.utils.config import get_attribute
 
 SERVER_ADDRESS = get_attribute('SERVER_ADDRESS')
 SERVER_PORT = get_attribute('SERVER_PORT')
