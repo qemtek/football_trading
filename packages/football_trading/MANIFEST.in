@@ -6,6 +6,7 @@ recursive-include ./football_trading/*
 
 include football_trading/data/*
 include football_trading/models/*
+include football_trading/models/in_production/*
 include football_trading/sql/*
 include football_trading/src/*
 include football_trading/logs/*
