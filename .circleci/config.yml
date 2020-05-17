@@ -18,6 +18,10 @@ jobs:
           command: |
             chmod +x scripts/publish_model.sh
             ./scripts/publish_model.sh ./packages/football_trading/
+      - run:
+          name: Deploy to Heroku
+          command: |
+            git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git master
       - save_cache:
           key: py-deps-{{ checksum "requirements.txt" }}
           paths:
@@ -45,6 +49,10 @@ jobs:
             . venv/bin/activate
             chmod u+x scripts/train_model.sh
             ./scripts/train_model.sh
+      - run:
+          name: Deploy to Heroku
+          command: |
+            git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git master
       - save_cache:
           key: py-deps-{{ checksum "packages/ft_api/requirements.txt" }}
           paths:
@@ -70,6 +78,10 @@ jobs:
             . venv/bin/activate
             chmod u+x scripts/make_predictions.sh
             ./scripts/make_predictions.sh
+      - run:
+          name: Deploy to Heroku
+          command: |
+            git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git master
       - save_cache:
           key: py-deps-{{ checksum "packages/ft_api/requirements.txt" }}
           paths:
