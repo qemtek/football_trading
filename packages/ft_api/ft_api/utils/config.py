@@ -1,5 +1,9 @@
 import os
-from ft_api import configuration
+
+try:
+    from ft_api import configuration
+except ImportError:
+    configuration = {}
 
 
 def get_attribute(attribute_name, fail_if_not_found=True, accepts=None):
