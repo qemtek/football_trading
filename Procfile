@@ -1,1 +1,1 @@
-web: gunicorn --pythonpath packages/api --access-logfile - --error-logfile - run:application
+web: gunicorn --pythonpath ./packages/ft_api --access-logfile - --error-logfile - run:application
