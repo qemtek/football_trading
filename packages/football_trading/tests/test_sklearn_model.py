@@ -4,6 +4,7 @@ from sklearn.linear_model import LogisticRegression
 
 from football_trading.src.utils.logging import get_logger
 from football_trading.src.models.templates.sklearn_model import SKLearnModel
+from football_trading.settings import PROJECTSPATH
 
 
 logger = get_logger()
