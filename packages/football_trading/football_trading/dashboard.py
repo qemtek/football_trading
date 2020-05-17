@@ -33,40 +33,40 @@ from football_trading.src.utils.db import run_query
 from football_trading.src.utils.s3_tools import download_from_s3
 
 
-session = boto3.session.Session(
-    aws_access_key_id=AWS_ACCESS_KEY_ID,
-    aws_secret_access_key=AWS_SECRET_ACCESS_KEY
-)
-
 active_graphs = ['profit-by-date', 'accuracy_home_away', 'accuracy_over_time', 'form_diff_acc']
 
 logger = get_logger(logger_name='dashboard')
 
-if not LOCAL:
-    logger.info('Attempting to download DB from S3..')
-    try:
-        if not os.path.exists(f"{DB_DIR}"):
-            download_from_s3(local_path=f"{DB_DIR}", s3_path='db.sqlite', bucket=S3_BUCKET_NAME)
-    except Exception as e:
-        raise Exception(f'DB cannot be found in S3, or the access credentials are incorrect. Error: {e}')
-    # Download training data from S3
-    logger.info('Downloading training data from S3')
-    files = wr.s3.list_objects(f's3://{S3_BUCKET_NAME}/training_data/', boto3_session=session)
-    for file in files:
-        filename = file.split(f's3://{S3_BUCKET_NAME}/training_data/')[1]
-        download_from_s3(local_path=f'{training_data_dir}/{filename}',
-                         s3_path=f'training_data/{filename}', bucket=S3_BUCKET_NAME)
-    # Download models from S3
-    logger.info('Downloading models from S3')
-    files = wr.s3.list_objects(f's3://{S3_BUCKET_NAME}/models/', boto3_session=session)
-    files = [f for f in files if 'in_production' not in f]
-    for file in files:
-        filename = file.split(f's3://{S3_BUCKET_NAME}/models/')[1]
-        download_from_s3(local_path=f'{model_dir}/{filename}',
-                         s3_path=f'models/{filename}', bucket=S3_BUCKET_NAME)
-
 
 def get_dashboard_app(server=None):
+
+    session = boto3.session.Session(
+        aws_access_key_id=AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=AWS_SECRET_ACCESS_KEY
+    )
+
+    if not LOCAL:
+        logger.info('Attempting to download DB from S3..')
+        try:
+            if not os.path.exists(f"{DB_DIR}"):
+                download_from_s3(local_path=f"{DB_DIR}", s3_path='db.sqlite', bucket=S3_BUCKET_NAME)
+        except Exception as e:
+            raise Exception(f'DB cannot be found in S3, or the access credentials are incorrect. Error: {e}')
+        # Download training data from S3
+        logger.info('Downloading training data from S3')
+        files = wr.s3.list_objects(f's3://{S3_BUCKET_NAME}/training_data/', boto3_session=session)
+        for file in files:
+            filename = file.split(f's3://{S3_BUCKET_NAME}/training_data/')[1]
+            download_from_s3(local_path=f'{training_data_dir}/{filename}',
+                             s3_path=f'training_data/{filename}', bucket=S3_BUCKET_NAME)
+        # Download models from S3
+        logger.info('Downloading models from S3')
+        files = wr.s3.list_objects(f's3://{S3_BUCKET_NAME}/models/', boto3_session=session)
+        files = [f for f in files if 'in_production' not in f]
+        for file in files:
+            filename = file.split(f's3://{S3_BUCKET_NAME}/models/')[1]
+            download_from_s3(local_path=f'{model_dir}/{filename}',
+                             s3_path=f'models/{filename}', bucket=S3_BUCKET_NAME)
     # Get the latest predictions
     latest_preds = run_query(query='select * from latest_predictions')
     # Get the names of models saved in the models directory
@@ -75,10 +75,13 @@ def get_dashboard_app(server=None):
     if len(model_names) < 1:
         raise Exception('No models could be found to add to the dashboard')
     predictions = run_query(query='select * from historic_predictions')
+    logger.info(f'Retrieved {len(predictions)} rows from the historic_predictions table')
     # Get historic features
     historic_df_all, all_model_ids = get_historic_features(predictions, model_names)
+    logger.info(f"Found {len(all_model_ids)} models in the DB")
     # Drop Duplicates
     historic_df_all = historic_df_all.drop_duplicates()
+    logger.info(f'Retrieved historic features. Rows: {len(historic_df_all)}')
     # Load the in-production model
     production_model, production_model_id, production_model_dir = load_production_model()
     # Get the current season
@@ -91,6 +94,7 @@ def get_dashboard_app(server=None):
     joblib.dump(model_names, f"{tmp_dir}/model_names.joblib")
     # Get the performance of the model for each team, at home and away
     combined_team_perf = get_team_home_away_performance(historic_df=historic_df, current_season=current_season)
+    logger.info(f'Getting team performance at home and away, returned {len(combined_team_perf)} rows')
     # Get the performance of all models, grouped by season
     time_perf = get_performance_by_season(
         historic_df_all=historic_df_all, production_model_id=production_model_id)
@@ -99,8 +103,10 @@ def get_dashboard_app(server=None):
         historic_df_all=historic_df_all, all_model_ids=all_model_ids, production_model_id=production_model_id)
     # Get the cumulative profit from betting on the favourite
     profit_perf_bof = get_cumulative_profit_from_bof(historic_df=historic_df)
+    logger.info(f'Getting cumulative profit from betting on the favourite, returned {len(profit_perf_bof)} rows')
     # Get the performance of each model, grouped by the difference in form between teams
     form_diff_acc = get_form_dif_view(historic_df_all=historic_df_all, production_model_id=production_model_id)
+    logger.info(f'Getting performance of each model grouped by difference in form, returned {len(form_diff_acc)} rows')
 
     if server is not None:
         logger.info(f'Server passed of type {str(type(server))}. It will only be used if its of type Flask.')

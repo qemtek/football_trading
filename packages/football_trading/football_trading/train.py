@@ -1,7 +1,6 @@
 from football_trading.src.models.MatchResultXGBoostModel import MatchResultXGBoost
 from football_trading.update_tables import update_tables
 from football_trading.src.utils.logging import get_logger
-from football_trading.settings import LOCAL
 
 logger = get_logger()
 

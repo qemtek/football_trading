@@ -1,3 +1,5 @@
+import os
+
 from sklearn.linear_model import LogisticRegression
 
 from football_trading.src.utils.logging import get_logger
@@ -20,5 +22,9 @@ def test_optimise_hyperparameters(test_dataset):
     X = test_dataset.drop('full_time_result_H', axis=1)
     y = test_dataset['full_time_result_H']
     model.optimise_hyperparams(X=X, y=y)
+    # Clean up files
+    hp_dir = f"{PROJECTSPATH}/data/hyperparams/test.joblib"
+    if os.path.exists(hp_dir):
+        os.remove(hp_dir)
     # ToDo: Pick a dataset where optimization improves the model,
     #  then ensure it does this in the test
