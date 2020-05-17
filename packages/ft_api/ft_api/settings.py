@@ -1,11 +1,12 @@
 import logging
 import os
+import pathlib
 
 from ft_api.utils.config import get_attribute
 
 SERVER_ADDRESS = get_attribute('SERVER_ADDRESS')
 SERVER_PORT = get_attribute('SERVER_PORT')
-PROJECTSPATH = get_attribute('PROJECTSPATH')
+PROJECTSPATH = pathlib.Path(ft_api.__file__).resolve().parent
 
 FORMATTER = logging.Formatter(
     "%(asctime)s — %(name)s — %(levelname)s —"
