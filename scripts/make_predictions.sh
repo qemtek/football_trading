@@ -1,5 +1,5 @@
 export IN_PRODUCTION=false
-export PROJECTSPATH=/home/circleci/project/packages/football_trading/football_trading
+#export PROJECTSPATH=/home/circleci/project/packages/football_trading/football_trading
 export DB_DIR=/home/circleci/project/db.sqlite
 export BFEX_USER=$CCI_BFEX_USER
 export BFEX_PASSWORD=$CCI_BFEX_PASS
@@ -8,12 +8,13 @@ export BFEX_CERTS_PATH=$CCI_BFEX_CERTS_PATH
 export PRODUCTION_MODEL_NAME=match-predict-base
 export RECREATE_DB=false
 export LOCAL=false
-export PYTHONPATH=./packages/ft_api
+export PYTHONPATH=/home/circleci/project/packages/ft_api
 export S3_BUCKET_NAME=$S3_BUCKET_NAME
 export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
 export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
 export SERVER_ADDRESS=0.0.0.0
 export SERVER_PORT=5000
+export MODE=prod
 
 cd packages/ft_api
 chmod u+x run.sh
