@@ -7,7 +7,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: py-deps-{{ checksum "packages/football_trading/requirements.txt" }}
+          key: py-deps-{{ checksum "requirements.txt" }}
       - run:
           name: Build Model Package & Test
           command: |
@@ -19,7 +19,7 @@ jobs:
             chmod +x scripts/publish_model.sh
             ./scripts/publish_model.sh ./packages/football_trading/
       - save_cache:
-          key: py-deps-{{ checksum "packages/football_trading/requirements.txt" }}
+          key: py-deps-{{ checksum "requirements.txt" }}
           paths:
             - "/venv"
       - store_test_results:

@@ -1,5 +1,4 @@
 # Set up environment
-cd packages/football_trading
 virtualenv venv
 . venv/bin/activate
 pip install --upgrade pip
