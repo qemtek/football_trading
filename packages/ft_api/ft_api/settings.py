@@ -2,6 +2,7 @@ import logging
 import os
 import pathlib
 
+import ft_api
 from ft_api.utils.config import get_attribute
 
 SERVER_ADDRESS = get_attribute('SERVER_ADDRESS')
