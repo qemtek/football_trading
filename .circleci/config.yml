@@ -1,4 +1,8 @@
 version: 2
+
+orbs:
+  heroku: circleci/heroku@0.0.10. # Invoke the Heroku orb
+
 jobs:
   test_and_publish:
     working_directory: ~/project
@@ -18,10 +22,6 @@ jobs:
           command: |
             chmod +x scripts/publish_model.sh
             ./scripts/publish_model.sh ./packages/football_trading/
-      - run:
-          name: Deploy to Heroku
-          command: |
-            git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git master
       - save_cache:
           key: py-deps-{{ checksum "requirements.txt" }}
           paths:
@@ -49,10 +49,6 @@ jobs:
             . venv/bin/activate
             chmod u+x scripts/train_model.sh
             ./scripts/train_model.sh
-      - run:
-          name: Deploy to Heroku
-          command: |
-            git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git master
       - save_cache:
           key: py-deps-{{ checksum "packages/ft_api/requirements.txt" }}
           paths:
@@ -78,10 +74,6 @@ jobs:
             . venv/bin/activate
             chmod u+x scripts/make_predictions.sh
             ./scripts/make_predictions.sh
-      - run:
-          name: Deploy to Heroku
-          command: |
-            git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git master
       - save_cache:
           key: py-deps-{{ checksum "packages/ft_api/requirements.txt" }}
           paths:
@@ -93,12 +85,21 @@ workflows:
     jobs:
       - test_and_publish:
           context: aws
+      - heroku/deploy-via-git: # Use the pre-configured job, deploy-via-git
+          requires:
+            - test_and_publish
+          filters:
+            branches:
+              only: master
   weekly-train:
     # Train the model using the latest version of the code via the API,
     # upload new model if it performs better than the old one
     jobs:
       - train_and_upload_model:
           context: aws
+      - heroku/deploy-via-git: # Use the pre-configured job, deploy-via-git
+          requires:
+            - train_and_upload_model
     triggers:
       - schedule:
           cron: "0 0 * * 3"  # Run every wednesday at midnight
@@ -111,6 +112,9 @@ workflows:
     jobs:
       - daily_predictions:
           context: aws
+      - heroku/deploy-via-git: # Use the pre-configured job, deploy-via-git
+          requires:
+            - daily_predictions
     triggers:
       - schedule:
           cron: "0 2 * * *"  # Run every day at 2am
