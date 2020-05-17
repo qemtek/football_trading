@@ -12,6 +12,7 @@ packages/ft_api/ft_api/logs/*
 *.pyc
 packages/football_trading/.tox/*
 packages/football_trading/football_trading/data/training_data/*
+packages/football_trading/football_trading/models/*
 packages/football_trading/football_trading/plots/*
 packages/football_trading/football_trading/tmp/*
 packages/ft_api/.tox/*
