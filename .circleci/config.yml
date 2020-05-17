@@ -87,13 +87,13 @@ workflows:
     jobs:
       - train_and_upload_model:
           context: aws
-#    triggers:
-#      - schedule:
-#          cron: "0 0 * * 3"  # Run every wednesday at midnight
-#          filters:
-#            branches:
-#              only:
-#                - master
+    triggers:
+      - schedule:
+          cron: "0 0 * * 3"  # Run every wednesday at midnight
+          filters:
+            branches:
+              only:
+                - master
   daily-predict:
     # Check and make predictions for any new fixtures that haven't been predicted for
     jobs:
