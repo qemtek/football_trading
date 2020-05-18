@@ -10,7 +10,7 @@ workflows:
     jobs:
       - test_and_publish:
           context: aws
-      - heroku/deploy-via-git: # Use the pre-configured job, deploy-via-git
+      - deploy-to-heroku: # Use the pre-configured job, deploy-via-git
           requires:
             - test_and_publish
           filters:
@@ -22,7 +22,7 @@ workflows:
     jobs:
       - train_and_upload_model:
           context: aws
-      - heroku/deploy-via-git: # Use the pre-configured job, deploy-via-git
+      - deploy-to-heroku: # Use the pre-configured job, deploy-via-git
           requires:
             - train_and_upload_model
     triggers:
@@ -37,7 +37,7 @@ workflows:
     jobs:
       - daily_predictions:
           context: aws
-      - heroku/deploy-via-git: # Use the pre-configured job, deploy-via-git
+      - deploy-to-heroku: # Use the pre-configured job, deploy-via-git
           requires:
             - daily_predictions
     triggers:
@@ -49,6 +49,16 @@ workflows:
                 - master
 
 jobs:
+  deploy-to-heroku:
+    executor: heroku/default
+    steps:
+      - checkout
+      - heroku/install
+      - run:
+          command: >
+            echo "The command above installs Heroku, the command below deploys.
+            What you do inbetween is up to you!"
+      - heroku/deploy-via-git
   test_and_publish:
     working_directory: ~/project
     docker:
